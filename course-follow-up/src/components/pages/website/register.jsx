@@ -2,6 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate} from "react-router-dom";
 import Navbar from "../shared/navbar";
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+
 
 function Signup () {
     const navigate = useNavigate();
@@ -14,6 +19,7 @@ function Signup () {
     const [psswrd, setPsswrd] = useState("");
     const [confirmPsswrd, setconfirmPsswrd] = useState("");
     const [showError, setShowError] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
 
     // Carga todas las actas de la BD en la lista "actas" 
@@ -39,6 +45,11 @@ function Signup () {
         navigate('/',{});
     }
 
+    const validarPassword = (password) => {
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$#(=?+}{\]\[]).{8,}$/;
+        return regex.test(password);
+    };
+
     const handleRegister = async () => {
         const usuarioEncontrado = usuarios.find(usuario => usuario.correo === correo);
 
@@ -53,6 +64,9 @@ function Signup () {
         else if(psswrd !== confirmPsswrd){
             setShowError(true);
         console.log("Contraseñas incorrectas");
+        }
+        else if (!validarPassword(psswrd)) {
+            toast.error("La contraseña debe tener mínimo 8 caracteres y al menos una mayúscula, minúscula, número y carácter especial como #$(=)?+}{][");
         }
         else{
             const datos = {
@@ -115,23 +129,40 @@ function Signup () {
                         <div className="form-group">
                             <label>Contraseña:</label>
                             <input 
-                                type="password" 
+                                type= {showPassword ? "text" : "password"} 
                                 className="form-control m-2" 
                                 onChange={(event)=>{setPsswrd(event.target.value)}}
                             />
+                            <button 
+                                type="button" 
+                                className="btn position-absolute end-0 top-50 translate-middle-y"
+                                onClick={() => setShowPassword(!showPassword)}
+                                style={{ marginRight: "15px", marginTop: "56px" }}
+                            >
+                                <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
+                            </button>
                         </div>
                         <div className="form-group">
                             <label>Confirmar Contraseña:</label>
                             <input 
-                                type="password" 
+                                type= {showPassword ? "text" : "password"} 
                                 className="form-control m-2"
                                 onChange={(event)=>{setconfirmPsswrd(event.target.value)}}
                             />
+                            <button 
+                                type="button" 
+                                className="btn position-absolute end-0 top-50 translate-middle-y"
+                                onClick={() => setShowPassword(!showPassword)}
+                                style={{ marginRight: "15px", marginTop: "134px" }}
+                            >
+                                <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
+                            </button>
                         </div>
                         <div className="m-3">
                             <hr />
                             <button className="btn btn-danger m-4" onClick={handleBack}>Volver</button>
                             <button className="btn btn-primary m-4" onClick={handleRegister}>Registrarse</button>
+                            <ToastContainer position="top-center"/>
                         </div>
                     </div>
                 </div>

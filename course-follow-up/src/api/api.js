@@ -68,6 +68,23 @@ app.post('/sendEmail', (req, res) => {
   });
 });
 
+// Ruta para recuperar contraseña de usuario
+app.put('/usuarios/updatePassword', async (req, res) => {
+  try {
+      const { correo, nuevaContraseña } = req.body;
+      const result = await db.query("UPDATE coursefollowup.usuario SET contraseña = ? WHERE correo = ?", [nuevaContraseña, correo]);
+
+      if (result.affectedRows === 0) {
+          res.status(404).json({ mensaje: 'Usuario no encontrado' });
+      } else {
+          res.status(200).json({ mensaje: 'Contraseña actualizada correctamente' });
+      }
+  } catch (error) {
+      console.error('Error al actualizar contraseña:', error);
+      res.status(500).json({ error: 'Error al actualizar contraseña' });
+  }
+});
+
 
 // Iniciar el servidor
 app.listen(port, () => {

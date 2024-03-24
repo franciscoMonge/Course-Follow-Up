@@ -5,6 +5,8 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import generarRandomPassword from "./generarPassword";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 function Login () {
     const navigate = useNavigate();
@@ -14,28 +16,34 @@ function Login () {
     const [correo, setCorreo] = useState('');
     const [psswrd, setPsswrd] = useState('');
     const [showError, setShowError] = useState(false);
-    const [emailSent, setEmailSent] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
-
-    // Carga todas las actas de la BD en la lista "actas" 
+    // Carga todas las actas de la BD en la lista "actas"
     useEffect(() =>{
         axios.get('http://localhost:3001/usuarios')
         .then(response =>{
-            console.log('nuevo EFFECT');
             setUsuarios(response.data);
-            //console.log('ok: ',usuarios[0].nombre)
         })
         .catch(error => {
             console.log('ERROR: Carga Fallida de usuarios', error);
         });
     }, []);
-
+    
     useEffect(() => {
         // Este se ejecuta cuando actas cambie
         console.log('actas actualizadas:', usuarios[0]);
         //console.log('keywords: ', actas[0].palabras_clave)
     }, [usuarios]);
 
+    const actualizarUsuarios = () =>{
+        axios.get('http://localhost:3001/usuarios')
+        .then(response =>{
+            setUsuarios(response.data);
+        })
+        .catch(error => {
+            console.log('ERROR: Carga Fallida de usuarios', error);
+        });
+    }
 
 
     const handleLogin = () =>{
@@ -62,25 +70,35 @@ function Login () {
     };
 
     const handleChangePassword = async () => {
-        console.log("ENTRE A CAMBIAR LA PASSWORD")
         if(!correo){
-            toast.info('Debe ingresar su correo.');
+            toast.info('Debe ingresar su dirección de correo.');
         }else{
             const correoEncontrado = usuarios.find(usuario => usuario.correo === correo);
 
             if(correoEncontrado){
-                console.log("ENCONTRE EL CORREO")
                 const nuevaPassword = generarRandomPassword(6);
+
                 try {
+                    // Actualizar la contraseña en la base de datos
+                    await axios.put('http://localhost:3001/usuarios/updatePassword', {
+                        correo: correo,
+                        nuevaContraseña: nuevaPassword
+                    });
+
+                    // Enviar correo con la nueva contraseña
                     await axios.post('http://localhost:3001/sendEmail', {
                       to: correo,
-                      subject: 'Recuperación de Contraseña',
-                      body: `Su nueva contraseña es: ${nuevaPassword}` 
+                      subject: '🚨 Recuperación de Contraseña 🚨',
+                      body: `¡Hola! Le saluda Course Follow Up 😊\n\nSu nueva contraseña es: ${nuevaPassword}` 
                     });
+                    
+                    // Actualizar lista de usuarios
+                    actualizarUsuarios();
+
                     toast.success('Se ha enviado un correo a su cuenta');
+
                   } catch (error) {
                     toast.error('Error al enviar correo', error);
-                    console.error("Error", error);
                   }
             }else{
                 toast.error('Correo inválido.');
@@ -110,10 +128,18 @@ function Login () {
                         <div className="form-group">
                             <label>Contraseña:</label>
                             <input 
-                                type="password" 
+                                type= {showPassword ? "text" : "password"} 
                                 className="form-control m-2" 
                                 onChange={(event)=>{setPsswrd(event.target.value)}}
                             />
+                            <button 
+                                type="button" 
+                                className="btn position-absolute end-0 top-50 translate-middle-y"
+                                onClick={() => setShowPassword(!showPassword)}
+                                style={{ marginRight: "15px", marginTop: "5px" }}
+                            >
+                                <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
+                            </button>
                         </div>
                         <div className="m-3">
                             <button className="btn btn-primary" onClick={handleLogin}>Iniciar Sesión</button>
