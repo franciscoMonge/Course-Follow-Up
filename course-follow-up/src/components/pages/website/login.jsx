@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../shared/navbar";
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import generarRandomPassword from "./generarPassword";
 
 function Login () {
-
     const navigate = useNavigate();
 
     //Datos de Login
@@ -12,6 +14,7 @@ function Login () {
     const [correo, setCorreo] = useState('');
     const [psswrd, setPsswrd] = useState('');
     const [showError, setShowError] = useState(false);
+    const [emailSent, setEmailSent] = useState(false);
 
 
     // Carga todas las actas de la BD en la lista "actas" 
@@ -58,6 +61,32 @@ function Login () {
         }
     };
 
+    const handleChangePassword = async () => {
+        console.log("ENTRE A CAMBIAR LA PASSWORD")
+        if(!correo){
+            toast.info('Debe ingresar su correo.');
+        }else{
+            const correoEncontrado = usuarios.find(usuario => usuario.correo === correo);
+
+            if(correoEncontrado){
+                console.log("ENCONTRE EL CORREO")
+                const nuevaPassword = generarRandomPassword(6);
+                try {
+                    await axios.post('http://localhost:3001/sendEmail', {
+                      to: correo,
+                      subject: 'Recuperación de Contraseña',
+                      body: `Su nueva contraseña es: ${nuevaPassword}` 
+                    });
+                    toast.success('Se ha enviado un correo a su cuenta');
+                  } catch (error) {
+                    toast.error('Error al enviar correo', error);
+                    console.error("Error", error);
+                  }
+            }else{
+                toast.error('Correo inválido.');
+            }
+        }
+    };
 
     return(
         <div>
@@ -90,6 +119,8 @@ function Login () {
                             <button className="btn btn-primary" onClick={handleLogin}>Iniciar Sesión</button>
                             <hr />
                         </div>
+                            <Link onClick={handleChangePassword}><span className="text-primary">¿Olvidaste la contraseña?</span></Link>
+                             <ToastContainer position="top-center"/>
                             <br />
                             <Link to="/Register"><span className="text-primary">¿No tienes cuenta?</span></Link>
                     </div>

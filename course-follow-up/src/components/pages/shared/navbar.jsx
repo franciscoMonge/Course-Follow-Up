@@ -6,10 +6,10 @@ function Navbar () {
         <nav style={{ backgroundColor: '#092D4E' }} className="navbar navbar-expand-lg navbar-dark fixed-top">
             <div className="container-fluid">
                 <div className="navbar-brand d-flex align-items-center">
-                <img src={logo} alt="Logo" height="60" width="170" className="mr-3" />
+                <img src={logo} alt="Logo" height="70" width="150" className="mr-3" />
                 </div>
                 <div className="ml-auto d-flex align-items-center">
-                <img src={tecLogo} alt="TEC_Logo" height="60" width="250" className="mr-3" />
+                <img src={tecLogo} alt="TEC_Logo" height="50" width="220" className="mr-3" />
                 </div>
             </div>
         </nav>
