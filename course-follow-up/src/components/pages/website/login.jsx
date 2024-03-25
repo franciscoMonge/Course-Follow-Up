@@ -58,6 +58,7 @@ function Login () {
             const usuarioEncontrado = usuarios.find(usuario => usuario.correo === correo && usuario.contraseña === psswrd);
 
             if (usuarioEncontrado) {
+                sessionStorage.setItem('usuarioActual', correo);
                 // El usuario y la contraseña coinciden
                 navigate('/MainPage',{});
                 console.log("Inicio de sesión exitoso");

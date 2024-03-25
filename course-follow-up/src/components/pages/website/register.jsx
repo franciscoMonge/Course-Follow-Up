@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 
+
 function Signup () {
     const navigate = useNavigate();
 
@@ -80,7 +81,8 @@ function Signup () {
                 console.log('revisarrrrrr ',datos)
                 const response = await axios.post('http://localhost:3001/usuarios', datos);
                 console.log(response.data);
-                alert("Usuario registrado exitosamente.");
+                toast.success('Usuario registrado exitosamente.');
+                sessionStorage.setItem('usuarioActual', correo);
                 navigate('/MainPage',{});
             }
             catch(err){
@@ -94,8 +96,8 @@ function Signup () {
             <div className="mb-5">
                 <Navbar/>
             </div>
-            <div className="container d-flex flex-column align-items-center justify-content-center  mt-5 vh-auto">
-                <h1 className="mb-2">Course Follow-Up</h1>
+            <div className="container d-flex flex-column align-items-center justify-content-center mt-5 vh-auto">
+                <h1 className="mb-2" style={ { marginTop: "80px"}}>Course Follow-Up</h1>
                 <div className="card m-4 text-center" style={{ width: '500px', overflowY: 'auto'}}>
                     <div className="card-header">
                         <h2>Crear Cuenta</h2>
