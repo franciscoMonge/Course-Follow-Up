@@ -36,6 +36,7 @@ function Login () {
     }, [usuarios]);
 
     const actualizarUsuarios = () =>{
+        console.log("CAMBIO CONTRASEÑA");
         axios.get('http://localhost:3001/usuarios')
         .then(response =>{
             setUsuarios(response.data);
@@ -45,6 +46,12 @@ function Login () {
         });
     }
 
+    const validarFormatoCorreo = (correo) => {
+        console.log("CORREO", correo);
+        const regex = /@(estudiantec\.cr|itcr\.ac\.cr)$/i;
+        return regex.test(correo);
+    };
+
 
     const handleLogin = () =>{
         console.log('aqui: ', usuarios[0].admin.data[0]);
@@ -53,6 +60,8 @@ function Login () {
 
         if(!correo || !psswrd){
             setShowError(true);
+        } else if(!validarFormatoCorreo(correo)){
+            setShowError(true)
         }
         else{
             const usuarioEncontrado = usuarios.find(usuario => usuario.correo === correo && usuario.contraseña === psswrd);
@@ -73,6 +82,8 @@ function Login () {
     const handleChangePassword = async () => {
         if(!correo){
             toast.info('Debe ingresar su dirección de correo.');
+        } else if(!validarFormatoCorreo(correo)){
+            toast.error('Formato de correo inválido.');
         }else{
             const correoEncontrado = usuarios.find(usuario => usuario.correo === correo);
 

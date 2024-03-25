@@ -26,6 +26,7 @@ function DropdownMenu() {
     };
 
     const handleItemCerrar= (e) => {
+        sessionStorage.removeItem('usuarioActual');
         navigate('/');
     };
 

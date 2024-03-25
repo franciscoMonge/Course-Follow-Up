@@ -11,6 +11,8 @@ Install packages:
 
 npm install express
 npm install cors
+npm install crypto-js
+npm install dotenv
 
 npm install react-toastify
 npm install @fortawesome/fontawesome-svg-core @fortawesome/free-solid-svg-icons @fortawesome/react-fontawesome
