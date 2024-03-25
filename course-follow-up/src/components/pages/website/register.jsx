@@ -51,6 +51,16 @@ function Signup () {
         return regex.test(password);
     };
 
+    const validarInput = (input) => {
+        return input.length >= 4;
+    };
+    
+    const validarFormatoCorreo = (correo) => {
+        console.log("CORREO", correo);
+        const regex = /@(estudiantec\.cr|itcr\.ac\.cr)$/i;
+        return regex.test(correo);
+    };
+    
     const handleRegister = async () => {
         const usuarioEncontrado = usuarios.find(usuario => usuario.correo === correo);
 
@@ -68,6 +78,12 @@ function Signup () {
         }
         else if (!validarPassword(psswrd)) {
             toast.error("La contraseña debe tener mínimo 8 caracteres y al menos una mayúscula, minúscula, número y carácter especial como #$(=)?+}{][");
+        } else if (!validarInput(name) || !validarInput(lastName)){
+            setShowError(true);
+            console.log("Minimo de caracteres");
+        }else if(!validarFormatoCorreo(correo)){
+            setShowError(true);
+            console.log("Correo inválido.")
         }
         else{
             const datos = {
@@ -107,6 +123,7 @@ function Signup () {
                             <label>Nombre:</label>
                             <input 
                                 type="text" 
+                                maxLength="24" 
                                 className="form-control m-2" 
                                 onChange={(event)=>{setName(event.target.value)}}
                             />
@@ -115,6 +132,7 @@ function Signup () {
                             <label>Apellido:</label>
                             <input 
                                 type="text" 
+                                maxLength="32" 
                                 className="form-control m-2" 
                                 onChange={(event)=>{setLastName(event.target.value)}}
                             />

@@ -77,7 +77,7 @@ function Login () {
             const correoEncontrado = usuarios.find(usuario => usuario.correo === correo);
 
             if(correoEncontrado){
-                const nuevaPassword = generarRandomPassword(6);
+                const nuevaPassword = generarRandomPassword(8);
 
                 try {
                     // Actualizar la contraseña en la base de datos
