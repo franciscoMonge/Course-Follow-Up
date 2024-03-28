@@ -1,6 +1,12 @@
 import Navbar from "../shared/navbar";
+import { Link, useNavigate} from "react-router-dom";
 
 function MainPage () {
+    const navigate = useNavigate();
+    const handleAgregar = () => {
+        navigate('/AgregarPlanificador',{});
+    };
+
     return(
         <div>
             <Navbar/>
@@ -12,7 +18,7 @@ function MainPage () {
                     </div>
                     <div className="card-body">
                         <div className="m-3">
-                            <button className="btn btn-primary">Agregar Planificador</button>
+                            <button className="btn btn-primary" onClick={handleAgregar}>Agregar Planificador</button>
                         </div>
                         <div className="m-3">
                             <button className="btn btn-primary">Ver Planificador</button>
