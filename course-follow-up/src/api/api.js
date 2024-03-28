@@ -32,6 +32,23 @@ app.post('/usuarios', async (req, res) => {
     }
   });
 
+//Obtener TODOS los cursos (13 disponibles)
+app.get('/cursos', (req, res) => {
+  connection.query('CALL GetCursos()', (error, results) => {
+    if (error) throw error;
+    res.json(results[0]); // Los resultados están en la primera posición del arreglo results
+  });
+});
+
+//Obtener los cursos por grupo
+app.get('/api/cursosxgrupo/:numero', (req, res) => {
+  const numeroGrupo = req.params.numero;
+  connection.query('CALL GetCursosxGrupo(?)', [numeroGrupo], (error, results) => {
+    if (error) throw error;
+    res.json(results[0]); // Los resultados están en la primera posición del arreglo results
+  });
+});
+
 // Iniciar el servidor
 app.listen(port, () => {
   console.log(`El servidor está corriendo en http://localhost:${port}`);
