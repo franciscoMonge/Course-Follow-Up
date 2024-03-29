@@ -32,22 +32,30 @@ app.post('/usuarios', async (req, res) => {
     }
   });
 
-//Obtener TODOS los cursos (13 disponibles)
-app.get('/cursos', (req, res) => {
-  connection.query('CALL GetCursos()', (error, results) => {
-    if (error) throw error;
-    res.json(results[0]); // Los resultados están en la primera posición del arreglo results
-  });
+
+app.get('/cursos/:numero', async(req, res) =>{
+  const numeroGrupo = req.params.numero;
+  try{
+      const [cursos] = await db.query("CALL GetCursosxGrupo(?)", [numeroGrupo]);
+      res.json(cursos);
+  } catch(error){
+      console.error('Error al obtener cursos:', error);
+      res.status(500).json({ error: 'Error al obtener cursos' });
+  }
 });
 
-//Obtener los cursos por grupo (Si no hay cursos para ese grupo, agarra lo de la tabla de Cursos)
-app.get('/cursos/:numero', (req, res) => {
-  const numeroGrupo = req.params.numero;
-  connection.query('CALL GetCursosxGrupo(?)', [numeroGrupo], (error, results) => {
-    if (error) throw error;
-    res.json(results[0]); // Los resultados están en la primera posición del arreglo results
-  });
+//Obtiene el horario de un grupo específico
+app.get('/horario/:grupo', async(req, res) =>{
+  const numeroGrupo = req.params.grupo;
+  try{
+      const [horario] = await db.query("CALL getHorarioGrupo(?)", [numeroGrupo]);
+      res.json(horario);
+  } catch(error){
+      console.error('Error al obtener horario:', error);
+      res.status(500).json({ error: 'Error al obtener horario' });
+  }
 });
+
 
 // Iniciar el servidor
 app.listen(port, () => {
