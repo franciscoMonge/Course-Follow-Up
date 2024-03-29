@@ -8,8 +8,21 @@ const Agregar_Cursos = () => {
 
   const [cursos, setCursos] = useState([]);
   const location = useLocation();
+  const [cursoSeleccionado, setCursoSeleccionado] = useState(null);
+  const [curso, setCurso] = useState(""); // Estado para almacenar el nombre del curso seleccionado
   const { grupo } = location.state;
   const [horario, setHorario] = useState('');
+
+
+  const handleCheckboxChange = (index) => {
+    if (cursoSeleccionado === index) {
+        setCursoSeleccionado(null);
+        setCurso(""); // Limpiar el estado curso
+    } else {
+        setCursoSeleccionado(index);
+        setCurso(cursos[index]); // Establecer el nombre del grupo seleccionado
+    }
+};
 
   // Función para cargar el horario del grupo
   const cargarHorarioGrupo = () => {
@@ -30,7 +43,8 @@ const Agregar_Cursos = () => {
     axios.get(`http://localhost:3001/cursos/${grupo}`)
       .then(response => {
         console.log('cargando cursos');
-        setCursos(response.data);
+        console.log('cursos: ', response.data[0]);
+        setCursos(response.data[0]);
       })
       .catch(error => {
         console.log('ERROR: Carga fallida de cursos', error);
@@ -68,9 +82,35 @@ const Agregar_Cursos = () => {
           <div className="col">
             <div className="form-group">
               <label>Horario:</label>
-              <label>{horario}</label> {/* Mostrar el horario del grupo */}
+              <label>{horario}</label> 
             </div>
           </div>
+        <div className="row">
+        <label>Selecciona un grupo existente:</label>
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <th>Curso</th>
+                                <th>Seleccionar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {cursos.map((curso, index) => (
+                                <tr key={index}>
+                                    <td>{curso.nombre_curso}</td>
+                                    <td>
+                                        <input
+                                            type="checkbox"
+                                            checked={cursoSeleccionado === index}
+                                            onChange={() => handleCheckboxChange(index)}
+                                        />
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+        </div>
+
         </div>
         {/* Resto del contenido */}
       </div>
