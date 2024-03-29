@@ -20,7 +20,7 @@ const Agregar_Cursos = () => {
   const [cursos, setCursos] = useState([]);
   // Carga todos las cursos de la BD en la lista "cursos" 
   useEffect(() =>{
-    axios.get(`http://localhost:3001//cursos/${1}`) //RECORDAR CAMBIAR ESE 1
+    axios.get(`http://localhost:3001/cursos/${1}`) //RECORDAR CAMBIAR ESE 1
     .then(response =>{
         console.log('cargando cursos');
         setCursos(response.data);
