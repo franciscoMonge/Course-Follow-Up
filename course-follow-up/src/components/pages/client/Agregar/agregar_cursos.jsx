@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
+import axios from 'axios';
 import Navbar from "../../shared/navbar";
 
 const Agregar_Cursos = () => {
@@ -19,7 +20,7 @@ const Agregar_Cursos = () => {
   const [cursos, setCursos] = useState([]);
   // Carga todos las cursos de la BD en la lista "cursos" 
   useEffect(() =>{
-    axios.get(`http://localhost:3001//cursos/${1}`)
+    axios.get(`http://localhost:3001//cursos/${1}`) //RECORDAR CAMBIAR ESE 1
     .then(response =>{
         console.log('cargando cursos');
         setCursos(response.data);
