@@ -4,17 +4,30 @@ import Navbar from "../../shared/navbar";
 
 const Agregar_Cursos = () => {
     const navigate = useNavigate();
-  const [cursos, setCursos] = useState([
-    { id: 1, nombre: 'Bodegas 1', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
-    { id: 2, nombre: 'Bodegas 2', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'KyJ' },
-    { id: 3, nombre: 'Matemática', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
-    { id: 4, nombre: 'Bodegas 1', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
-    { id: 5, nombre: 'Bodegas 1', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
-    { id: 6, nombre: 'Bodegas 1', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
-    { id: 7, nombre: 'Bodegas 1', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
-    { id: 8, nombre: 'Bodegas 1', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
-    { id: 9, nombre: 'Bodegas 1', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
-  ]);
+  // const [cursos, setCursos] = useState([
+  //   { id: 1, nombre: 'Bodegas 1', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
+  //   { id: 2, nombre: 'Bodegas 2', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'KyJ' },
+  //   { id: 3, nombre: 'Matemática', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
+  //   { id: 4, nombre: 'Bodegas 1', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
+  //   { id: 5, nombre: 'Bodegas 1', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
+  //   { id: 6, nombre: 'Bodegas 1', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
+  //   { id: 7, nombre: 'Bodegas 1', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
+  //   { id: 8, nombre: 'Bodegas 1', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
+  //   { id: 9, nombre: 'Bodegas 1', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
+  // ]);
+
+  const [cursos, setCursos] = useState([]);
+  // Carga todos las cursos de la BD en la lista "cursos" 
+  useEffect(() =>{
+    axios.get(`http://localhost:3001//cursos/${1}`)
+    .then(response =>{
+        console.log('cargando cursos');
+        setCursos(response.data);
+    })
+    .catch(error => {
+        console.log('ERROR: Carga fallida de cursos', error);
+    });
+  }, []);
 
   const handleChange = (e, id, field) => {
     const updatedCursos = cursos.map(curso => {

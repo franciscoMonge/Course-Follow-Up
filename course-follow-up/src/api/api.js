@@ -40,8 +40,8 @@ app.get('/cursos', (req, res) => {
   });
 });
 
-//Obtener los cursos por grupo
-app.get('/api/cursosxgrupo/:numero', (req, res) => {
+//Obtener los cursos por grupo (Si no hay cursos para ese grupo, agarra lo de la tabla de Cursos)
+app.get('/cursos/:numero', (req, res) => {
   const numeroGrupo = req.params.numero;
   connection.query('CALL GetCursosxGrupo(?)', [numeroGrupo], (error, results) => {
     if (error) throw error;
