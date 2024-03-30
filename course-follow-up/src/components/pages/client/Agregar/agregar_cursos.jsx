@@ -1,9 +1,17 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import Navbar from "../../shared/navbar";
 
 const Agregar_Cursos = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const idGrupo = location?.state?.idGrupo;
+  const numero = location?.state?.numero;
+  const horario = location?.state?.horario;
+
+  console.log('INFO: ', idGrupo, ' ',numero, ' ', horario);
+
   const [cursos, setCursos] = useState([
     { id: 1, nombre: 'Bodegas 1', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
     { id: 2, nombre: 'Bodegas 2', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'KyJ' },

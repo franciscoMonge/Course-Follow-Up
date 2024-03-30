@@ -1,12 +1,41 @@
 import Navbar from "../../shared/navbar";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from 'axios';
 
 function Agregar_Planificador() {
     const navigate = useNavigate();
-    const planificadoresExistentes = ["Planificador 2021", "Planificador 2022", "Planificador 2023"];
+    
+    
+    //const planificadoresExistentes = ["Planificador 2021", "Planificador 2022", "Planificador 2023"];
+
+    // Datos Planificador
+    const [planificadoresExistentes, setPlanificadoresExistentes] = useState([]);
     const [planificadorSeleccionado, setPlanificadorSeleccionado] = useState(null);
     const [planificador, setPlanificador] = useState("");
+    const [nuevoPlanificador, setNuevoPlanificador] = useState("");
+    const [nombrePlanificador, setNombrePlanificador] = useState("");
+    const [fechaInicio, setFechaInicio] = useState("");
+    const [fechaFinal, setFechaFinal] = useState("");
+
+    const [showError, setShowError] = useState(false);
+
+
+    // Carga todas los planificadores de la BD en la lista "planificadores existentes" 
+    useEffect(() =>{
+        axios.get('http://localhost:3001/planificadores')
+        .then(response =>{
+            setPlanificadoresExistentes(response.data);
+        })
+        .catch(error => {
+            console.log('ERROR: Carga Fallida de usuarios', error);
+        });
+    }, []);
+
+    useEffect(() => {
+        // Este se ejecuta cuando planificadoresExistentes1 cambie
+        console.log('planificadores existentes: ', planificadoresExistentes[0]);
+    }, [planificadoresExistentes]);
 
     const handleCheckboxChange = (index) => {
         if (planificadorSeleccionado === index) {
@@ -14,17 +43,20 @@ function Agregar_Planificador() {
         setPlanificador(""); // Limpiar el estado planificador
         } else {
         setPlanificadorSeleccionado(index);
-        setPlanificador(planificadoresExistentes[index]); // Establecer el nombre del planificador seleccionado
+        setPlanificador(planificadoresExistentes[index].idplanificador); // Establecer el nombre del planificador seleccionado
         }
     };
 
     const handleContinuar = () => {
-        if (planificador === "") {
-        //alert("Debe seleccionar un planificador existente");
-        navigate('/AgregarGrupo',{});
-        } else {
-        //alert(`Planificador seleccionado: ${planificador}`);
-        navigate('/AgregarGrupo',{});
+        if (planificador === "" && nuevoPlanificador === "") {
+            alert("No ha seleccionado o creado un planificador, por favor intentelo de nuevo.");
+        }
+        else if(planificador != "" && nuevoPlanificador != ""){
+            alert('No puede seleccionar y crear un planificador al mismo tiempo.')
+        }
+        else {
+        alert( `Planificador seleccionado: ${planificador} o Planificador creado: ${nuevoPlanificador}`);
+        //navigate('/AgregarGrupo',{});
         }
     };
 
@@ -43,28 +75,30 @@ function Agregar_Planificador() {
             <div className="card-body">
                 <div className="m-3">
                 <label>Selecciona un planificador existente:</label>
-                <table className="table">
-                    <thead>
-                    <tr>
-                        <th>Planificador</th>
-                        <th>Seleccionar</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {planificadoresExistentes.map((planificadorExistente, index) => (
-                        <tr key={index}>
-                        <td>{planificadorExistente}</td>
-                        <td>
-                            <input
-                            type="checkbox"
-                            checked={planificadorSeleccionado === index}
-                            onChange={() => handleCheckboxChange(index)}
-                            />
-                        </td>
+                <div className="table-responsive" style={{ maxHeight: '200px' }}>
+                    <table className="table">
+                        <thead>
+                        <tr>
+                            <th>Planificador</th>
+                            <th>Seleccionar</th>
                         </tr>
-                    ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        {planificadoresExistentes.map((planificadorExistente, index) => (
+                            <tr key={index}>
+                            <td>{planificadorExistente.nombre}</td>
+                            <td>
+                                <input
+                                type="checkbox"
+                                checked={planificadorSeleccionado === index}
+                                onChange={() => handleCheckboxChange(index)}
+                                />
+                            </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
                 </div>
                 <div className="form-group d-flex align-items-center">
                 <label className="me-2">Crea un nuevo Planificador:</label>
@@ -76,9 +110,9 @@ function Agregar_Planificador() {
                     onInput={(e) => {
                         const inputValue = parseInt(e.target.value);
                         if (isNaN(inputValue) || inputValue < 2024) {
-                            e.target.value = '';
+                            setNuevoPlanificador(""); // Establecer el estado como vacío si la entrada no es válida
                         } else {
-                            e.target.value = inputValue.toString().slice(0, 4);
+                            setNuevoPlanificador(inputValue.toString().slice(0, 4)); // Establecer el estado con el valor válido
                         }
                     }} 
                     placeholder="Seleccione el año" 

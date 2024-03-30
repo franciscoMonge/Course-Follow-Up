@@ -1,35 +1,61 @@
 import Navbar from "../../shared/navbar";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from 'axios';
 
 function Agregar_Grupo() {
     const navigate = useNavigate();
-    const planificadoresExistentes = ["Grupo 1", "Grupo 2", "Grupo 3"];
-    const [planificadorSeleccionado, setPlanificadorSeleccionado] = useState(null);
-    const [planificador, setPlanificador] = useState("");
+    
+    const [gruposExistentes, setGruposExistentes] = useState([]);
+    const [grupoSeleccionado, setGrupoSeleccionado] = useState(null);
+    const [idGrupo, setIdGrupo] = useState("");
+    const [grupo, setGrupo] = useState("");
+    const [horario, setHorario] = useState("");
+
+    // Carga todas los grupos de la BD en la lista "grupos existentes" 
+    useEffect(() =>{
+        axios.get('http://localhost:3001/grupos')
+        .then(response =>{
+            setGruposExistentes(response.data);
+        })
+        .catch(error => {
+            console.log('ERROR: Carga Fallida de grupos', error);
+        });
+    }, []);
+
+    useEffect(() => {
+        // Este se ejecuta cuando gruposexistentes cambie
+        console.log('grupos existentes: ', gruposExistentes[0]);
+    }, [gruposExistentes]);
 
     const handleCheckboxChange = (index) => {
-        if (planificadorSeleccionado === index) {
-        setPlanificadorSeleccionado(null);
-        setPlanificador(""); // Limpiar el estado planificador
+        if (grupoSeleccionado === index) {
+        setGrupoSeleccionado(null);
+        setGrupo(""); // Limpiar el estado grupo
         } else {
-        setPlanificadorSeleccionado(index);
-        setPlanificador(planificadoresExistentes[index]); // Establecer el nombre del planificador seleccionado
+        setGrupoSeleccionado(index);
+        setIdGrupo(gruposExistentes[index].idgrupo); // Establecer el id del grupo seleccionado
+        setGrupo(gruposExistentes[index].numero);
+        setHorario(gruposExistentes[index].horario); // Establecer el horario del grupo seleccionado
         }
     };
 
+    const handleCrearGrupo = () =>{
+        navigate('/CrearGrupo', {});
+    };
+
     const handleContinuar = () => {
-        if (planificador === "") {
-        //alert("Debe seleccionar un planificador existente");
-        navigate('/AgregarCursos',{});
-        } else {
-        //alert(`Planificador seleccionado: ${planificador}`);
-        navigate('/AgregarCursos',{});
+        if (grupo === "") {
+            alert("No ha seleccionadoun grupo, por favor intentelo de nuevo.");
+        } 
+        else {
+            alert( `Grupo seleccionado: ${grupo} y horario: ${horario}`);
+            navigate('/AgregarCursos',{state:{idGrupo: idGrupo, numero: grupo, horario: horario}});
         }
     };
 
     const handleBack = () =>{
-        navigate('/AgregarPlanificador',{});
+        navigate('/MainPage',{});
     };
 
 
@@ -44,52 +70,33 @@ function Agregar_Grupo() {
             <div className="card-body">
                 <div className="m-3">
                 <label>Selecciona un grupo existente:</label>
-                <table className="table">
-                    <thead>
-                    <tr>
-                        <th>Grupo</th>
-                        <th>Seleccionar</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {planificadoresExistentes.map((planificadorExistente, index) => (
-                        <tr key={index}>
-                        <td>{planificadorExistente}</td>
-                        <td>
-                            <input
-                            type="checkbox"
-                            checked={planificadorSeleccionado === index}
-                            onChange={() => handleCheckboxChange(index)}
-                            />
-                        </td>
+                <div className="table-responsive" style={{ maxHeight: '200px' }}>
+                    <table className="table">
+                        <thead>
+                        <tr>
+                            <th>Grupo</th>
+                            <th>Seleccionar</th>
                         </tr>
-                    ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        {gruposExistentes.map((grupoExistente, index) => (
+                            <tr key={index}>
+                            <td>Grupo {grupoExistente.numero}</td>
+                            <td>
+                                <input
+                                type="checkbox"
+                                checked={grupoSeleccionado === index}
+                                onChange={() => handleCheckboxChange(index)}
+                                />
+                            </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
                 </div>
                 <div className="form-group d-flex align-items-center">
-                <label className="me-2">Crea un nuevo  grupo:</label>
-                <input 
-                    type="number" 
-                    className="form-control m-2" 
-                    style={{ width: '200px' }} 
-                    min="1" 
-                    placeholder="Digita el número" 
-                />
-
-
-                </div>
-                <div className="form-group d-flex align-items-center">
-                <label className="me-2">Selecciona un horario:</label>
-                <input 
-                    type="number" 
-                    className="form-control m-2" 
-                    style={{ width: '200px' }} 
-                    min="1" 
-                    placeholder="Digita el número" 
-                />
-
-
+                    <button className="btn btn-success m-4" onClick={handleCrearGrupo}>Crear un Grupo Nuevo</button>
                 </div>
                 <div className="m-3">
                 <hr />
