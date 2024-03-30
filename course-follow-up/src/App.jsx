@@ -5,6 +5,7 @@ import MainPage from './components/pages/client/main_page';
 import Agregar_Planificador from './components/pages/client/Agregar/agregar_planificador';
 import Agregar_Grupo from './components/pages/client/Agregar/agregar_grupo';
 import Agregar_Cursos from './components/pages/client/Agregar/agregar_cursos';
+import Agregar_Cursos_Indiv from './components/pages/client/Agregar/agregar_cursos_indiv';
 import App1 from './components/pages/client/Ver/templatePlanificador';
 import './App.css'
 
@@ -18,6 +19,7 @@ function App() {
         <Route path="/AgregarPlanificador" element={<Agregar_Planificador />}/>
         <Route path="/AgregarGrupo" element={<Agregar_Grupo />}/>
         <Route path="/AgregarCursos" element={<Agregar_Cursos />}/>
+        <Route path="/AgregarCursoIndividual" element={<Agregar_Cursos_Indiv/>}/>
         <Route path="/App" element={<App1 />}/>
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

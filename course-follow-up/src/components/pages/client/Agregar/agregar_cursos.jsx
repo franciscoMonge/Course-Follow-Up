@@ -22,7 +22,9 @@ const Agregar_Cursos = () => {
         setCursoSeleccionado(index);
         setCurso(cursos[index]); // Establecer el nombre del grupo seleccionado
     }
-};
+  };
+
+
 
   // Función para cargar el horario del grupo
   const cargarHorarioGrupo = () => {
@@ -64,7 +66,12 @@ const Agregar_Cursos = () => {
   };
 
   const handleBack = () => {
-    navigate('/AgregarGrupo', {});
+    navigate('/AgregarGrupo', { state: { grupo }} );
+  };
+
+  //A la siguiente pestaña hay que enviar Cursos, curso seleccionado, grupo, horario
+  const handleContinuar = () => {
+    navigate('/AgregarCursoIndividual', { state: { cursos, cursoSeleccionado,grupo, horario } }); // Pasar el nombre del planificador seleccionado
   };
 
   return (
@@ -75,21 +82,27 @@ const Agregar_Cursos = () => {
         <div className="row">
           <div className="col">
             <div className="form-group">
-              <label>Grupo:</label>
-              <label>{grupo}</label>
+            <span className="badge bg-light text-dark">
+            <h5>Grupo:</h5>
+            <h5>{grupo}</h5>  
+            </span>
             </div>
           </div>
           <div className="col">
             <div className="form-group">
-              <label>Horario:</label>
-              <label>{horario}</label> 
+            <span className="badge bg-light text-dark">
+            <h5>Horario del grupo:</h5>
+            <h5>{horario}</h5>  
+            </span>
             </div>
           </div>
         <div className="row">
-        <label>Selecciona un grupo existente:</label>
+        <label>Seleccione un curso:</label>
+        <div className = "row"></div>
                     <table className="table">
                         <thead>
                             <tr>
+                                <th>No.</th>
                                 <th>Curso</th>
                                 <th>Seleccionar</th>
                             </tr>
@@ -97,6 +110,7 @@ const Agregar_Cursos = () => {
                         <tbody>
                             {cursos.map((curso, index) => (
                                 <tr key={index}>
+                                    <td>{index+1}</td>
                                     <td>{curso.nombre_curso}</td>
                                     <td>
                                         <input
@@ -111,7 +125,17 @@ const Agregar_Cursos = () => {
                     </table>
         </div>
 
+
+        <div className="m-3">
+                            <hr />
+                            <button className="btn btn-danger m-4" onClick={handleBack}>Volver</button>
+                            <button className="btn btn-primary m-4" onClick={handleContinuar}>
+                                Continuar
+                            </button>
+                        </div>
         </div>
+
+
         {/* Resto del contenido */}
       </div>
     </div>

@@ -24,12 +24,12 @@ function Agregar_Grupo() {
         if (grupo === "") {
             alert("Debe seleccionar un grupo existente");
         } else {
-            navigate('/AgregarCursos', { state: { planificador, grupo } }); // Pasar el nombre del grupo seleccionado
+            navigate('/AgregarCursos', { state: { planificador,grupo} }); // Pasar el nombre del grupo seleccionado
         }
     };
 
     const handleBack = () =>{
-        navigate('/Agregargrupo',{});
+        navigate('/AgregarPlanificador',{ state: { planificador}});
     };
 
     return (
