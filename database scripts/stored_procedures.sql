@@ -1,0 +1,69 @@
+-- STORED PROCEDURES
+
+DELIMITER //
+
+-- Permite actualizar la información de un curso para un grupo específico, SI NO EXISTE, crea un nuevo registro
+CREATE PROCEDURE updateCursoGrupo (
+    IN p_idGrupo INT,
+    IN p_idCurso INT,
+    IN p_fechaInicio DATE,
+    IN p_fechaFinal DATE,
+    IN p_profesor VARCHAR(200),
+    IN p_horario VARCHAR(45)
+)
+BEGIN
+    DECLARE curso_existente INT;
+
+    -- VERIFICAR SI EXISTE EL CURSO PARA ESE GRUPO
+    SELECT COUNT(*) INTO curso_existente 
+    FROM grupoxcurso 
+    WHERE idGrupo = p_idGrupo AND idcurso = p_idCurso;
+
+    IF curso_existente > 0 THEN
+        -- Si el curso existe para ese grupo, se ACTUALIZAN los datos
+        UPDATE grupoxcurso SET
+            fechaInicio = IF(p_fechaInicio IS NOT NULL AND p_fechaInicio <> '', p_fechaInicio, fechaInicio),
+            fechaFinal = IF(p_fechaFinal IS NOT NULL AND p_fechaFinal <> '', p_fechaFinal, fechaFinal),
+            profesor = IF(p_profesor IS NOT NULL AND p_profesor <> '', p_profesor, profesor),
+            horario = IF(p_horario IS NOT NULL AND p_horario <> '', p_horario, horario)
+        WHERE idGrupo = p_idGrupo AND idcurso = p_idCurso;
+    ELSE
+        -- Si el curso NO existe para ese grupo, se CREA un nuevo registro
+        INSERT INTO grupoxcurso (idGrupo, idcurso, fechaInicio, fechaFinal, profesor, horario)
+        VALUES (p_idGrupo, p_idCurso, p_fechaInicio, p_fechaFinal, p_profesor, p_horario);
+    END IF;
+END //
+
+CREATE PROCEDURE getGrupos ()
+BEGIN
+    SELECT idgrupo, numero, horario FROM grupo;
+END //
+
+CREATE PROCEDURE getHorarioGrupo (p_idGrupo int)
+BEGIN
+    SELECT horario FROM grupo WHERE idGrupo = p_idGrupo;
+END //
+
+CREATE PROCEDURE GetCursos ()
+BEGIN
+    SELECT nombre FROM Curso;
+END //
+
+CREATE PROCEDURE GetCursosxGrupo(p_idGrupo INT)
+BEGIN
+	-- Obtengo la información de los cursos para ese grupo, si está disponible
+	SELECT 
+		COALESCE(curso.nombre) AS nombre_curso,
+		IFNULL(grupoxcurso.fechaInicio, '') AS fechaInicio,
+		IFNULL(grupoxcurso.fechaFinal, '') AS fechaFinal,
+		IFNULL(grupoxcurso.horario, '') AS horario,
+		IFNULL(grupoxcurso.profesor, '') AS profesor
+	FROM Curso 
+	LEFT JOIN GrupoxCurso ON curso.idCurso = grupoxcurso.idCurso AND grupoxcurso.idGrupo = p_idGrupo;
+END //
+
+DELIMITER ;
+
+
+ -- CALL GetCursosxGrupo(1)
+ -- CALL getHorarioGrupo(2)
