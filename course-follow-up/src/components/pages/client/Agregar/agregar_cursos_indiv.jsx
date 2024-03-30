@@ -15,27 +15,17 @@ const Agregar_Cursos_Indiv = () => {
   const { horario} = location.state;
 
 
-  const handleChange = (e, id, field) => {
-    const updatedCursos = cursos.map(curso => {
-      if (curso.id === id) {
-        return { ...curso, [field]: e.target.value };
-      }
-      return curso;
-    });
-    setCursos(updatedCursos);
+  const handleChange = () => {
+    console.log('Cambio')
+  };
+
+  const handleConfirmar = () => {
+    console.log('Confirmar cambio')
   };
 
   const handleBack = () => {
     navigate('/AgregarCursos', { state: { cursos, cursoSeleccionado,grupo, horario } });
   };
-
-
-//   const prueba = () => {
-//     console.log("Cursos: ", cursos);
-//     console.log("Grupo: ", grupo);
-//     console.log("Horario: ", horario);
-//     console.log("Curso Seleccionado: ", cursoSeleccionado);
-//   };
 
 
   return (
@@ -74,7 +64,7 @@ const Agregar_Cursos_Indiv = () => {
                 type="text"
                 className="form-control"
                 value={cursos[cursoSeleccionado].profesor}
-                onChange={(e) => handleChange(e, curso.id, 'profesor')}
+                onChange={(e) => handleChange()}
               />
             </div>
             <div className='form-group'>
@@ -83,7 +73,7 @@ const Agregar_Cursos_Indiv = () => {
                 type="date"
                 className="form-control"
                 value={cursos[cursoSeleccionado].fechaInicio}
-                onChange={(e) => handleChange(e, curso.id, 'fechaInicio')}
+                onChange={(e) => handleChange()}
               />
             </div>
             <div className='form-group'>
@@ -92,9 +82,10 @@ const Agregar_Cursos_Indiv = () => {
                 type="date"
                 className="form-control"
                 value={cursos[cursoSeleccionado].fechaFinal}
-                onChange={(e) => handleChange(e, curso.id, 'fechaFinalizacion')}
+                onChange={(e) => handleChange()}
               />
             </div>
+            <button className="btn btn-success m-4" onClick={handleConfirmar()}>Confirmar cambios</button>
           </div>
         </div>
       </div>
