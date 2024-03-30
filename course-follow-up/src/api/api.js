@@ -32,11 +32,21 @@ app.post('/usuarios', async (req, res) => {
     }
   });
 
-
-app.get('/cursos/:numero', async(req, res) =>{
-  const numeroGrupo = req.params.numero;
+// Ruta para obtener TODOS los grupos
+app.get('/grupos', async(req, res) =>{
   try{
-      const [cursos] = await db.query("CALL GetCursosxGrupo(?)", [numeroGrupo]);
+      const [grupos] = await db.query("CALL getGrupos()");
+      res.json(grupos);
+  } catch(error){
+      console.error('Error al obtener grupos:', error);
+      res.status(500).json({ error: 'Error al obtener grupos' });
+  }
+});
+
+app.get('/cursos/:idGrupo', async(req, res) =>{
+  const idGrupo = req.params.idGrupo;
+  try{
+      const [cursos] = await db.query("CALL GetCursosxGrupo(?)", [idGrupo]);
       res.json(cursos);
   } catch(error){
       console.error('Error al obtener cursos:', error);
@@ -53,6 +63,18 @@ app.get('/horario/:grupo', async(req, res) =>{
   } catch(error){
       console.error('Error al obtener horario:', error);
       res.status(500).json({ error: 'Error al obtener horario' });
+  }
+});
+
+// Ruta para agregar un nuevo usuario
+app.post('/actualizarCursos', async (req, res) => {
+  try {
+      const { idGrupo, idCurso, fechaInicio, fechaFinal, profesor, horario } = req.body;
+    const result = await db.query("CALL updateCursoGrupo(?,?,?,?,?,?)", [idGrupo, idCurso, fechaInicio, fechaFinal, profesor, horario]);
+    res.status(201).json({ mensaje: 'Curso actualizado correctamente', resultado: result });
+  } catch (error) {
+    console.error('Error al actualizar curso:', error);
+    res.status(500).json({ error: 'Error al agregar curso' });
   }
 });
 

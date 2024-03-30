@@ -5,22 +5,22 @@ import Navbar from "../../shared/navbar";
 
 const Agregar_Cursos = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [cursos, setCursos] = useState([]);
-  const location = useLocation();
-  const [cursoSeleccionado, setCursoSeleccionado] = useState(null);
-  const [curso, setCurso] = useState(""); // Estado para almacenar el nombre del curso seleccionado
-  const { grupo } = location.state;
+  const [idCursoSeleccionado, setidCursoSeleccionado] = useState(null); //Indice del curso seleccionado
+  const [cursoSeleccionado, setCursoSeleccionado] = useState(""); // curso seleccionado
   const [horario, setHorario] = useState('');
-
+  const { grupo } = location.state; //OBJETO grupo
+  const { idGrupoSeleccionado} = location.state; //Indice del grupo
 
   const handleCheckboxChange = (index) => {
-    if (cursoSeleccionado === index) {
-        setCursoSeleccionado(null);
-        setCurso(""); // Limpiar el estado curso
+    if (idCursoSeleccionado === index) {
+        setidCursoSeleccionado(null);
+        setCursoSeleccionado(""); // Limpiar el estado curso
     } else {
-        setCursoSeleccionado(index);
-        setCurso(cursos[index]); // Establecer el nombre del grupo seleccionado
+        setidCursoSeleccionado(index); //indice del curso
+        setCursoSeleccionado(cursos[index]); // Establecer el nombre del grupo seleccionado
     }
   };
 
@@ -28,7 +28,7 @@ const Agregar_Cursos = () => {
 
   // Función para cargar el horario del grupo
   const cargarHorarioGrupo = () => {
-    axios.get(`http://localhost:3001/horario/${grupo}`)
+    axios.get(`http://localhost:3001/horario/${idGrupoSeleccionado}`)
       .then(response => {
         console.log('Horario: ', response.data[0][0].horario);
         setHorario(response.data[0][0].horario);
@@ -40,9 +40,8 @@ const Agregar_Cursos = () => {
 
   // Carga todos los cursos de la BD en la lista "cursos" 
   useEffect(() => {
-    console.log('Grupo pag anterior: ', grupo);
     cargarHorarioGrupo(); // Cargar el horario del grupo al montar el componente
-    axios.get(`http://localhost:3001/cursos/${grupo}`)
+    axios.get(`http://localhost:3001/cursos/${idGrupoSeleccionado}`)
       .then(response => {
         console.log('cargando cursos');
         console.log('cursos: ', response.data[0]);
@@ -55,23 +54,16 @@ const Agregar_Cursos = () => {
 
   }, [grupo]); // Grupo como dependencia para recargar los cursos cuando cambie
 
-  const handleChange = (e, id, field) => {
-    const updatedCursos = cursos.map(curso => {
-      if (curso.id === id) {
-        return { ...curso, [field]: e.target.value };
-      }
-      return curso;
-    });
-    setCursos(updatedCursos);
-  };
 
   const handleBack = () => {
-    navigate('/AgregarGrupo', { state: { grupo }} );
+    navigate('/AgregarGrupo', { state: { grupo,idGrupoSeleccionado }} );
   };
 
   //A la siguiente pestaña hay que enviar Cursos, curso seleccionado, grupo, horario
   const handleContinuar = () => {
-    navigate('/AgregarCursoIndividual', { state: { cursos, cursoSeleccionado,grupo, horario } }); // Pasar el nombre del planificador seleccionado
+    console.log('Curso seleccionado: ', cursoSeleccionado);
+    console.log('ID seleccionado: ', idCursoSeleccionado);
+    navigate('/AgregarCursoIndividual', { state: { cursos, idCursoSeleccionado,cursoSeleccionado, grupo, idGrupoSeleccionado, horario } }); // Pasar el nombre del planificador seleccionado
   };
 
   return (
@@ -84,7 +76,7 @@ const Agregar_Cursos = () => {
             <div className="form-group">
             <span className="badge bg-light text-dark">
             <h5>Grupo:</h5>
-            <h5>{grupo}</h5>  
+            <h5>{grupo.numero}</h5>  
             </span>
             </div>
           </div>
@@ -92,7 +84,7 @@ const Agregar_Cursos = () => {
             <div className="form-group">
             <span className="badge bg-light text-dark">
             <h5>Horario del grupo:</h5>
-            <h5>{horario}</h5>  
+            <h5>{grupo.horario}</h5>  
             </span>
             </div>
           </div>
@@ -115,7 +107,7 @@ const Agregar_Cursos = () => {
                                     <td>
                                         <input
                                             type="checkbox"
-                                            checked={cursoSeleccionado === index}
+                                            checked={idCursoSeleccionado === index}
                                             onChange={() => handleCheckboxChange(index)}
                                         />
                                     </td>

@@ -63,7 +63,7 @@ function Signup () {
             };
     
             try{
-                console.log('revisarrrrrr ',datos)
+                // console.log('revisarrrrrr ',datos)
                 const response = await axios.post('http://localhost:3001/usuarios', datos);
                 console.log(response.data);
                 alert("Usuario registrado exitosamente.");

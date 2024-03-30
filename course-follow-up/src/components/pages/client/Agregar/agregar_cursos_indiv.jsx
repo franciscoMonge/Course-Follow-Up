@@ -8,48 +8,53 @@ const Agregar_Cursos_Indiv = () => {
 
   const location = useLocation();
   //De la página anterior debemos traer 
-  //Cursos, curso seleccionado, grupo, horario
-  const { cursos} = location.state;
-  const {cursoSeleccionado} =  location.state;
-  const { grupo } = location.state;
-  const { horario} = location.state;
-  
+// cursos, idCursoSeleccionado,cursoSeleccionado, grupo, idGrupoSeleccionado, horario
+  const { cursos} = location.state; 
+  const { idCursoSeleccionado} = location.state; //Este es el ID del cruso
+  const {cursoSeleccionado} =  location.state; //Este es el OBJETO curso
+  const { grupo } = location.state; //Este es el OBJETO de grupo
+  const { idGrupoSeleccionado } = location.state; //Este es el ID del grupo
+  const { horario} = location.state; //Este es el horario del GRUPO
+
   // Variables para guardar los cambios
-  const [profesor, setProfesor] = useState(cursos[cursoSeleccionado].profesor);
-  const [fechaInicio, setFechaInicio] = useState(cursos[cursoSeleccionado].fechaInicio);
-  const [fechaFinal, setFechaFinal] = useState(cursos[cursoSeleccionado].fechaFinal);
+  const [profesor, setProfesor] = useState(cursoSeleccionado.profesor);
+  const [fechaInicio, setFechaInicio] = useState(cursoSeleccionado.fechaInicio);
+  const [fechaFinal, setFechaFinal] = useState(cursoSeleccionado.fechaFinal);
   const[horarioGrupo, setHorarioGrupo] = useState(horario);
   
   
-
   const handleConfirmar = () => {
     // Actualizar el estado de los cursos con los nuevos valores
     const updatedCursos = [...cursos];
-    updatedCursos[cursoSeleccionado].profesor = profesor;
-    updatedCursos[cursoSeleccionado].fechaInicio = fechaInicio;
-    updatedCursos[cursoSeleccionado].fechaFinal = fechaFinal;
-    updatedCursos[cursoSeleccionado].horario = horarioGrupo;
+    updatedCursos[idCursoSeleccionado].profesor = profesor;
+    updatedCursos[idCursoSeleccionado].fechaInicio = fechaInicio;
+    updatedCursos[idCursoSeleccionado].fechaFinal = fechaFinal;
+    updatedCursos[idCursoSeleccionado].horario = horarioGrupo;
+    //REVISAR
+    //1.No hay información en blanco
+    //2.Fecha de inicio y fecha de fin tienen concordancia
+    //3.Hay una distancia de mínimo 1 mes entre las fechas
+    //4.Horario de curso coincide con horario de grupo
 
 
-    console.log('Confirmar cambios');
-    console.log(updatedCursos[cursoSeleccionado].profesor,
-        updatedCursos[cursoSeleccionado].fechaInicio,
-        updatedCursos[cursoSeleccionado].fechaFinal,
-        updatedCursos[cursoSeleccionado].horario)
     };
 
     const handleChange = (e) => {
         console.log('INFO DEL SELECT')
         console.log(e.target.value)
         setHorarioGrupo(e.target.value);
+        console.log('Id del curso: ', idCursoSeleccionado);
+        console.log('Curso: ', cursoSeleccionado);
     };
 
   const handleBack = () => {
-    navigate('/AgregarCursos', { state: { cursos, cursoSeleccionado,grupo, horario } });
+    
+    navigate('/AgregarCursos', { state: {  cursos, idCursoSeleccionado,cursoSeleccionado, grupo, idGrupoSeleccionado, horario  } });
   };
 
 
   return (
+
 <div>
   <Navbar />
   <div className="container" style={{ paddingTop: '80px' }}>
@@ -59,7 +64,8 @@ const Agregar_Cursos_Indiv = () => {
         <div className="form-group">
         <span className="badge bg-light text-dark">
           <h5>Grupo:</h5>
-          <h5>{grupo}</h5>  
+          <h5>{grupo.numero}</h5> 
+ 
         </span>
         </div>
       </div>
@@ -67,7 +73,7 @@ const Agregar_Cursos_Indiv = () => {
         <div className="form-group">
         <span className="badge bg-light text-dark">
           <h5>Horario del grupo:</h5>
-          <h5>{horario}</h5>  
+          <h5>{grupo.horario}</h5>  
         </span>
         </div>
       </div>
@@ -78,7 +84,7 @@ const Agregar_Cursos_Indiv = () => {
       <div className="col-md-12 mb-12">
         <div className="card">
           <div className="card-body">
-            <h5 className="card-title">{cursos[cursoSeleccionado].nombre_curso}</h5>
+            <h5 className="card-title">{cursoSeleccionado.nombre_curso}</h5>
             <div className="form-group">
               <label>Profesor:</label>
               <input
@@ -109,7 +115,7 @@ const Agregar_Cursos_Indiv = () => {
             <div className="form-group">
               <label>Horario:</label>
               <select className="form-select form-select-sm" aria-label=".form-select-sm example" onChange={handleChange}>
-                <option value = "Lunes y Miércoles" selected>Lunes y Miércoles</option>
+                <option value = "Lunes y Miércoles" defaultValue>Lunes y Miércoles</option>
                 <option value="Martes y Jueves">Martes y Jueves</option>
 
             </select>
