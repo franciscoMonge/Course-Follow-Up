@@ -9,19 +9,40 @@ const Agregar_Cursos_Indiv = () => {
   const location = useLocation();
   //De la página anterior debemos traer 
   //Cursos, curso seleccionado, grupo, horario
-  const { cursos } = location.state;
+  const { cursos} = location.state;
   const {cursoSeleccionado} =  location.state;
   const { grupo } = location.state;
   const { horario} = location.state;
-
-
-  const handleChange = () => {
-    console.log('Cambio')
-  };
+  
+  // Variables para guardar los cambios
+  const [profesor, setProfesor] = useState(cursos[cursoSeleccionado].profesor);
+  const [fechaInicio, setFechaInicio] = useState(cursos[cursoSeleccionado].fechaInicio);
+  const [fechaFinal, setFechaFinal] = useState(cursos[cursoSeleccionado].fechaFinal);
+  const[horarioGrupo, setHorarioGrupo] = useState(horario);
+  
+  
 
   const handleConfirmar = () => {
-    console.log('Confirmar cambio')
-  };
+    // Actualizar el estado de los cursos con los nuevos valores
+    const updatedCursos = [...cursos];
+    updatedCursos[cursoSeleccionado].profesor = profesor;
+    updatedCursos[cursoSeleccionado].fechaInicio = fechaInicio;
+    updatedCursos[cursoSeleccionado].fechaFinal = fechaFinal;
+    updatedCursos[cursoSeleccionado].horario = horarioGrupo;
+
+
+    console.log('Confirmar cambios');
+    console.log(updatedCursos[cursoSeleccionado].profesor,
+        updatedCursos[cursoSeleccionado].fechaInicio,
+        updatedCursos[cursoSeleccionado].fechaFinal,
+        updatedCursos[cursoSeleccionado].horario)
+    };
+
+    const handleChange = (e) => {
+        console.log('INFO DEL SELECT')
+        console.log(e.target.value)
+        setHorarioGrupo(e.target.value);
+    };
 
   const handleBack = () => {
     navigate('/AgregarCursos', { state: { cursos, cursoSeleccionado,grupo, horario } });
@@ -63,8 +84,8 @@ const Agregar_Cursos_Indiv = () => {
               <input
                 type="text"
                 className="form-control"
-                value={cursos[cursoSeleccionado].profesor}
-                onChange={(e) => handleChange()}
+                value={profesor}
+                onChange={(e) => setProfesor(e.target.value)}
               />
             </div>
             <div className='form-group'>
@@ -72,8 +93,8 @@ const Agregar_Cursos_Indiv = () => {
               <input
                 type="date"
                 className="form-control"
-                value={cursos[cursoSeleccionado].fechaInicio}
-                onChange={(e) => handleChange()}
+                value={fechaInicio}
+                onChange={(e) => setFechaInicio(e.target.value)}
               />
             </div>
             <div className='form-group'>
@@ -81,11 +102,19 @@ const Agregar_Cursos_Indiv = () => {
               <input
                 type="date"
                 className="form-control"
-                value={cursos[cursoSeleccionado].fechaFinal}
-                onChange={(e) => handleChange()}
+                value={fechaFinal}
+                onChange={(e) => setFechaFinal(e.target.value)}
               />
             </div>
-            <button className="btn btn-success m-4" onClick={handleConfirmar()}>Confirmar cambios</button>
+            <div className="form-group">
+              <label>Horario:</label>
+              <select className="form-select form-select-sm" aria-label=".form-select-sm example" onChange={handleChange}>
+                <option value = "Lunes y Miércoles" selected>Lunes y Miércoles</option>
+                <option value="Martes y Jueves">Martes y Jueves</option>
+
+            </select>
+            </div>
+            <button className="btn btn-success m-4" onClick={handleConfirmar}>Confirmar cambios</button>
           </div>
         </div>
       </div>
