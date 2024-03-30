@@ -20,31 +20,69 @@ const Agregar_Cursos_Indiv = () => {
   const [profesor, setProfesor] = useState(cursoSeleccionado.profesor);
   const [fechaInicio, setFechaInicio] = useState(cursoSeleccionado.fechaInicio);
   const [fechaFinal, setFechaFinal] = useState(cursoSeleccionado.fechaFinal);
-  const[horarioGrupo, setHorarioGrupo] = useState(horario);
+  const[horarioCurso, setHorarioCurso] = useState();
   
   
   const handleConfirmar = () => {
-    // Actualizar el estado de los cursos con los nuevos valores
-    const updatedCursos = [...cursos];
-    updatedCursos[idCursoSeleccionado].profesor = profesor;
-    updatedCursos[idCursoSeleccionado].fechaInicio = fechaInicio;
-    updatedCursos[idCursoSeleccionado].fechaFinal = fechaFinal;
-    updatedCursos[idCursoSeleccionado].horario = horarioGrupo;
-    //REVISAR
-    //1.No hay información en blanco
-    //2.Fecha de inicio y fecha de fin tienen concordancia
-    //3.Hay una distancia de mínimo 1 mes entre las fechas
-    //4.Horario de curso coincide con horario de grupo
+    //Validaciones extra por confimar:
+    //1. Si ya existe un profesor asginado para esas mismas fechas y horario
+    //2. Si ya asignó para ese mismo grupo, otro curso en las mismas fechas
+
+    // Validar que no haya información en blanco (El profe puede quedar en blanco)
+    if (!fechaInicio || !fechaFinal || !horarioCurso) {
+      alert('Por favor completa todos los campos');
+      return;
+    }
+  
+    // Validar que las fechas tengan concordancia
+    if (fechaInicio > fechaFinal) {
+      alert('La fecha de inicio debe ser anterior a la fecha final');
+      return;
+    }
+  
+    // Validar que haya una distancia mínima de 1 mes entre las fechas
+    const fechaInicioObj = new Date(fechaInicio);
+    const fechaFinalObj = new Date(fechaFinal);
+    const diferenciaMeses = (fechaFinalObj.getFullYear() - fechaInicioObj.getFullYear()) * 12 + fechaFinalObj.getMonth() - fechaInicioObj.getMonth();
+    if (diferenciaMeses < 1) {
+      alert('Debe haber una distancia mínima de 1 mes entre la fecha de inicio y la fecha final');
+      return;
+    }
+  
+    // Validar que el horario del curso coincida con el horario del grupo
+    if (horarioCurso !== grupo.horario) {
+      alert('El horario del curso debe coincidir con el horario del grupo');
+      return;
+    }
+  
+    // Llamar a la API para actualizar los cursos
+    axios.post('http://localhost:3001/actualizarCursos', {
+        idGrupo: idGrupoSeleccionado,
+        idCurso: idCursoSeleccionado,
+        fechaInicio: fechaInicio,
+        fechaFinal: fechaFinal,
+        profesor: profesor,
+        horario: horarioCurso
+    })
+    .then(response => {
+        console.log('Curso actualizado correctamente:', response.data);
+        // Aquí puedes realizar otras acciones después de actualizar los cursos, como mostrar un mensaje de éxito, etc.
+    })
+    .catch(error => {
+        console.error('Error al actualizar curso:', error);
+        // Aquí puedes manejar el error, mostrar un mensaje de error al usuario, etc.
+    });
 
 
-    };
+  };
+  
 
     const handleChange = (e) => {
+        // console.log("Profesor: ", profesor);
+        // console.log("Profesor .: ", cursoSeleccionado.profesor);
         console.log('INFO DEL SELECT')
         console.log(e.target.value)
-        setHorarioGrupo(e.target.value);
-        console.log('Id del curso: ', idCursoSeleccionado);
-        console.log('Curso: ', cursoSeleccionado);
+        setHorarioCurso(e.target.value);
     };
 
   const handleBack = () => {

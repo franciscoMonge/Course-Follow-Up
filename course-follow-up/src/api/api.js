@@ -48,6 +48,7 @@ app.get('/cursos/:idGrupo', async(req, res) =>{
   try{
       const [cursos] = await db.query("CALL GetCursosxGrupo(?)", [idGrupo]);
       res.json(cursos);
+
   } catch(error){
       console.error('Error al obtener cursos:', error);
       res.status(500).json({ error: 'Error al obtener cursos' });
@@ -56,9 +57,9 @@ app.get('/cursos/:idGrupo', async(req, res) =>{
 
 //Obtiene el horario de un grupo específico
 app.get('/horario/:grupo', async(req, res) =>{
-  const numeroGrupo = req.params.grupo;
+  const idGrupo = req.params.grupo;
   try{
-      const [horario] = await db.query("CALL getHorarioGrupo(?)", [numeroGrupo]);
+      const [horario] = await db.query("CALL getHorarioGrupo(?)", [idGrupo]);
       res.json(horario);
   } catch(error){
       console.error('Error al obtener horario:', error);

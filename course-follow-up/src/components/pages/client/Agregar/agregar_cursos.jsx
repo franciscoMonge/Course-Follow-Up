@@ -11,11 +11,14 @@ const Agregar_Cursos = () => {
   const [idCursoSeleccionado, setidCursoSeleccionado] = useState(null); //Indice del curso seleccionado
   const [cursoSeleccionado, setCursoSeleccionado] = useState(""); // curso seleccionado
   const [horario, setHorario] = useState('');
+
   const { grupo } = location.state; //OBJETO grupo
   const { idGrupoSeleccionado} = location.state; //Indice del grupo
 
   const handleCheckboxChange = (index) => {
     if (idCursoSeleccionado === index) {
+        console.log("id del curso: ", idCursoSeleccionado);
+        console.log("index: ", index);
         setidCursoSeleccionado(null);
         setCursoSeleccionado(""); // Limpiar el estado curso
     } else {
@@ -24,24 +27,23 @@ const Agregar_Cursos = () => {
     }
   };
 
-
-
   // Función para cargar el horario del grupo
   const cargarHorarioGrupo = () => {
-    axios.get(`http://localhost:3001/horario/${idGrupoSeleccionado}`)
+    axios.get(`http://localhost:3001/horario/${idGrupoSeleccionado+1}`)
       .then(response => {
         console.log('Horario: ', response.data[0][0].horario);
         setHorario(response.data[0][0].horario);
       })
       .catch(error => {
         console.log('ERROR: Carga fallida de horario del grupo', error);
+        console.log("id del grupo: ", idGrupoSeleccionado);
       });
   };
 
   // Carga todos los cursos de la BD en la lista "cursos" 
   useEffect(() => {
     cargarHorarioGrupo(); // Cargar el horario del grupo al montar el componente
-    axios.get(`http://localhost:3001/cursos/${idGrupoSeleccionado}`)
+    axios.get(`http://localhost:3001/cursos/${idGrupoSeleccionado+1}`)
       .then(response => {
         console.log('cargando cursos');
         console.log('cursos: ', response.data[0]);
@@ -61,9 +63,15 @@ const Agregar_Cursos = () => {
 
   //A la siguiente pestaña hay que enviar Cursos, curso seleccionado, grupo, horario
   const handleContinuar = () => {
+    //REVISAR QUE HAYA SELECCIONADO UN CURSO
     console.log('Curso seleccionado: ', cursoSeleccionado);
     console.log('ID seleccionado: ', idCursoSeleccionado);
-    navigate('/AgregarCursoIndividual', { state: { cursos, idCursoSeleccionado,cursoSeleccionado, grupo, idGrupoSeleccionado, horario } }); // Pasar el nombre del planificador seleccionado
+    if(cursoSeleccionado ===  ""){
+      alert("Debe seleccionar un curso")
+    }
+    else{
+      navigate('/AgregarCursoIndividual', { state: { cursos, idCursoSeleccionado,cursoSeleccionado, grupo, idGrupoSeleccionado, horario } }); // Pasar el nombre del planificador seleccionado
+    }
   };
 
   return (
