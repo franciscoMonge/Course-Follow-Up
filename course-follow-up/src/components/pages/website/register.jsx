@@ -2,6 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate} from "react-router-dom";
 import Navbar from "../shared/navbar";
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+
+
 
 function Signup () {
     const navigate = useNavigate();
@@ -14,6 +20,7 @@ function Signup () {
     const [psswrd, setPsswrd] = useState("");
     const [confirmPsswrd, setconfirmPsswrd] = useState("");
     const [showError, setShowError] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
 
     // Carga todas las actas de la BD en la lista "actas" 
@@ -39,6 +46,21 @@ function Signup () {
         navigate('/',{});
     }
 
+    const validarPassword = (password) => {
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$#(=?+}{\]\[]).{8,}$/;
+        return regex.test(password);
+    };
+
+    const validarInput = (input) => {
+        return input.length >= 4;
+    };
+    
+    const validarFormatoCorreo = (correo) => {
+        console.log("CORREO", correo);
+        const regex = /@(estudiantec\.cr|itcr\.ac\.cr)$/i;
+        return regex.test(correo);
+    };
+    
     const handleRegister = async () => {
         const usuarioEncontrado = usuarios.find(usuario => usuario.correo === correo);
 
@@ -54,6 +76,15 @@ function Signup () {
             setShowError(true);
         console.log("Contraseñas incorrectas");
         }
+        else if (!validarPassword(psswrd)) {
+            toast.error("La contraseña debe tener mínimo 8 caracteres y al menos una mayúscula, minúscula, número y carácter especial como #$(=)?+}{][");
+        } else if (!validarInput(name) || !validarInput(lastName)){
+            setShowError(true);
+            console.log("Minimo de caracteres");
+        }else if(!validarFormatoCorreo(correo)){
+            setShowError(true);
+            console.log("Correo inválido.")
+        }
         else{
             const datos = {
                 name,
@@ -66,7 +97,8 @@ function Signup () {
                 console.log('revisarrrrrr ',datos)
                 const response = await axios.post('http://localhost:3001/usuarios', datos);
                 console.log(response.data);
-                alert("Usuario registrado exitosamente.");
+                toast.success('Usuario registrado exitosamente.');
+                sessionStorage.setItem('usuarioActual', correo);
                 navigate('/MainPage',{});
             }
             catch(err){
@@ -80,8 +112,8 @@ function Signup () {
             <div className="mb-5">
                 <Navbar/>
             </div>
-            <div className="container d-flex flex-column align-items-center justify-content-center  mt-5 vh-auto">
-                <h1 className="mb-2">Course Follow-Up</h1>
+            <div className="container d-flex flex-column align-items-center justify-content-center mt-5 vh-auto">
+                <h1 className="mb-2" style={ { marginTop: "80px"}}>Course Follow-Up</h1>
                 <div className="card m-4 text-center" style={{ width: '500px', overflowY: 'auto'}}>
                     <div className="card-header">
                         <h2>Crear Cuenta</h2>
@@ -91,6 +123,7 @@ function Signup () {
                             <label>Nombre:</label>
                             <input 
                                 type="text" 
+                                maxLength="24" 
                                 className="form-control m-2" 
                                 onChange={(event)=>{setName(event.target.value)}}
                             />
@@ -99,6 +132,7 @@ function Signup () {
                             <label>Apellido:</label>
                             <input 
                                 type="text" 
+                                maxLength="32" 
                                 className="form-control m-2" 
                                 onChange={(event)=>{setLastName(event.target.value)}}
                             />
@@ -115,23 +149,40 @@ function Signup () {
                         <div className="form-group">
                             <label>Contraseña:</label>
                             <input 
-                                type="password" 
+                                type= {showPassword ? "text" : "password"} 
                                 className="form-control m-2" 
                                 onChange={(event)=>{setPsswrd(event.target.value)}}
                             />
+                            <button 
+                                type="button" 
+                                className="btn position-absolute end-0 top-50 translate-middle-y"
+                                onClick={() => setShowPassword(!showPassword)}
+                                style={{ marginRight: "15px", marginTop: "56px" }}
+                            >
+                                <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
+                            </button>
                         </div>
                         <div className="form-group">
                             <label>Confirmar Contraseña:</label>
                             <input 
-                                type="password" 
+                                type= {showPassword ? "text" : "password"} 
                                 className="form-control m-2"
                                 onChange={(event)=>{setconfirmPsswrd(event.target.value)}}
                             />
+                            <button 
+                                type="button" 
+                                className="btn position-absolute end-0 top-50 translate-middle-y"
+                                onClick={() => setShowPassword(!showPassword)}
+                                style={{ marginRight: "15px", marginTop: "134px" }}
+                            >
+                                <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
+                            </button>
                         </div>
                         <div className="m-3">
                             <hr />
                             <button className="btn btn-danger m-4" onClick={handleBack}>Volver</button>
                             <button className="btn btn-primary m-4" onClick={handleRegister}>Registrarse</button>
+                            <ToastContainer position="top-center"/>
                         </div>
                     </div>
                 </div>
