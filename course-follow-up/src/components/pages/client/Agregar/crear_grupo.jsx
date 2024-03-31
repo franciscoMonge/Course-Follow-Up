@@ -22,7 +22,7 @@ function Crear_Grupo() {
 
     useEffect(() => {
         // Este se ejecuta cuando gruposexistentes cambie
-        console.log('grupos existentes: ', gruposExistentes[0]);
+        //console.log('grupos existentes: ', gruposExistentes[0]);
     }, [gruposExistentes]);
 
     const handleContinuar = async() => {
@@ -38,13 +38,13 @@ function Crear_Grupo() {
             // Enviar los datos del nuevo grupo al servidor
             axios.post('http://localhost:3001/grupos', { numero: nuevoGrupo, horario })
             .then(response => {
-                console.log('VER AQUI 1: ', response.data);
+                //console.log('VER AQUI 1: ', response.data);
                 const { idGrupoResult } = response.data;
-                console.log('VER AQUI 2: ', idGrupoResult[0][0].idGrupo);
+                //console.log('VER AQUI 2: ', idGrupoResult[0][0].idGrupo);
                 const idGrupo = idGrupoResult[0][0].idGrupo
-                console.log('VER AQUI 3: ', idGrupo);
-                alert(`Nuevo grupo creado con ID: ${idGrupo}`);
-                alert( `Grupo creado: ${nuevoGrupo} y Horario ${horario}`);
+                //console.log('VER AQUI 3: ', idGrupo);
+                //alert(`Nuevo grupo creado con ID: ${idGrupo}`);
+                //alert( `Grupo creado: ${nuevoGrupo} y Horario ${horario}`);
                 navigate('/AgregarCursos', {state:{idGrupo: idGrupo , numero: nuevoGrupo, horario: horario}});
             })
             .catch(error => {

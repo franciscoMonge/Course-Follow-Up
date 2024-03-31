@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import axios from 'axios';
 import Navbar from "../../shared/navbar";
+import { useToastContainer } from 'react-toastify';
 
 const Agregar_Cursos = () => {
   const navigate = useNavigate();
@@ -12,106 +14,126 @@ const Agregar_Cursos = () => {
 
   console.log('INFO: ', idGrupo, ' ',numero, ' ', horario);
 
-  const [cursos, setCursos] = useState([
-    { id: 1, nombre: 'Bodegas 1', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
-    { id: 2, nombre: 'Bodegas 2', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'KyJ' },
-    { id: 3, nombre: 'Matemática', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
-    { id: 4, nombre: 'Bodegas 1', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
-    { id: 5, nombre: 'Bodegas 1', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
-    { id: 6, nombre: 'Bodegas 1', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
-    { id: 7, nombre: 'Bodegas 1', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
-    { id: 8, nombre: 'Bodegas 1', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
-    { id: 9, nombre: 'Bodegas 1', profesor: '', fechaInicio: '', fechaFinalizacion: '', horario: 'LyM' },
-  ]);
+  const [cursos, setCursos] = useState([]);
+  const [idCursoSeleccionado, setidCursoSeleccionado] = useState(null); //Indice del curso seleccionado
+  const [idCurso, setIdCurso] = useState("");
+  const [cursoSeleccionado, setCursoSeleccionado] = useState(""); // curso seleccionado
 
-  const handleChange = (e, id, field) => {
-    const updatedCursos = cursos.map(curso => {
-      if (curso.id === id) {
-        return { ...curso, [field]: e.target.value };
-      }
-      return curso;
-    });
-    setCursos(updatedCursos);
+  const handleCheckboxChange = (index) => {
+    if (idCursoSeleccionado === index) {
+        console.log("id del curso: ", idCursoSeleccionado);
+        console.log("index: ", index);
+        setidCursoSeleccionado(null);
+        setCursoSeleccionado(""); // Limpiar el estado curso
+    } else {
+        setidCursoSeleccionado(index); //indice del curso
+        console.log("aiudaa: ", cursos[index]);
+        setIdCurso(cursos[index].idCurso);
+        setCursoSeleccionado(cursos[index]); 
+    }
   };
+
+  // Carga todos los cursos de la BD en la lista "cursos" 
+  useEffect(() => {
+    axios.get(`http://localhost:3001/cursos/${idGrupo}`)
+      .then(response => {
+        console.log('cursos111: ', response.data[0]);
+        setCursos(response.data[0]);
+      })
+      .catch(error => {
+        console.log('ERROR: Carga fallida de cursos', error);
+      });
+     
+
+  }, []); // Grupo como dependencia para recargar los cursos cuando cambie
+
+  useEffect(() => {
+    // Este se ejecuta cuando cursos cambie
+    console.log('cursos: ', cursos[0]);
+}, [cursos]);
 
   const handleBack = () => {
     navigate('/AgregarGrupo',{});
   };
 
+  //A la siguiente pestaña hay que enviar Cursos, curso seleccionado, grupo, horario
+  const handleContinuar = () => {
+    //REVISAR QUE HAYA SELECCIONADO UN CURSO
+    console.log('Curso seleccionado: ', cursoSeleccionado);
+    console.log('ID seleccionado: ', idCursoSeleccionado);
+    if(cursoSeleccionado ===  ""){
+      alert("Debe seleccionar un curso")
+    }
+    else{
+      navigate('/AgregarCursoIndividual', { state: { cursos, idCurso, cursoSeleccionado, idGrupo, numero, horario } }); // Pasar el nombre del planificador seleccionado
+    }
+  };
+
   return (
     <div>
-        <Navbar />
-        <div className="container" style={{ paddingTop: '80px' }}>
-        <h3>Agregar Planificación</h3>
+      <Navbar />
+      <div className="container" style={{ paddingTop: '80px' }}>
+        <h3>Agregar Cursos</h3>
         <div className="row">
-            <div className="col">
+          <div className="col">
             <div className="form-group">
-                <label>Grupo:</label>
-                <select className="form-control">
-                {/* Opciones de grupo */}
-                </select>
+            <span className="badge bg-light text-dark">
+            <h5>Grupo:</h5>
+            <h5>{numero}</h5>  
+            </span>
             </div>
-            </div>
-            <div className="col">
+          </div>
+          <div className="col">
             <div className="form-group">
-                <label>Horario:</label>
-                <select className="form-control">
-                {/* Opciones de horario */}
-                </select>
+            <span className="badge bg-light text-dark">
+            <h5>Horario del grupo:</h5>
+            <h5>{horario}</h5>  
+            </span>
             </div>
-            </div>
-        </div>
+          </div>
         <div className="row">
-            {cursos.map(curso => (
-            <div key={curso.id} className="col-md-4 mb-4">
-                <div className="card">
-                <div className="card-body">
-                    <h5 className="card-title">{curso.nombre}</h5>
-                    <div className="form-group">
-                    <label>Profesor:</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        value={curso.profesor}
-                        onChange={(e) => handleChange(e, curso.id, 'profesor')}
-                    />
-                    </div>
-                    <div className='form group'>
-                    <label>Fecha Inicio:</label>
-                    <input
-                        type="date"
-                        className="form-control"
-                        value={curso.fechaInicio}
-                        onChange={(e) => handleChange(e, curso.id, 'profesor')}
-                    />
-                    </div>
-                    <div className='form group'>
-                    <label>Fecha Final:</label>
-                    <input
-                        type="date"
-                        className="form-control"
-                        value={curso.fechaFinalizacion}
-                        onChange={(e) => handleChange(e, curso.id, 'profesor')}
-                    />
-                    </div>
-                </div>
-                </div>
-            </div>
-            ))}
+        <label>Seleccione un curso:</label>
+        <div className="table-responsive" style={{ maxHeight: '300px' }}>
+                    <table className="table">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Curso</th>
+                                <th>Seleccionar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {cursos.map((curso, index) => (
+                                <tr key={index}>
+                                    <td>{index+1}</td>
+                                    <td>{curso.nombre_curso}</td>
+                                    <td>
+                                        <input
+                                            type="checkbox"
+                                            checked={idCursoSeleccionado === index}
+                                            onChange={() => handleCheckboxChange(index)}
+                                        />
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+          </div>
         </div>
-        <div className="row">
-        <div className="col">
-            <button type="button" className="btn btn-danger" onClick={handleBack}>
-                Volver
-            </button>
-            </div>
-            <div className="col">
-            <button type="button" className="btn btn-primary">
-                Confirmar
-            </button>
-            </div>
+
+
+        <div className="m-3">
+                            <hr />
+                            <button className="btn btn-danger m-4" onClick={handleBack}>Volver</button>
+                            <button className="btn btn-primary m-4" onClick={handleContinuar}>
+                                Continuar
+                            </button>
+                        </div>
         </div>
-        </div>
+
+
+        {/* Resto del contenido */}
+      </div>
     </div>
   );
 };

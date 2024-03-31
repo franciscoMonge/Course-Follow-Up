@@ -133,6 +133,66 @@ app.post('/grupos', async (req, res) => {
   }
 });
 
+// Ruta para obtner los cursos por idGrupo
+app.get('/cursos/:idGrupo', async(req, res) =>{
+  const idGrupo = req.params.idGrupo;
+  try{
+      const [cursos] = await db.query("CALL GetCursosxGrupo(?)", [idGrupo]);
+      res.json(cursos);
+
+  } catch(error){
+      console.error('Error al obtener cursos:', error);
+      res.status(500).json({ error: 'Error al obtener cursos' });
+  }
+});
+
+// Ruta para agregar un nuevo curso a un grupo
+app.post('/actualizarCursos', async (req, res) => {
+  try {
+      const { idGrupo, idCurso, fechaInicio, fechaFinal, profesor, horario } = req.body;
+      console.log("ID GRUPO que va a la BD: ", idGrupo);
+      console.log("ID CURSO que va a la BD: ", idCurso);
+      console.log(typeof fechaFinal); // Debería imprimir 'string'
+      const formatoEsperado = /^\d{4}-\d{2}-\d{2}$/;
+      if(!formatoEsperado.test(fechaInicio)){
+        console.log("formatear fecha inicio")
+        const fechaInicioFormateada = fechaInicio.split('-').reverse().join('-'); // Convertir a "YYYY-MM-DD"
+      }
+      if(!formatoEsperado.test(fechaFinal)){
+        console.log("formatear fecha final")
+        const fechaFinalFormateada = fechaFinal.split('-').reverse().join('-');// Convertir a "YYYY-MM-DD"
+      }
+
+      const result = await db.query("CALL updateCursoGrupo(?,?,?,?,?,?)", [idGrupo, idCurso, fechaInicio, fechaFinal, profesor, horario]);
+    res.status(201).json({ mensaje: 'Curso actualizado correctamente', resultado: result });
+  } catch (error) {
+    console.error('Error al actualizar curso:', error);
+    res.status(500).json({ error: 'Error al agregar curso' });
+  }
+});
+
+
+// Ruta para obtener cursos filtrados por fecha
+app.get('/cursosXFecha', async (req, res) => {
+  try {
+    const { fechaInicio, fechaFinal } = req.query;
+
+    const [cursos] = await db.query(`
+      SELECT g.numero AS grupoNumero, g.horario AS grupoHorario, c.idcurso, c.nombre AS cursoNombre, gxc.fechaInicio, gxc.fechaFinal, gxc.profesor, gxc.horario AS cursoHorario
+      FROM grupoXcurso gxc
+      JOIN grupo g ON gxc.idgrupo = g.idgrupo
+      JOIN curso c ON gxc.idcurso = c.idcurso
+      WHERE gxc.fechaInicio >= ? AND gxc.fechaFinal <= ?
+    `, [fechaInicio, fechaFinal]);
+
+    res.json(cursos);
+  } catch (error) {
+    console.error('Error al obtener cursos por fecha:', error);
+    res.status(500).json({ error: 'Error al obtener cursos por fecha' });
+  }
+});
+
+
 // Ruta para enviar correos de recuperación de contraseña
 const transporter = nodemailer.createTransport({
   service: 'gmail',

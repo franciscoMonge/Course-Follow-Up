@@ -6,20 +6,26 @@ import axios from 'axios';
 function Ver_Planificador() {
     const navigate = useNavigate();
     
-    const [nuevoPlanificador, setNuevoPlanificador] = useState("");
+    const [añoPlanificador, setAñoPlanificador] = useState("");
     const [fechaInicio, setFechaInicio] = useState("");
     const [fechaFinal, setFechaFinal] = useState("");
 
-    const [showError, setShowError] = useState(false);
 
+    useEffect(() => {
+        if (añoPlanificador !== "") {
+            const fechaInicio = `${añoPlanificador}-01-01`;
+            const fechaFinal = `${añoPlanificador}-12-31`;
+            setFechaInicio(fechaInicio);
+            setFechaFinal(fechaFinal);
+        }
+    }, [añoPlanificador]);
 
     const handleContinuar = () => {
-        if (nuevoPlanificador === "") {
-            alert("No ha seleccionado o creado un planificador, por favor intentelo de nuevo.");
+        if (añoPlanificador === "") {
+            alert("No ha seleccionado o creado un planificador, por favor inténtelo de nuevo.");
         }
         else {
-        alert( `Planificador seleccionado: ${planificador} o Planificador creado: ${nuevoPlanificador}`);
-        //navigate('/AgregarGrupo',{});
+            navigate('/App', { state: { fechaInicio, fechaFinal, añoPlanificador } });
         }
     };
 
@@ -46,9 +52,9 @@ function Ver_Planificador() {
                     onInput={(e) => {
                         const inputValue = parseInt(e.target.value);
                         if (isNaN(inputValue) || inputValue < 2024) {
-                            setNuevoPlanificador(""); // Establecer el estado como vacío si la entrada no es válida
+                            setAñoPlanificador(""); // Establecer el estado como vacío si la entrada no es válida
                         } else {
-                            setNuevoPlanificador(inputValue.toString().slice(0, 4)); // Establecer el estado con el valor válido
+                            setAñoPlanificador(inputValue.toString().slice(0, 4)); // Establecer el estado con el valor válido
                         }
                     }} 
                     placeholder="Seleccione el año" 

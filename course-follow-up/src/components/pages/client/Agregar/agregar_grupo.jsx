@@ -25,7 +25,7 @@ function Agregar_Grupo() {
 
     useEffect(() => {
         // Este se ejecuta cuando gruposexistentes cambie
-        console.log('grupos existentes: ', gruposExistentes[0]);
+        //console.log('grupos existentes: ', gruposExistentes[0]);
     }, [gruposExistentes]);
 
     const handleCheckboxChange = (index) => {
@@ -49,7 +49,7 @@ function Agregar_Grupo() {
             alert("No ha seleccionadoun grupo, por favor intentelo de nuevo.");
         } 
         else {
-            alert( `Grupo seleccionado: ${grupo} y horario: ${horario}`);
+            //alert( `Grupo seleccionado: ${grupo} y horario: ${horario}`);
             navigate('/AgregarCursos',{state:{idGrupo: idGrupo, numero: grupo, horario: horario}});
         }
     };

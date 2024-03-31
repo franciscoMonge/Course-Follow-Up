@@ -25,7 +25,7 @@ function MainPage () {
                             <button className="btn btn-primary btn-lg" onClick={handleAgregar}>Agregar Planificador</button>
                         </div>
                         <div className="m-3">
-                            <button className="btn btn-primary btn-lg">Ver Planificador</button>
+                            <button className="btn btn-primary btn-lg" onClick={handleVer}>Ver Planificador</button>
                         </div>
                     </div>
                 </div>
