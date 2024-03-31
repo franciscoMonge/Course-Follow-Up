@@ -73,6 +73,17 @@ app.post('/actualizarCursos', async (req, res) => {
       const { idGrupo, idCurso, fechaInicio, fechaFinal, profesor, horario } = req.body;
       console.log("ID GRUPO que va a la BD: ", idGrupo);
       console.log("ID CURSO que va a la BD: ", idCurso);
+      console.log(typeof fechaFinal); // Debería imprimir 'string'
+      const formatoEsperado = /^\d{4}-\d{2}-\d{2}$/;
+      if(!formatoEsperado.test(fechaInicio)){
+        console.log("formatear fecha inicio")
+        const fechaInicioFormateada = fechaInicio.split('-').reverse().join('-'); // Convertir a "YYYY-MM-DD"
+      }
+      if(!formatoEsperado.test(fechaFinal)){
+        console.log("formatear fecha final")
+        const fechaFinalFormateada = fechaFinal.split('-').reverse().join('-');// Convertir a "YYYY-MM-DD"
+      }
+
       const result = await db.query("CALL updateCursoGrupo(?,?,?,?,?,?)", [idGrupo, idCurso, fechaInicio, fechaFinal, profesor, horario]);
     res.status(201).json({ mensaje: 'Curso actualizado correctamente', resultado: result });
   } catch (error) {

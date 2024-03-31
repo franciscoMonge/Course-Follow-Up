@@ -6,14 +6,19 @@ DELIMITER //
 CREATE PROCEDURE updateCursoGrupo (
     IN p_idGrupo INT,
     IN p_idCurso INT,
-    IN p_fechaInicio DATE,
-    IN p_fechaFinal DATE,
+    IN p_fechaInicio VARCHAR(20),
+    IN p_fechaFinal varchar(20),
     IN p_profesor VARCHAR(200),
     IN p_horario VARCHAR(45)
 )
 BEGIN
     DECLARE curso_existente INT;
+    -- DECLARE fechaInicioDate DATE;
+    -- DECLARE fechaFinalDate DATE;
 
+    -- Convertir las cadenas de fecha en objetos de fecha
+    -- SET fechaInicioDate = STR_TO_DATE(p_fechaInicio, '%Y-%m-%d');
+    -- SET fechaFinalDate = STR_TO_DATE(p_fechaFinal, '%Y-%m-%d');
     -- VERIFICAR SI EXISTE EL CURSO PARA ESE GRUPO
     SELECT COUNT(*) INTO curso_existente 
     FROM grupoxcurso 
@@ -22,6 +27,8 @@ BEGIN
     IF curso_existente > 0 THEN
         -- Si el curso existe para ese grupo, se ACTUALIZAN los datos
         UPDATE grupoxcurso SET
+            -- fechaInicio = IF(fechaInicioDate IS NOT NULL AND fechaInicioDate <> '', fechaInicioDate, fechaInicio),
+            -- fechaFinal = IF(fechaFinalDate IS NOT NULL AND fechaFinalDate <> '', fechaFinalDate, fechaFinal),
             fechaInicio = IF(p_fechaInicio IS NOT NULL AND p_fechaInicio <> '', p_fechaInicio, fechaInicio),
             fechaFinal = IF(p_fechaFinal IS NOT NULL AND p_fechaFinal <> '', p_fechaFinal, fechaFinal),
             profesor = IF(p_profesor IS NOT NULL AND p_profesor <> '', p_profesor, profesor),
