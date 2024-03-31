@@ -17,19 +17,35 @@ const Agregar_Cursos_Indiv = () => {
   const { horario} = location.state; //Este es el horario del GRUPO
 
   // Variables para guardar los cambios
-  const [profesor, setProfesor] = useState(cursoSeleccionado.profesor);
-  const [fechaInicio, setFechaInicio] = useState(cursoSeleccionado.fechaInicio);
-  const [fechaFinal, setFechaFinal] = useState(cursoSeleccionado.fechaFinal);
-  const[horarioCurso, setHorarioCurso] = useState();
+  const [profesor, setProfesor] = useState('');
+  const [fechaInicio, setFechaInicio] = useState('');
+  const [fechaFinal, setFechaFinal] = useState('');
+  const [horarioCurso, setHorarioCurso] = useState('');
+
+  useEffect(() => {
+    if (cursoSeleccionado) {
+      setProfesor(cursoSeleccionado.profesor || '');
+      setFechaInicio(cursoSeleccionado.fechaInicio || '');
+      setFechaFinal(cursoSeleccionado.fechaFinal || '');
+      setHorarioCurso(horario || '');
+    }
+  }, [cursoSeleccionado,horario]);
   
   
   const handleConfirmar = () => {
     //Validaciones extra por confimar:
     //1. Si ya existe un profesor asginado para esas mismas fechas y horario
     //2. Si ya asignó para ese mismo grupo, otro curso en las mismas fechas
-
-    // Validar que no haya información en blanco (El profe puede quedar en blanco)
+    console.log("Fecha inicio: ", fechaInicio);
+    console.log("Fecha final: ", fechaFinal);
+    console.log("Horario Curso: ", horarioCurso);
+    console.log("Profesor: ", profesor);
+    //Validar que no haya información en blanco (El profe puede quedar en blanco)
     if (!fechaInicio || !fechaFinal || !horarioCurso) {
+        console.log("Fecha inicio: ", fechaInicio);
+        console.log("Fecha final: ", fechaFinal);
+        console.log("Horario Curso: ", horarioCurso);
+        console.log("Profesor: ", profesor);
       alert('Por favor completa todos los campos');
       return;
     }
@@ -54,11 +70,11 @@ const Agregar_Cursos_Indiv = () => {
       alert('El horario del curso debe coincidir con el horario del grupo');
       return;
     }
-  
+    
     // Llamar a la API para actualizar los cursos
     axios.post('http://localhost:3001/actualizarCursos', {
-        idGrupo: idGrupoSeleccionado,
-        idCurso: idCursoSeleccionado,
+        idGrupo: idGrupoSeleccionado+1, //En mi MYSQL las inserciones empiezan en 1 
+        idCurso: idCursoSeleccionado+1,//En mi MYSQL las inserciones empiezan en 1,por eso hay que sumarle 1
         fechaInicio: fechaInicio,
         fechaFinal: fechaFinal,
         profesor: profesor,
@@ -66,10 +82,13 @@ const Agregar_Cursos_Indiv = () => {
     })
     .then(response => {
         console.log('Curso actualizado correctamente:', response.data);
+        alert("Curso actualizado correctamente");
+        navigate('/AgregarCursos', { state: {  cursos, idCursoSeleccionado,cursoSeleccionado, grupo, idGrupoSeleccionado, horario  } });
         // Aquí puedes realizar otras acciones después de actualizar los cursos, como mostrar un mensaje de éxito, etc.
     })
     .catch(error => {
         console.error('Error al actualizar curso:', error);
+        alert("Error al actualizar el curso");
         // Aquí puedes manejar el error, mostrar un mensaje de error al usuario, etc.
     });
 
@@ -152,11 +171,14 @@ const Agregar_Cursos_Indiv = () => {
             </div>
             <div className="form-group">
               <label>Horario:</label>
-              <select className="form-select form-select-sm" aria-label=".form-select-sm example" onChange={handleChange}>
-                <option value = "Lunes y Miércoles" defaultValue>Lunes y Miércoles</option>
-                <option value="Martes y Jueves">Martes y Jueves</option>
-
-            </select>
+                <select 
+                        className="form-select form-select-sm" 
+                        aria-label=".form-select-sm example" 
+                        onChange={handleChange}
+                        value={horarioCurso || ''}>
+                        <option value="Lunes y Miércoles">Lunes y Miércoles</option>
+                        <option value="Martes y Jueves">Martes y Jueves</option>
+                </select>
             </div>
             <button className="btn btn-success m-4" onClick={handleConfirmar}>Confirmar cambios</button>
           </div>

@@ -71,7 +71,9 @@ app.get('/horario/:grupo', async(req, res) =>{
 app.post('/actualizarCursos', async (req, res) => {
   try {
       const { idGrupo, idCurso, fechaInicio, fechaFinal, profesor, horario } = req.body;
-    const result = await db.query("CALL updateCursoGrupo(?,?,?,?,?,?)", [idGrupo, idCurso, fechaInicio, fechaFinal, profesor, horario]);
+      console.log("ID GRUPO que va a la BD: ", idGrupo);
+      console.log("ID CURSO que va a la BD: ", idCurso);
+      const result = await db.query("CALL updateCursoGrupo(?,?,?,?,?,?)", [idGrupo, idCurso, fechaInicio, fechaFinal, profesor, horario]);
     res.status(201).json({ mensaje: 'Curso actualizado correctamente', resultado: result });
   } catch (error) {
     console.error('Error al actualizar curso:', error);
