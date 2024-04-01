@@ -74,3 +74,4 @@ DELIMITER ;
 
  -- CALL GetCursosxGrupo(1)
  -- CALL getHorarioGrupo(2)
+ select * from grupoxcurso 
