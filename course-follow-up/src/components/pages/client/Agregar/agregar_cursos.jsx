@@ -27,7 +27,6 @@ const Agregar_Cursos = () => {
         setCursoSeleccionado(""); // Limpiar el estado curso
     } else {
         setidCursoSeleccionado(index); //indice del curso
-        console.log("aiudaa: ", cursos[index]);
         setIdCurso(cursos[index].idCurso);
         setCursoSeleccionado(cursos[index]); 
     }
@@ -66,7 +65,7 @@ const Agregar_Cursos = () => {
       alert("Debe seleccionar un curso")
     }
     else{
-      navigate('/AgregarCursoIndividual', { state: { cursos, idCurso, cursoSeleccionado, idGrupo, numero, horario } }); // Pasar el nombre del planificador seleccionado
+      navigate('/AgregarCursoIndividual', { state: { cursos, idCursoSeleccionado, cursoSeleccionado, idGrupo, numero, horario } }); // Pasar el nombre del planificador seleccionado
     }
   };
 
