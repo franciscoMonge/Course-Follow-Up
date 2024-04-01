@@ -1,19 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import axios from 'axios';
 import Navbar from "../../shared/navbar";
+import { useToastContainer } from 'react-toastify';
 
 const Agregar_Cursos = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const idGrupo = location?.state?.idGrupo;
+  const numero = location?.state?.numero;
+  const horario = location?.state?.horario;
+
+  console.log('INFO: ', idGrupo, ' ',numero, ' ', horario);
+
   const [cursos, setCursos] = useState([]);
   const [idCursoSeleccionado, setidCursoSeleccionado] = useState(null); //Indice del curso seleccionado
+  const [idCurso, setIdCurso] = useState("");
   const [cursoSeleccionado, setCursoSeleccionado] = useState(""); // curso seleccionado
-  const [horario, setHorario] = useState('');
-
-  const { grupo } = location.state; //OBJETO grupo
-  const { idGrupoSeleccionado} = location.state; //Indice del grupo
 
   const handleCheckboxChange = (index) => {
     if (idCursoSeleccionado === index) {
@@ -23,30 +27,17 @@ const Agregar_Cursos = () => {
         setCursoSeleccionado(""); // Limpiar el estado curso
     } else {
         setidCursoSeleccionado(index); //indice del curso
-        setCursoSeleccionado(cursos[index]); // Establecer el nombre del grupo seleccionado
+        console.log("aiudaa: ", cursos[index]);
+        setIdCurso(cursos[index].idCurso);
+        setCursoSeleccionado(cursos[index]); 
     }
-  };
-
-  // Función para cargar el horario del grupo
-  const cargarHorarioGrupo = () => {
-    axios.get(`http://localhost:3001/horario/${idGrupoSeleccionado+1}`)
-      .then(response => {
-        console.log('Horario: ', response.data[0][0].horario);
-        setHorario(response.data[0][0].horario);
-      })
-      .catch(error => {
-        console.log('ERROR: Carga fallida de horario del grupo', error);
-        console.log("id del grupo: ", idGrupoSeleccionado);
-      });
   };
 
   // Carga todos los cursos de la BD en la lista "cursos" 
   useEffect(() => {
-    cargarHorarioGrupo(); // Cargar el horario del grupo al montar el componente
-    axios.get(`http://localhost:3001/cursos/${idGrupoSeleccionado+1}`)
+    axios.get(`http://localhost:3001/cursos/${idGrupo}`)
       .then(response => {
-        console.log('cargando cursos');
-        console.log('cursos: ', response.data[0]);
+        console.log('cursos111: ', response.data[0]);
         setCursos(response.data[0]);
       })
       .catch(error => {
@@ -54,12 +45,17 @@ const Agregar_Cursos = () => {
       });
      
 
-  }, [grupo]); // Grupo como dependencia para recargar los cursos cuando cambie
+  }, []); // Grupo como dependencia para recargar los cursos cuando cambie
 
+  useEffect(() => {
+    // Este se ejecuta cuando cursos cambie
+    console.log('cursos: ', cursos[0]);
+}, [cursos]);
 
   const handleBack = () => {
     navigate('/AgregarGrupo', { state: { grupo,idGrupoSeleccionado }} );
   };
+
 
   //A la siguiente pestaña hay que enviar Cursos, curso seleccionado, grupo, horario
   const handleContinuar = () => {
@@ -70,7 +66,7 @@ const Agregar_Cursos = () => {
       alert("Debe seleccionar un curso")
     }
     else{
-      navigate('/AgregarCursoIndividual', { state: { cursos, idCursoSeleccionado,cursoSeleccionado, grupo, idGrupoSeleccionado, horario } }); // Pasar el nombre del planificador seleccionado
+      navigate('/AgregarCursoIndividual', { state: { cursos, idCurso, cursoSeleccionado, idGrupo, numero, horario } }); // Pasar el nombre del planificador seleccionado
     }
   };
 
@@ -78,13 +74,13 @@ const Agregar_Cursos = () => {
     <div>
       <Navbar />
       <div className="container" style={{ paddingTop: '80px' }}>
-        <h3>Agregar Planificación</h3>
+        <h3>Agregar Cursos</h3>
         <div className="row">
           <div className="col">
             <div className="form-group">
             <span className="badge bg-light text-dark">
             <h5>Grupo:</h5>
-            <h5>{grupo.numero}</h5>  
+            <h5>{numero}</h5>  
             </span>
             </div>
           </div>
@@ -92,13 +88,13 @@ const Agregar_Cursos = () => {
             <div className="form-group">
             <span className="badge bg-light text-dark">
             <h5>Horario del grupo:</h5>
-            <h5>{grupo.horario}</h5>  
+            <h5>{horario}</h5>  
             </span>
             </div>
           </div>
         <div className="row">
         <label>Seleccione un curso:</label>
-        <div className = "row"></div>
+        <div className="table-responsive" style={{ maxHeight: '300px' }}>
                     <table className="table">
                         <thead>
                             <tr>
@@ -123,6 +119,7 @@ const Agregar_Cursos = () => {
                             ))}
                         </tbody>
                     </table>
+          </div>
         </div>
 
 

@@ -8,13 +8,14 @@ const Agregar_Cursos_Indiv = () => {
 
   const location = useLocation();
   //De la página anterior debemos traer 
-// cursos, idCursoSeleccionado,cursoSeleccionado, grupo, idGrupoSeleccionado, horario
+// cursos, idCursoSeleccionado,cursoSeleccionado, grupo, idGrupo, horario
   const { cursos} = location.state; 
-  const { idCursoSeleccionado} = location.state; //Este es el ID del cruso
+  const { idCurso} = location.state; //Este es el ID del cruso
   const {cursoSeleccionado} =  location.state; //Este es el OBJETO curso
-  const { grupo } = location.state; //Este es el OBJETO de grupo
-  const { idGrupoSeleccionado } = location.state; //Este es el ID del grupo
+  const {numero} = location.state;
+  const { idGrupo } = location.state; //Este es el ID del grupo
   const { horario} = location.state; //Este es el horario del GRUPO
+
 
   // Variables para guardar los cambios
   const [profesor, setProfesor] = useState('');
@@ -66,15 +67,15 @@ const Agregar_Cursos_Indiv = () => {
     }
   
     // Validar que el horario del curso coincida con el horario del grupo
-    if (horarioCurso !== grupo.horario) {
+    if (horarioCurso !== horario) {
       alert('El horario del curso debe coincidir con el horario del grupo');
       return;
     }
     
     // Llamar a la API para actualizar los cursos
     axios.post('http://localhost:3001/actualizarCursos', {
-        idGrupo: idGrupoSeleccionado+1, //En mi MYSQL las inserciones empiezan en 1 
-        idCurso: idCursoSeleccionado+1,//En mi MYSQL las inserciones empiezan en 1,por eso hay que sumarle 1
+        idGrupo: idGrupo, //En mi MYSQL las inserciones empiezan en 1 
+        idCurso: idCurso,//En mi MYSQL las inserciones empiezan en 1,por eso hay que sumarle 1
         fechaInicio: fechaInicio,
         fechaFinal: fechaFinal,
         profesor: profesor,
@@ -83,7 +84,7 @@ const Agregar_Cursos_Indiv = () => {
     .then(response => {
         console.log('Curso actualizado correctamente:', response.data);
         alert("Curso actualizado correctamente");
-        navigate('/AgregarCursos', { state: {  cursos, idCursoSeleccionado,cursoSeleccionado, grupo, idGrupoSeleccionado, horario  } });
+        navigate('/AgregarCursos', { state: { idGrupo, numero, horario  } });
         // Aquí puedes realizar otras acciones después de actualizar los cursos, como mostrar un mensaje de éxito, etc.
     })
     .catch(error => {
@@ -106,7 +107,7 @@ const Agregar_Cursos_Indiv = () => {
 
   const handleBack = () => {
     
-    navigate('/AgregarCursos', { state: {  cursos, idCursoSeleccionado,cursoSeleccionado, grupo, idGrupoSeleccionado, horario  } });
+    navigate('/AgregarCursos', { state: { idGrupo, numero, horario  } });
   };
 
 
@@ -121,7 +122,7 @@ const Agregar_Cursos_Indiv = () => {
         <div className="form-group">
         <span className="badge bg-light text-dark">
           <h5>Grupo:</h5>
-          <h5>{grupo.numero}</h5> 
+          <h5>{numero}</h5> 
  
         </span>
         </div>
@@ -130,7 +131,7 @@ const Agregar_Cursos_Indiv = () => {
         <div className="form-group">
         <span className="badge bg-light text-dark">
           <h5>Horario del grupo:</h5>
-          <h5>{grupo.horario}</h5>  
+          <h5>{horario}</h5>  
         </span>
         </div>
       </div>
@@ -176,8 +177,8 @@ const Agregar_Cursos_Indiv = () => {
                         aria-label=".form-select-sm example" 
                         onChange={handleChange}
                         value={horarioCurso || ''}>
-                        <option value="Lunes y Miércoles">Lunes y Miércoles</option>
-                        <option value="Martes y Jueves">Martes y Jueves</option>
+                        <option value="L-M">L-M</option>
+                        <option value="K-J">K-J</option>
                 </select>
             </div>
             <button className="btn btn-success m-4" onClick={handleConfirmar}>Confirmar cambios</button>

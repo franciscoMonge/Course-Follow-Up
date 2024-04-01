@@ -4,7 +4,11 @@ import { Link, useNavigate} from "react-router-dom";
 function MainPage () {
     const navigate = useNavigate();
     const handleAgregar = () => {
-        navigate('/AgregarPlanificador',{});
+        navigate('/AgregarGrupo',{});
+    };
+
+    const handleVer = () => {
+        navigate('/SeleccionaAño',{});
     };
 
     return(
@@ -18,10 +22,10 @@ function MainPage () {
                     </div>
                     <div className="card-body">
                         <div className="m-3">
-                            <button className="btn btn-primary" onClick={handleAgregar}>Agregar Planificador</button>
+                            <button className="btn btn-primary btn-lg" onClick={handleAgregar}>Agregar Planificador</button>
                         </div>
                         <div className="m-3">
-                            <button className="btn btn-primary">Ver Planificador</button>
+                            <button className="btn btn-primary btn-lg" onClick={handleVer}>Ver Planificador</button>
                         </div>
                     </div>
                 </div>
