@@ -10,7 +10,7 @@ const Agregar_Cursos_Indiv = () => {
   //De la página anterior debemos traer 
 // cursos, idCursoSeleccionado,cursoSeleccionado, grupo, idGrupo, horario
   const { cursos} = location.state; 
-  const { idCursoSeleccionado} = location.state; //Este es el ID del cruso
+  const { idCurso} = location.state; //Este es el ID del cruso
   const {cursoSeleccionado} =  location.state; //Este es el OBJETO curso
   const {numero} = location.state;
   const { idGrupo } = location.state; //Este es el ID del grupo
@@ -75,7 +75,7 @@ const Agregar_Cursos_Indiv = () => {
     // Llamar a la API para actualizar los cursos
     axios.post('http://localhost:3001/actualizarCursos', {
         idGrupo: idGrupo, //En mi MYSQL las inserciones empiezan en 1 
-        idCurso: idCursoSeleccionado+1,//En mi MYSQL las inserciones empiezan en 1,por eso hay que sumarle 1
+        idCurso: idCurso,//En mi MYSQL las inserciones empiezan en 1,por eso hay que sumarle 1
         fechaInicio: fechaInicio,
         fechaFinal: fechaFinal,
         profesor: profesor,

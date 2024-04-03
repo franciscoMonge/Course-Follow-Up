@@ -59,8 +59,10 @@ END //
 CREATE PROCEDURE GetCursosxGrupo(p_idGrupo INT)
 BEGIN
 	-- Obtengo la información de los cursos para ese grupo, si está disponible
-	SELECT 
+	SELECT
+		
 		COALESCE(curso.nombre) AS nombre_curso,
+        (curso.idcurso) AS idCurso,
 		IFNULL(grupoxcurso.fechaInicio, '') AS fechaInicio,
 		IFNULL(grupoxcurso.fechaFinal, '') AS fechaFinal,
 		IFNULL(grupoxcurso.horario, '') AS horario,
@@ -71,7 +73,7 @@ END //
 
 DELIMITER ;
 
-
+select * from usuario
  -- CALL GetCursosxGrupo(1)
  -- CALL getHorarioGrupo(2)
  select * from grupoxcurso 

@@ -146,19 +146,7 @@ app.get('/cursos/:idGrupo', async(req, res) =>{
   }
 });
 
-//Obtiene el horario de un grupo específico
-app.get('/horario/:grupo', async(req, res) =>{
-  const idGrupo = req.params.grupo;
-  try{
-      const [horario] = await db.query("CALL getHorarioGrupo(?)", [idGrupo]);
-      res.json(horario);
-  } catch(error){
-      console.error('Error al obtener horario:', error);
-      res.status(500).json({ error: 'Error al obtener horario' });
-  }
-});
-
-// Ruta para agregar un nuevo usuario
+// Ruta para agregar un nuevo curso a un grupo
 app.post('/actualizarCursos', async (req, res) => {
   try {
       const { idGrupo, idCurso, fechaInicio, fechaFinal, profesor, horario } = req.body;

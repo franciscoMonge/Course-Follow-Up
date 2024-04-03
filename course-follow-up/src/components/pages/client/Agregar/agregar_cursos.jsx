@@ -27,6 +27,10 @@ const Agregar_Cursos = () => {
         setCursoSeleccionado(""); // Limpiar el estado curso
     } else {
         setidCursoSeleccionado(index); //indice del curso
+        console.log("aiudaa: ", cursos[index]);
+        console.log("Esto se guarda CURSOS: ", cursos);
+        console.log("Esto se guarda CURSOS[INDEX]: ", cursos[index]);
+        console.log("Esto se guarda como idCurso: ", cursos[index].idCurso);
         setIdCurso(cursos[index].idCurso);
         setCursoSeleccionado(cursos[index]); 
     }
@@ -52,20 +56,19 @@ const Agregar_Cursos = () => {
 }, [cursos]);
 
   const handleBack = () => {
-    navigate('/AgregarGrupo', { state: { grupo,idGrupoSeleccionado }} );
+    navigate('/AgregarGrupo',{});
   };
-
 
   //A la siguiente pestaña hay que enviar Cursos, curso seleccionado, grupo, horario
   const handleContinuar = () => {
     //REVISAR QUE HAYA SELECCIONADO UN CURSO
     console.log('Curso seleccionado: ', cursoSeleccionado);
-    console.log('ID seleccionado: ', idCursoSeleccionado);
+    console.log('ID seleccionado: ', idCurso);
     if(cursoSeleccionado ===  ""){
       alert("Debe seleccionar un curso")
     }
     else{
-      navigate('/AgregarCursoIndividual', { state: { cursos, idCursoSeleccionado, cursoSeleccionado, idGrupo, numero, horario } }); // Pasar el nombre del planificador seleccionado
+      navigate('/AgregarCursoIndividual', { state: { cursos, idCurso, cursoSeleccionado, idGrupo, numero, horario } }); // Pasar el nombre del planificador seleccionado
     }
   };
 
