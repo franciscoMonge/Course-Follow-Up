@@ -97,6 +97,14 @@ function Signup () {
                 // console.log('revisarrrrrr ',datos)
                 const response = await axios.post('http://localhost:3001/usuarios', datos);
                 console.log(response.data);
+
+                // Enviar correo de confirmacion de registro
+                await axios.post('http://localhost:3001/sendEmail', {
+                    to: correo,
+                    subject: '📝¡Bienvenido a COURSE FOLLOW UP! 📝',
+                    body: `¡Hola! 😊 Su cuenta ha sido creada con éxito.\n\nSu usuario es: ${correo}\nSu contraseña es: ${psswrd}` 
+                });
+                
                 toast.success('Usuario registrado exitosamente.');
                 sessionStorage.setItem('usuarioActual', correo);
                 navigate('/MainPage',{});
