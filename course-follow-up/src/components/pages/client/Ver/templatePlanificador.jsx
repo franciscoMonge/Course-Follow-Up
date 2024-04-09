@@ -4,6 +4,8 @@ import axios from 'axios';
 
 const App1 = () => {
 
+  const navigate = useNavigate();
+
   const location = useLocation();
   const { fechaInicio } = location.state;
   const { fechaFinal } = location.state;
@@ -66,6 +68,11 @@ const App1 = () => {
   const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
 
+  const handleBack = () =>{
+    navigate('/SeleccionaAño',{});
+  };
+
+
   return (
     <div>
       <h1 className="mb-4">Planificador de Cursos</h1>
@@ -109,6 +116,13 @@ const App1 = () => {
           ))}
         </tbody>
       </table>
+      <div className="m-3">
+                <hr />
+                <button className="btn btn-danger m-4" onClick={handleBack}>Volver</button>
+                <button className="btn btn-primary m-4">
+                    Modificar
+                </button>
+                </div>
     </div>
   );
 }
