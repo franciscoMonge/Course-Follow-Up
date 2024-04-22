@@ -28,6 +28,9 @@ const Agregar_Cursos = () => {
     } else {
         setidCursoSeleccionado(index); //indice del curso
         console.log("aiudaa: ", cursos[index]);
+        console.log("Esto se guarda CURSOS: ", cursos);
+        console.log("Esto se guarda CURSOS[INDEX]: ", cursos[index]);
+        console.log("Esto se guarda como idCurso: ", cursos[index].idCurso);
         setIdCurso(cursos[index].idCurso);
         setCursoSeleccionado(cursos[index]); 
     }
@@ -60,7 +63,7 @@ const Agregar_Cursos = () => {
   const handleContinuar = () => {
     //REVISAR QUE HAYA SELECCIONADO UN CURSO
     console.log('Curso seleccionado: ', cursoSeleccionado);
-    console.log('ID seleccionado: ', idCursoSeleccionado);
+    console.log('ID seleccionado: ', idCurso);
     if(cursoSeleccionado ===  ""){
       alert("Debe seleccionar un curso")
     }
