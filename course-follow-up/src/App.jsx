@@ -20,7 +20,7 @@ function App() {
         <Route path="/Register" element={<Register />}/>
         <Route path="/MainPage" element={<MainPage />}/>
         <Route path="/AgregarPlanificador" element={<Agregar_Planificador />}/>
-        <Route path="/Modificar_Planificador" element={<Modificar_Planificacion />}/>
+        <Route path="/Modificar_Planificacion" element={<Modificar_Planificacion />}/>
         <Route path="/AgregarGrupo" element={<Agregar_Grupo />}/>
         <Route path="/CrearGrupo" element={<Crear_Grupo />}/>
         <Route path="/AgregarCursos" element={<Agregar_Cursos />}/>

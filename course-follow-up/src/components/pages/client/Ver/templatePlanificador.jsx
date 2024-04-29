@@ -1,9 +1,8 @@
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from 'axios';
 
 const App1 = () => {
-
   const navigate = useNavigate();
 
   const location = useLocation();
@@ -22,6 +21,7 @@ const App1 = () => {
         const data = response.data;
         const groupedCourses = groupCoursesByGroup(data);
         setCourses(groupedCourses);
+        console.log(courses);
       } catch (error) {
         console.error('Error al obtener cursos:', error);
       }
@@ -61,7 +61,9 @@ const App1 = () => {
   };
 
   const getRandomColor = () => {
-    const colors = ['#ffc107', '#28a745', '#007bff', '#dc3545', '#6610f2', '#e83e8c', '#20c997', '#fd7e14'];
+    const colors = ['#ffc107', '#28a745', '#007bff', '#dc3545', '#6610f2', '#e83e8c', '#20c997', '#fd7e14', '#891652', '#0B60B0', 
+    '#7E6363', '#116D6E', '#E96479', '#43766C', '#CD5C08', '#BE3144', '#9A3B3B', '#1B4242', '#363062', '#8B9A46', '#2D4263', '#C060A1', 
+    '#FFAC41'];
     return colors[Math.floor(Math.random() * colors.length)];
   };
 
@@ -72,10 +74,14 @@ const App1 = () => {
     navigate('/SeleccionaAño',{});
   };
 
+  const handleModify = () => {
+    navigate('/Modificar_Planificacion', { state: { courses, añoPlanificador}})
+  }
+
 
   return (
     <div>
-      <h1 className="mb-4">Planificador de Cursos</h1>
+      <h1 className="mb-4">Planificador de Cursos {añoPlanificador}</h1>
       <table className="table">
         <thead>
           <tr>
@@ -116,13 +122,15 @@ const App1 = () => {
           ))}
         </tbody>
       </table>
-      <div className="m-3">
-                <hr />
-                <button className="btn btn-danger m-4" onClick={handleBack}>Volver</button>
-                <button className="btn btn-primary m-4">
-                    Modificar
-                </button>
-                </div>
+      <div>
+        <button style={ { backgroundColor: 'black'}} onClick={handleBack}>
+          Volver
+        </button>
+        
+        <button style={{ background: '#092D4E', marginLeft: '20px'}} onClick={handleModify}>
+          Modificar
+        </button>
+      </div>
     </div>
   );
 }
