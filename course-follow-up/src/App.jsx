@@ -10,6 +10,7 @@ import Agregar_Cursos_Indiv from './components/pages/client/Agregar/agregar_curs
 import App1 from './components/pages/client/Ver/templatePlanificador';
 import Ver_Planificador from './components/pages/client/Ver/ver_planificador';
 import Modificar_Planificacion from './components/pages/client/Modificar/modificar_planificacion';
+import Intercambiar_Cursos from './components/pages/client/Modificar/intercambiar_cursos';
 import './App.css'
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
         <Route path="/SeleccionaAño" element={<Ver_Planificador />}/>
         <Route path="/App" element={<App1 />}/>
         <Route path="*" element={<Navigate to="/" />} />
+        <Route path="/IntercambiarCursos" element={<Intercambiar_Cursos />}/>
       </Routes>
     </Router>
   );

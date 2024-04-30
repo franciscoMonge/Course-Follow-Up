@@ -171,6 +171,21 @@ app.post('/actualizarCursos', async (req, res) => {
   }
 });
 
+// Ruta para intercambiar cursos de un grupo
+app.put('/intercambiarCursos', async (req, res) => {
+  try {
+      const { idGrupo, idCurso1, idCurso2} = req.body;
+      console.log("ID GRUPO que va a la BD: ", idGrupo);
+      console.log("ID CURSO_1 que va a la BD: ", idCurso1);
+      console.log("ID CURSO_2 que va a la BD: ", idCurso2);
+
+      const result = await db.query("CALL intercambiarCursos(?,?,?)", [idGrupo, idCurso1, idCurso2]);
+      res.status(201).json({ mensaje: 'Curso actualizado correctamente', resultado: result });
+  } catch (error) {
+    console.error('Error al intercambiar los cursos:', error);
+    res.status(500).json({ error: 'Error al intercambiar los cursos' });
+  }
+});
 
 // Ruta para obtener cursos filtrados por fecha
 app.get('/cursosXFecha', async (req, res) => {
