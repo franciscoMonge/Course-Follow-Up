@@ -73,6 +73,37 @@ END //
 
 DELIMITER ;
 
+CREATE PROCEDURE intercambiarCursos(
+	IN p_idGrupo INT,
+    IN p_idCurso1 INT,
+    IN p_idCurso2 INT
+)
+BEGIN
+	DECLARE fechaInicioCurso1 DATE;
+    DECLARE fechaFinalCurso1 DATE;
+    
+    DECLARE fechaInicioCurso2 DATE;
+    DECLARE fechaFinalCurso2 DATE;
+    
+    SELECT fechaInicio, fechaFinal INTO fechaInicioCurso1, fechaFinalCurso1
+    FROM grupoxcurso
+    WHERE idgrupo = p_idGrupo AND idcurso = p_idCurso1;
+    
+    SELECT fechaInicio, fechaFinal INTO fechaInicioCurso2, fechaFinalCurso2
+    FROM grupoxcurso
+    WHERE idgrupo = p_idGrupo AND idcurso = p_idCurso2;
+    
+	UPDATE grupoxcurso SET 
+		fechaInicio = fechaInicioCurso2,
+		fechaFinal = fechaFinalCurso2
+    WHERE idgrupo = p_idGrupo AND idcurso = p_idCurso1;
+    
+    UPDATE grupoxcurso SET 
+		fechaInicio = fechaInicioCurso1,
+		fechaFinal = fechaFinalCurso1
+    WHERE idgrupo = p_idGrupo AND idcurso = p_idCurso2;
+END
+
 select * from usuario
  -- CALL GetCursosxGrupo(1)
  -- CALL getHorarioGrupo(2)
