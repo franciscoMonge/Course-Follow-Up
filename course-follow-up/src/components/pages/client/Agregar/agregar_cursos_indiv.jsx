@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import Navbar from "../../shared/navbar";
 
+
 // Código para la ventana donde se muestra 
 // la información de UN curso específico
 
@@ -27,7 +28,7 @@ const Agregar_Cursos_Indiv = () => {
   const [profesor, setProfesor] = useState('');
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFinal, setFechaFinal] = useState('');
-  const [horarioCurso, setHorarioCurso] = useState('');
+  const [horarioCurso, setHorarioCurso] = useState(''); 
 
   //Modals para errores de fechas
   const [showWarning, setShowWarning] = useState(false); 
@@ -40,8 +41,9 @@ const Agregar_Cursos_Indiv = () => {
       setProfesor(cursoSeleccionado.profesor || '');
       setFechaInicio(cursoSeleccionado.fechaInicio || '');
       setFechaFinal(cursoSeleccionado.fechaFinal || '');
-      setHorarioCurso(horario || '');
+      setHorarioCurso(cursoSeleccionado.horario || '');
     }
+    
   }, [cursoSeleccionado,horario]);
   
   //Validar que la fecha ingresada coincida con el día del horario
@@ -51,16 +53,37 @@ const Agregar_Cursos_Indiv = () => {
     const finDateObject = new Date(fechaFinal);
 
     // Obtener el día correspondiente a las fechas
-    //(0= Domingo, 1= Lunes, 2= Martes, 3=Miércoles, 4=Jueves, ..., 6 para Sábado)
-    const diaInicio = inicioDateObject.getDay() + 1 ; //Devuelve un int. Hay que sumarle 1 porque hay un desfaz en zonas horarias por el String
-    const diaFin = finDateObject.getDay() + 1 ; //Devuelve un int     
+    //(Domingo = 0, 1= Lunes, 2= Martes, 3=Miércoles, 4=Jueves, ..., 6 para Sábado)
+    /**
+     * EXPLICACIÓN:
+     * Get day tiene un desfase, por lo que devuelve un día atrás las fechas. Ejemplo: El 01 de mayo 2024
+     * lo identifica como martes, o sea (2) en vez de (3).
+     * Para solucionar este problema se ha sumado "1" en todos los casos
+     * Pero cuando se presenta el caso que una fecha es Domingo, get day la identifica como 6 y
+     * nuestra solución lo pndría como 7 (valor inexistente en arreglo de días)
+     * Por ende se ha implementado otra solución, cuando getday es =6, ponemos el valor en 0 (Domingo)
+     */
+    let diaInicio = 0;
+    let diaFin = 0;
+    if(inicioDateObject.getDay() == 6){
+      diaInicio = 0;//Se pone en 0 representando al domingo
+    }
+    else{
+       diaInicio = inicioDateObject.getDay() +1 ; //Devuelve un int. Hay que sumarle 1 porque hay un desfaz en zonas horarias por el String
+    }
+     
+    if(finDateObject.getDay() == 6){
+      diaFin = 0;//Se pone en 0 representando al domingo
+    }
+    else{
+      diaFin = finDateObject.getDay() + 1 ;  //Devuelve un int. Hay que sumarle 1 porque hay un desfaz en zonas horarias por el String
+    }  
     const dias =['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
     console.log('diaInicio', diaInicio);
     console.log('diaFin',diaFin);
 
-    //Los únicos días permitidos serían L(1) y M(3)
-    if(horarioCurso === 'Lunes y Miércoles'){
-      console.log('Revisando miércoles y lunes');
+    //Si el horario del GRUPO es LYM.Los únicos días permitidos serían L(1) y M(3)
+    if(horario === 'Lunes y Miércoles'){
       if(diaInicio !== 1 && diaInicio !== 3){
         toast.error('La fecha de inicio seleccionada es: ' + dias[diaInicio] + '. No corresponde a Lunes ni Miércoles.');
         return;
@@ -71,8 +94,8 @@ const Agregar_Cursos_Indiv = () => {
       }
     }
     
-    //Los únicos días permitidos serían K(2) y J(4)
-    if(horarioCurso === 'Martes y Jueves'){
+    //Si el horario del GRUPO es KYJ. Los únicos días permitidos serían K(2) y J(4)
+    if(horario === 'Martes y Jueves'){
       if(diaInicio !== 2 && diaInicio !== 4){
         toast.error('La fecha de inicio seleccionada es: ' + dias[diaInicio] + '. No corresponde a Martes ni Jueves');
         return;
@@ -93,19 +116,37 @@ const Agregar_Cursos_Indiv = () => {
     const diferenciaMeses = (fechaFinalObj.getFullYear() - fechaInicioObj.getFullYear()) * 12 + fechaFinalObj.getMonth() - fechaInicioObj.getMonth();
     
     if (diferenciaMeses < 1) {
-      setWarningMessage('Debe haber una distancia mínima de 1 mes entre la fecha de inicio y la fecha final');
+      setWarningMessage('Entre la fecha de inicio y la fecha final hay menos de 1 mes. Esto puede afectar la planificación del curso. \n ¿Desea continuar de todos modos?');
+
+      //setWarningMessage('No hay una distancia mínima de 1 mes entre la fecha de inicio y la fecha final.\n¿Desea continuar?');
       setShowWarning(true);
       return;
     }
   } //Fin validar distancia fechas
 
   //Validar que el horario del curso coincida con el horario del grupo (OPCIONAL QUE SE CUMPLA)
-  const validarHorarioCursoGrupo = () => {
-    if (horarioCurso !== horario) {
-      setWarningMessage('El horario del curso debe coincidir con el horario del grupo');
+  const validarHorarioCursoGrupo = () => {  
+    if (horarioCurso == "Lunes y Miércoles" && horario !== "Lunes y Miércoles") { //Horario es horario del grupo
+      setWarningMessage('El horario del curso  no coincide con el horario del grupo al que está asignado. Esto podría causar conflictos en la planificación.\n  ¿Desea continuar de todos modos?');
       setShowWarning(true);
       return;
     }
+    if (horarioCurso == "L-M" && horario !== "Lunes y Miércoles") { //Horario es horario del grupo
+      setWarningMessage('El horario del curso  no coincide con el horario del grupo al que está asignado. Esto podría causar conflictos en la planificación.\n  ¿Desea continuar de todos modos?');
+      setShowWarning(true);
+      return;
+    }
+    if (horarioCurso == "Martes y Jueves" && horario !== "Martes y Jueves") { //Horario es horario del grupo
+      setWarningMessage('El horario del curso  no coincide con el horario del grupo al que está asignado. Esto podría causar conflictos en la planificación.\n  ¿Desea continuar de todos modos?');
+      setShowWarning(true);
+      return;
+    }
+    if (horarioCurso == "K-J" && horario !== "Martes y Jueves") { //Horario es horario del grupo
+      setWarningMessage('El horario del curso  no coincide con el horario del grupo al que está asignado. Esto podría causar conflictos en la planificación.\n  ¿Desea continuar de todos modos?');
+      setShowWarning(true);
+      return;
+    }
+    return;
   } //Fin validar horario curso grupo
 
   const handleConfirmar = () => {
@@ -139,7 +180,6 @@ const Agregar_Cursos_Indiv = () => {
   
     // Si no hay advertencias o el usuario ha confirmado continuar, continuar con la actualización
     if (continueUpdate) {
-      console.log("Horario en update:",horarioCurso);
       axios.post('http://localhost:3001/actualizarCursos', {
           idGrupo: idGrupo,
           idCurso: idCurso,
@@ -150,12 +190,12 @@ const Agregar_Cursos_Indiv = () => {
       })
       .then(response => {
           console.log('Curso actualizado correctamente:', response.data);
-          alert("Curso actualizado correctamente");
+          toast.success("Curso actualizado correctamente");
           navigate('/AgregarCursos', { state: { idGrupo, numero, horario } });
       })
       .catch(error => {
           console.error('Error al actualizar curso:', error);
-          alert("Error al actualizar el curso");
+          toast.error("Error al actualizar el curso");
       });
     }
   }, [showWarning, continueUpdate]);
@@ -173,9 +213,13 @@ const Agregar_Cursos_Indiv = () => {
       navigate('/AgregarCursos', { state: { idGrupo, numero, horario  } });
     };
 
+    //Maneja lo que se hace después de que la persona desee seguir actualizando cuando:
+    //  1. No coincide el horario curso con horario grup
+    //  2. No hay duración mínima de un mes en el curso
     const handleContinue = () => {
       setShowWarning(false);
       setContinueUpdate(true);
+      validarDiaFecha(); //Revisa que los días de fecha inicio y fecha fin coincidan con días de horario
     };
 
     const handleCerrarModal = () =>{
@@ -263,14 +307,19 @@ const Agregar_Cursos_Indiv = () => {
                   </div>
                   <div className="form-group">
                     <label>Horario:</label>
-                      <select 
-                        className="form-select form-select-sm" 
-                        aria-label=".form-select-sm example" 
-                        onChange={handleChange}
-                        value={horarioCurso || ''}>
-                        <option value="L-M">L-M</option>
-                        <option value="K-J">K-J</option>
-                      </select>
+                    <select 
+                    className="form-select form-select-sm" 
+                    aria-label=".form-select-sm example" 
+                    onChange={handleChange}
+                    value={
+                      horarioCurso === 'Lunes y Miércoles' ? 'L-M' :
+                      horarioCurso === 'Martes y Jueves' ? 'K-J' :
+                      horarioCurso // Si no coincide con ninguno de los casos anteriores, se utiliza el valor actual de horarioCurso
+                    }
+                  >
+                    <option value="L-M">L-M</option>
+                    <option value="K-J">K-J</option>
+                  </select>
                   </div>
                   <button className="btn btn-success m-4" onClick={handleConfirmar}>Confirmar cambios</button>
                 </div>
