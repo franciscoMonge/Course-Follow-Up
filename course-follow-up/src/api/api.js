@@ -194,6 +194,7 @@ app.get('/cursosXFecha', async (req, res) => {
 
 
 // Ruta para obtener grupos filtrados por fecha
+// Para la tabla de grupos a fusionar
 app.get('/gruposXFecha', async (req, res) => {
   try {
     const { fechaInicio, fechaFinal, idGrupo } = req.query;
