@@ -178,12 +178,32 @@ app.get('/cursosXFecha', async (req, res) => {
     const { fechaInicio, fechaFinal } = req.query;
 
     const [cursos] = await db.query(`
-      SELECT g.numero AS grupoNumero, g.horario AS grupoHorario, c.idcurso, c.nombre AS cursoNombre, gxc.fechaInicio, gxc.fechaFinal, gxc.profesor, gxc.horario AS cursoHorario
+      SELECT gxc.idgrupoXcurso, g.idgrupo ,g.numero AS grupoNumero, g.horario AS grupoHorario, c.idcurso, c.nombre AS cursoNombre, gxc.fechaInicio, gxc.fechaFinal, gxc.profesor, gxc.horario AS cursoHorario
       FROM grupoXcurso gxc
       JOIN grupo g ON gxc.idgrupo = g.idgrupo
       JOIN curso c ON gxc.idcurso = c.idcurso
       WHERE gxc.fechaInicio >= ? AND gxc.fechaFinal <= ?
     `, [fechaInicio, fechaFinal]);
+
+    res.json(cursos);
+  } catch (error) {
+    console.error('Error al obtener cursos por fecha:', error);
+    res.status(500).json({ error: 'Error al obtener cursos por fecha' });
+  }
+});
+
+
+// Ruta para obtener grupos filtrados por fecha
+app.get('/gruposXFecha', async (req, res) => {
+  try {
+    const { fechaInicio, fechaFinal, idGrupo } = req.query;
+
+    const [cursos] = await db.query(`
+      SELECT gxc.idgrupoXcurso ,g.numero AS grupoNumero
+      FROM grupoXcurso gxc
+      JOIN grupo g ON gxc.idgrupo = g.idgrupo
+      WHERE gxc.fechaInicio >= ? AND gxc.fechaFinal <= ? AND gxc.idgrupo != ?
+    `, [fechaInicio, fechaFinal, idGrupo]);
 
     res.json(cursos);
   } catch (error) {

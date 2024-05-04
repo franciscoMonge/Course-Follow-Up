@@ -9,6 +9,8 @@ import Agregar_Cursos from './components/pages/client/Agregar/agregar_cursos';
 import Agregar_Cursos_Indiv from './components/pages/client/Agregar/agregar_cursos_indiv';
 import App1 from './components/pages/client/Ver/templatePlanificador';
 import Ver_Planificador from './components/pages/client/Ver/ver_planificador';
+import Opciones from './components/pages/client/Ver/opciones';
+import Fusionar_Grupo from './components/pages/client/Ver/fusionarGrupo';
 import './App.css'
 
 function App() {
@@ -25,6 +27,8 @@ function App() {
         <Route path="/AgregarCursoIndividual" element={<Agregar_Cursos_Indiv />}/>
         <Route path="/SeleccionaAño" element={<Ver_Planificador />}/>
         <Route path="/App" element={<App1 />}/>
+        <Route path="/Opciones" element={<Opciones />}/>
+        <Route path="/FusionarGrupo" element={<Fusionar_Grupo />}/>
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>

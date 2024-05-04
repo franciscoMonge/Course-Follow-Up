@@ -7,9 +7,9 @@ const App1 = () => {
   const navigate = useNavigate();
 
   const location = useLocation();
-  const { fechaInicio } = location.state;
-  const { fechaFinal } = location.state;
-  const { añoPlanificador} = location.state;
+  const fechaInicio = location.state.fechaInicio;
+  const fechaFinal = location.state.fechaFinal;
+  const añoPlanificador = location.state.añoPlanificador;
 
   console.log('FechaInicio: ', fechaInicio,' FechaFinal: ', fechaFinal, ' año: ', añoPlanificador);
 
@@ -48,6 +48,7 @@ const App1 = () => {
 
       const group = groupMap.get(groupId);
       group.courses.push({
+        idgrupoXcurso: course.idgrupoXcurso,
         id: course.idcurso,
         name: course.cursoNombre,
         startDate: new Date(course.fechaInicio),
@@ -72,10 +73,15 @@ const App1 = () => {
     navigate('/SeleccionaAño',{});
   };
 
+  const handleOpciones = (grupoNumero, cursoNombre) =>{
+    navigate('/Opciones',{state:{grupoNumero: grupoNumero, cursoNombre: cursoNombre, fechaInicio: fechaInicio, fechaFinal: fechaFinal, 
+      añoPlanificador: añoPlanificador}});
+  }
+
 
   return (
     <div>
-      <h1 className="mb-4">Planificador de Cursos</h1>
+      <h1 className="mb-4">Planificador de Cursos {añoPlanificador}</h1>
       <table className="table">
         <thead>
           <tr>
@@ -101,13 +107,22 @@ const App1 = () => {
                     )
                     .map((course) => (
                       <div key={course.id} style={{ backgroundColor: group.color, color: 'white', padding: '5px' }}>
+                        <button className="btn btn-primary" onClick={() => handleOpciones(group.groupId, course.name)}>Opciones</button>
                         <hr />
                         {course.name}
                         <br />
-                        Inicio: {new Date(course.startDate).getDate()} {months[new Date(course.startDate).getMonth()]}
-                        <br />
-                        Fin: {new Date(course.endDate).getDate()} {months[new Date(course.endDate).getMonth()]}
-                        <br />
+                        {new Date(course.startDate).getMonth() === index && (
+                          <>
+                            Inicio: {new Date(course.startDate).getDate()} {months[new Date(course.startDate).getMonth()]}
+                            <br />
+                          </>
+                        )}
+                        {new Date(course.endDate).getMonth() === index && (
+                          <>
+                            Fin: {new Date(course.endDate).getDate()} {months[new Date(course.endDate).getMonth()]}
+                            <br />
+                          </>
+                        )}
                       </div>
                     ))}
                 </td>
