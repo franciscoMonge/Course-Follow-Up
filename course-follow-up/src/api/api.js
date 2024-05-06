@@ -197,14 +197,14 @@ app.get('/cursosXFecha', async (req, res) => {
 // Para la tabla de grupos a fusionar
 app.get('/gruposXFecha', async (req, res) => {
   try {
-    const { fechaInicio, fechaFinal, idGrupo } = req.query;
-
+    const { fechaInicio, fechaFinal, grupo_id, idcurso } = req.query;
+    console.log('REVISAR AQUI 333: ', idcurso);
     const [cursos] = await db.query(`
       SELECT gxc.idgrupoXcurso ,g.numero AS grupoNumero
       FROM grupoXcurso gxc
       JOIN grupo g ON gxc.idgrupo = g.idgrupo
-      WHERE gxc.fechaInicio >= ? AND gxc.fechaFinal <= ? AND gxc.idgrupo != ?
-    `, [fechaInicio, fechaFinal, idGrupo]);
+      WHERE gxc.fechaInicio >= ? AND gxc.fechaFinal <= ? AND gxc.idgrupo != ? AND gxc.idcurso = ?
+    `, [fechaInicio, fechaFinal, grupo_id, idcurso]);
 
     res.json(cursos);
   } catch (error) {
@@ -212,6 +212,44 @@ app.get('/gruposXFecha', async (req, res) => {
     res.status(500).json({ error: 'Error al obtener cursos por fecha' });
   }
 });
+
+
+//Ruta para obtener todos los fusiones
+app.get('/fusiones', async(req, res) =>{
+  try{
+      const [fusiones] = await db.query(`SELECT f.*, g1.numero AS numero_grupo_1, g2.numero AS numero_grupo_2
+      FROM fusion f
+      JOIN grupoxcurso gc1 ON f.idgrupoXcurso1 = gc1.idgrupoXcurso
+      JOIN grupoxcurso gc2 ON f.idgrupoXcurso2 = gc2.idgrupoXcurso
+      JOIN grupo g1 ON gc1.idgrupo = g1.idgrupo
+      JOIN grupo g2 ON gc2.idgrupo = g2.idgrupo;`);
+      res.json(fusiones);
+  } catch(error){
+      console.error('Error al obtener fusiones:', error);
+      res.status(500).json({ error: 'Error al obtener fusiones' });
+  }
+});
+
+// Ruta para agregar una nueva fusión
+app.post('/fusion', async (req, res) => {
+  try {
+      const { idgrupoXcurso1, idgrupoXcurso } = req.body;
+      
+      // Insertar el nuevo fusion en la base de datos
+      const result = await db.query("INSERT INTO coursefollowup.fusion (idgrupoXcurso1, idgrupoXcurso2) VALUES (?, ?)", [idgrupoXcurso1, idgrupoXcurso]);
+      
+      // Obtener el ID de la fusion insertada
+      const idFusionResult = await db.query("SELECT LAST_INSERT_ID() AS idfusion");
+
+      // Devolver el ID de la fusion insertado
+      res.status(201).json({ mensaje: 'Fusion agregado correctamente', idFusionResult });
+  } catch (error) {
+      console.error('Error al agregar fusion:', error);
+      res.status(500).json({ error: 'Error al agregar fusion' });
+  }
+});
+
+// ----------------------------------------------------------------------------------------------------------------------
 
 
 // Ruta para enviar correos de recuperación de contraseña

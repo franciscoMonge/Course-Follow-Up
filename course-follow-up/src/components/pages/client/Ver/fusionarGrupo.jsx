@@ -7,7 +7,10 @@ function Fusionar_Grupo() {
     const navigate = useNavigate();
     const location = useLocation();
 
+    const idgrupoXcurso1 =location?.state?.idgrupoXcurso;
+    const grupo_id = location?.state?.grupo_id;
     const grupoNumero = location?.state?.grupoNumero;
+    const idcurso = location?.state?.idcurso;
     const cursoNombre = location?.state?.cursoNombre;
     const fechaInicio = location.state.fechaInicio;
     const fechaFinal = location.state.fechaFinal;
@@ -15,13 +18,14 @@ function Fusionar_Grupo() {
     
     const [gruposExistentes, setGruposExistentes] = useState([]);
     const [grupoSeleccionado, setGrupoSeleccionado] = useState(null);
-    const [idGrupo, setIdGrupo] = useState("");
-    const [grupo, setGrupo] = useState("");
-    const [horario, setHorario] = useState("");
+    const [idgrupoXcurso, setidgrupoXcurso] = useState("");
+    const [fusiones, setFusiones] = useState([]);
+
+    console.log('ver estoooooooooooooo',grupoNumero);
 
     // Carga todas los grupos de la BD en la lista "grupos existentes" 
     useEffect(() =>{
-        axios.get('http://localhost:3001/grupos')
+        axios.get(`http://localhost:3001/gruposXFecha?fechaInicio=${fechaInicio}&fechaFinal=${fechaFinal}&grupo_id=${grupo_id}&idcurso=${idcurso}`)
         .then(response =>{
             setGruposExistentes(response.data);
         })
@@ -32,8 +36,24 @@ function Fusionar_Grupo() {
 
     useEffect(() => {
         // Este se ejecuta cuando gruposexistentes cambie
-        //console.log('grupos existentes: ', gruposExistentes[0]);
+        console.log('grupos existentes: ', gruposExistentes);
     }, [gruposExistentes]);
+
+
+    useEffect(() =>{
+        axios.get('http://localhost:3001/fusiones')
+        .then(response =>{
+            setFusiones(response.data);
+        })
+        .catch(error => {
+            console.log('ERROR: Carga Fallida de fusiones', error);
+        });
+    }, [])
+
+    useEffect(() => {
+        // Este se ejecuta cuando gruposexistentes cambie
+        console.log('fusiones existentes: ', fusiones);
+    }, [fusiones]);
 
     const handleCheckboxChange = (index) => {
         if (grupoSeleccionado === index) {
@@ -41,9 +61,9 @@ function Fusionar_Grupo() {
         setGrupo(""); // Limpiar el estado grupo
         } else {
         setGrupoSeleccionado(index);
-        setIdGrupo(gruposExistentes[index].idgrupo); // Establecer el id del grupo seleccionado
-        setGrupo(gruposExistentes[index].numero);
-        setHorario(gruposExistentes[index].horario); // Establecer el horario del grupo seleccionado
+        setidgrupoXcurso(gruposExistentes[index].idgrupoXcurso);
+        console.log('ver idgrupoXcurso1', idgrupoXcurso1);
+        console.log('ver idgrupoXcurso2', idgrupoXcurso);
         }
     };
 
@@ -52,11 +72,30 @@ function Fusionar_Grupo() {
     };
 
     const handleContinuar = () => {
-        if (grupo === "") {
-            alert("No ha seleccionadoun grupo, por favor intentelo de nuevo.");
+        // Suponiendo que tienes un array de objetos 'a' que quieres buscar
+        const resultado = fusiones.find(a => 
+            (idgrupoXcurso1 === a.idgrupoXcurso1 && idgrupoXcurso === a.idgrupoXcurso2) ||
+            (idgrupoXcurso === a.idgrupoXcurso1 && idgrupoXcurso1 === a.idgrupoXcurso2)
+        );
+
+        if (resultado) {
+            alert("Estos grupos YA se encuentran fusionados.");
         } 
+        else if(idgrupoXcurso === ""){
+            alert("No ha seleccionado un grupo, por favor intentelo de nuevo.");
+        }
         else {
-            //alert( `Grupo seleccionado: ${grupo} y horario: ${horario}`);
+            alert( `Fusion: ${idgrupoXcurso1} - ${idgrupoXcurso}`);
+             // Enviar los datos del nuevo grupo al servidor
+             axios.post('http://localhost:3001/fusion', {idgrupoXcurso1,idgrupoXcurso })
+             .then(response => {
+                 const { idFusionResult } = response.data;
+                 navigate('/SeleccionaAño', {});
+             })
+             .catch(error => {
+                 console.log('ERROR: No se pudo agregar el nuevo grupo', error);
+                 alert('Error al crear un nuevo grupo');
+             });
             navigate('/AgregarCursos',{state:{idGrupo: idGrupo, numero: grupo, horario: horario}});
         }
     };
@@ -91,7 +130,7 @@ function Fusionar_Grupo() {
                         <tbody>
                         {gruposExistentes.map((grupoExistente, index) => (
                             <tr key={index}>
-                            <td>Grupo {grupoExistente.numero}</td>
+                            <td>Grupo {grupoExistente.grupoNumero}</td>
                             <td>
                                 <input
                                 type="checkbox"

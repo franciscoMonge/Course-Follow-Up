@@ -14,26 +14,34 @@ const App1 = () => {
   console.log('FechaInicio: ', fechaInicio,' FechaFinal: ', fechaFinal, ' año: ', añoPlanificador);
 
   const [courses, setCourses] = useState([]);
+  const [fusiones, setFusiones] = useState([]);
 
   useEffect(() => {
-    const fetchCourses = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/cursosXFecha?fechaInicio=${fechaInicio}&fechaFinal=${fechaFinal}`);
-        const data = response.data;
-        const groupedCourses = groupCoursesByGroup(data);
+        const [coursesResponse, fusionesResponse] = await Promise.all([
+          axios.get(`http://localhost:3001/cursosXFecha?fechaInicio=${fechaInicio}&fechaFinal=${fechaFinal}`),
+          axios.get('http://localhost:3001/fusiones')
+        ]);
+  
+        const groupedCourses = groupCoursesByGroup(coursesResponse.data);
         setCourses(groupedCourses);
+        setFusiones(fusionesResponse.data);
       } catch (error) {
-        console.error('Error al obtener cursos:', error);
+        console.error('Error al obtener datos:', error);
       }
     };
-
-    fetchCourses();
+  
+    fetchData();
   }, [fechaInicio, fechaFinal]);
 
+
   const groupCoursesByGroup = (data) => {
+    console.log('AQUI FRAN: ', data);
     const groupMap = new Map();
 
     data.forEach((course) => {
+      console.log('AQUI FRAN2: ', course.idcurso);
       const { grupoNumero, grupoHorario } = course;
       const groupId = `#${grupoNumero}`;
 
@@ -49,6 +57,8 @@ const App1 = () => {
       const group = groupMap.get(groupId);
       group.courses.push({
         idgrupoXcurso: course.idgrupoXcurso,
+        grupo_id: course.idgrupo,
+        idGRUPO: course.grupoNumero,
         id: course.idcurso,
         name: course.cursoNombre,
         startDate: new Date(course.fechaInicio),
@@ -59,6 +69,21 @@ const App1 = () => {
     });
 
     return Array.from(groupMap.values());
+  };
+
+
+  const getFusionesForIdGrupoXCurso = (idgrupoXcurso, fusiones) => {
+    const fusionesRelacionadas = [];
+  
+    fusiones.forEach(fusion => {
+      if (fusion.idgrupoXcurso1 === idgrupoXcurso) {
+        fusionesRelacionadas.push(fusion.numero_grupo_2);
+      } else if (fusion.idgrupoXcurso2 === idgrupoXcurso) {
+        fusionesRelacionadas.push(fusion.numero_grupo_1);
+      }
+    });
+  
+    return fusionesRelacionadas;
   };
 
   const getRandomColor = () => {
@@ -73,8 +98,8 @@ const App1 = () => {
     navigate('/SeleccionaAño',{});
   };
 
-  const handleOpciones = (grupoNumero, cursoNombre) =>{
-    navigate('/Opciones',{state:{grupoNumero: grupoNumero, cursoNombre: cursoNombre, fechaInicio: fechaInicio, fechaFinal: fechaFinal, 
+  const handleOpciones = (idgrupoXcurso, grupo_id, grupoNumero, idcurso, cursoNombre) =>{
+    navigate('/Opciones',{state:{idgrupoXcurso: idgrupoXcurso, grupo_id: grupo_id, grupoNumero: grupoNumero, idcurso: idcurso, cursoNombre: cursoNombre, fechaInicio: fechaInicio, fechaFinal: fechaFinal, 
       añoPlanificador: añoPlanificador}});
   }
 
@@ -107,8 +132,9 @@ const App1 = () => {
                     )
                     .map((course) => (
                       <div key={course.id} style={{ backgroundColor: group.color, color: 'white', padding: '5px' }}>
-                        <button className="btn btn-primary" onClick={() => handleOpciones(group.groupId, course.name)}>Opciones</button>
                         <hr />
+                        <button className="btn btn-light" onClick={() => handleOpciones(course.idgrupoXcurso, course.grupo_id, course.idGRUPO, course.id, course.name)}>Opciones</button>
+                        
                         {course.name}
                         <br />
                         {new Date(course.startDate).getMonth() === index && (
@@ -123,6 +149,16 @@ const App1 = () => {
                             <br />
                           </>
                         )}
+                        <div>
+                        <strong>Fusión:</strong>{' '}
+                          {fusiones.length > 0 &&
+                            getFusionesForIdGrupoXCurso(course.idgrupoXcurso, fusiones).map((fusion, index) => (
+                              <span key={index}>
+                                #{fusion}
+                                {index < getFusionesForIdGrupoXCurso(course.idgrupoXcurso, fusiones).length - 1 ? ' - ' : ''}
+                              </span>
+                            ))}
+                        </div>
                       </div>
                     ))}
                 </td>
