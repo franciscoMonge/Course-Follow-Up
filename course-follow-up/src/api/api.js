@@ -266,6 +266,35 @@ app.put('/usuarios/updatePassword', async (req, res) => {
   }
 });
 
+// Ruta para obtener si hay una distancia de 2 meses entre cursos iguales
+//0 es False, 1 es true
+app.get('/distanciaCursosIguales/:nombreCurso/:fechaInicio/:fechaFinal', async (req, res) => {
+  const { nombreCurso, fechaInicio, fechaFinal } = req.params;
+  try {
+    const resultado = await db.query("CALL  VerificarDistanciaCursos(?,?,?)", [nombreCurso, fechaInicio, fechaFinal]);
+    res.json(resultado);
+    
+  } catch (error) {
+    console.error('Error al obtener distancia de 2 meses:', error);
+    res.status(500).json({ error: 'Error al obtener distancia de 2 meses' });
+  }
+});
+
+
+
+// Ruta para obtener si hay una distancia de 1 SEMANA entre cursos de un MISMO GRUPOes
+app.get('/validarDistanciaUnaSemana/:idGrupo/:fechaInicio', async (req, res) => {
+  const { idGrupo,fechaInicio } = req.params;
+  try {
+    const resultado = await db.query("CALL VerificarDistanciaUnaSemana(?,?)", [idGrupo,fechaInicio]);
+    res.json(resultado);
+
+  } catch (error) {
+    console.error('Error al obtener distancia de 1 semana:', error);
+    res.status(500).json({ error: 'Error al obtener distancia de 1 semana' });
+  }
+});
+
 
 // Iniciar el servidor
 app.listen(port, () => {

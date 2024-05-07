@@ -65,14 +65,14 @@ const Agregar_Cursos_Indiv = () => {
      */
     let diaInicio = 0;
     let diaFin = 0;
-    if(inicioDateObject.getDay() == 6){
+    if(inicioDateObject.getDay() === 6){
       diaInicio = 0;//Se pone en 0 representando al domingo
     }
     else{
-       diaInicio = inicioDateObject.getDay() +1 ; //Devuelve un int. Hay que sumarle 1 porque hay un desfaz en zonas horarias por el String
+       diaInicio = inicioDateObject.getDay() + 1 ; //Devuelve un int. Hay que sumarle 1 porque hay un desfaz en zonas horarias por el String
     }
      
-    if(finDateObject.getDay() == 6){
+    if(finDateObject.getDay() === 6){
       diaFin = 0;//Se pone en 0 representando al domingo
     }
     else{
@@ -102,7 +102,7 @@ const Agregar_Cursos_Indiv = () => {
       }
     
       if(diaFin !== 2 && diaFin !== 4){
-        toast.error('La fecha de finalización seleccionada es: ' + dias[diaInicio] + '. No corresponde a Martes ni Jueves');
+        toast.error('La fecha de finalización seleccionada es: ' + dias[diaFin] + '. No corresponde a Martes ni Jueves');
         return;
       }
     }
@@ -110,7 +110,7 @@ const Agregar_Cursos_Indiv = () => {
   }; //Fin validar dia fecha
 
   const validarDistanciaFechas = () =>{
-    // Validar que haya una distancia mínima de 1 mes entre las fechas(OPCIONAL)
+    // Validar que el curso dure mínimo 1 mes (haya una distancia mínima de 1 mes entre las fechas de INICIO y FIN)(OPCIONAL)
     const fechaInicioObj = new Date(fechaInicio);
     const fechaFinalObj = new Date(fechaFinal);
     const diferenciaMeses = (fechaFinalObj.getFullYear() - fechaInicioObj.getFullYear()) * 12 + fechaFinalObj.getMonth() - fechaInicioObj.getMonth();
@@ -149,6 +149,45 @@ const Agregar_Cursos_Indiv = () => {
     return;
   } //Fin validar horario curso grupo
 
+//Revisa que haya distancia de 2 MESES entre CURSOS IGUALES
+const validarDistanciaCursosIguales = async () => { 
+  try {
+    console.log("Validar distanciaa 2 meses");
+    const cumpleDistancia = await axios.get(`http://localhost:3001/distanciaCursosIguales/${cursoSeleccionado.nombre_curso}/${fechaInicio}/${fechaFinal}`);
+    if (!cumpleDistancia.data) {
+      setWarningMessage('No se cumple la distancia de 2 meses entre cursos iguales.\n¿Desea continuar de todos modos?');
+      setShowWarning(true);
+      return;
+    }
+    console.log("Todo good con la verif: ", cumpleDistancia.data);
+  } catch (error) {
+    console.error('Error al verificar la distancia de 2 meses entre cursos iguales:', error);
+    // Manejo del error
+  }
+}
+
+//Revisa que haya distancia de UNA SEMANA entre cursos de UN MISMO GRUPO
+const validarDistanciaUnaSemana = async () => { 
+  try {
+    const cumpleDistancia = await axios.get(`http://localhost:3001/validarDistanciaUnaSemana/${idGrupo}/${fechaInicio}`);
+    if (!cumpleDistancia.data) {
+      setWarningMessage('No se cumple la distancia de 1 semana respecto al último curso impartido a este grupo.\n¿Desea continuar de todos modos?');
+      setShowWarning(true);
+      return;
+    }
+  } catch (error) {
+    console.error('Error al verificar la distancia de 1 semana entre cursos del mismo grupo:', error);
+    // Manejo del error
+  }
+}
+
+
+
+
+  /**
+   * 
+   * Bug to fix: Que cuando se cambie de horario, obligue a cambiar fechas de inicio y fin
+   */
   const handleConfirmar = () => {
     //V#1.Validar que no haya información en blanco (El profe puede quedar en blanco)
     if (!fechaInicio || !fechaFinal || !horarioCurso) {
@@ -170,6 +209,12 @@ const Agregar_Cursos_Indiv = () => {
     validarDistanciaFechas();
     // V#5. Validar que el horario del curso coincida con el horario del grupo (OPCIONAL QUE SE CUMPLA)
     validarHorarioCursoGrupo();
+
+    // V#6. Validar distancia de 2 meses entre cursos iguales
+    validarDistanciaCursosIguales();
+
+    // V#7. Validar distancia de 1 semana entre cursos de de un mismo GRUPO
+    validarDistanciaUnaSemana();
   };
 
   useEffect(() => {
@@ -219,7 +264,7 @@ const Agregar_Cursos_Indiv = () => {
     const handleContinue = () => {
       setShowWarning(false);
       setContinueUpdate(true);
-      validarDiaFecha(); //Revisa que los días de fecha inicio y fecha fin coincidan con días de horario
+      //validarDiaFecha(); //Revisa que los días de fecha inicio y fecha fin coincidan con días de horario
     };
 
     const handleCerrarModal = () =>{
