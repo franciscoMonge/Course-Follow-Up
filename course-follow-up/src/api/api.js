@@ -146,6 +146,19 @@ app.get('/cursos/:idGrupo', async(req, res) =>{
   }
 });
 
+// Ruta para obtner los cursos por idGrupo
+app.get('/cursosAgregados/:idGrupo', async(req, res) =>{
+  const idGrupo = req.params.idGrupo;
+  try{
+      const [cursos] = await db.query("CALL GetCursosEnGrupo(?)", [idGrupo]);
+      res.json(cursos);
+
+  } catch(error){
+      console.error('Error al obtener cursos:', error);
+      res.status(500).json({ error: 'Error al obtener cursos' });
+  }
+});
+
 // Ruta para agregar un nuevo curso a un grupo
 app.post('/actualizarCursos', async (req, res) => {
   try {

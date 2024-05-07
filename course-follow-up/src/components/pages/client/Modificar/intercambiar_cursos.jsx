@@ -7,6 +7,7 @@ const Intercambiar_Cursos = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const { idgrupoXcurso } = location.state;
   const {idGrupo} = location.state; // ID grupo entrante
   const {numero} = location.state; // Numero de grupo
   const {idCurso} = location.state; // ID Curso seleccionado para ser intercambiado
@@ -23,7 +24,7 @@ const Intercambiar_Cursos = () => {
 
   // Carga todos los cursos de la BD en la lista "cursos" 
   useEffect(() => {
-    axios.get(`http://localhost:3001/cursos/${idGrupo}`)
+    axios.get(`http://localhost:3001/cursosAgregados/${idGrupo}`)
       .then(response => {
         setCursos(response.data[0]);
       })
@@ -32,19 +33,24 @@ const Intercambiar_Cursos = () => {
       });
   }, []);
 
+  useEffect(() => {
+    console.log("idCursoSeleccionado: " + idCursoSeleccionado)
+  }, [idCursoSeleccionado]);
+
   // MODIFICAR
   // Esto es para regresar a la pantalla anterior
   const handleBack = () => {
-    navigate('/App', { state: { añoPlanificador:añoPlanificador, fechaInicio:fechaInicioPlanificador, fechaFinal:fechaFinalPlanificador } });
+    navigate('/Opciones', { state: {idgrupoXcurso:idgrupoXcurso, grupo_id:idGrupo, grupoNumero:numero, idcurso:idCurso,
+      cursoNombre:nombreCurso, añoPlanificador:añoPlanificador, fechaInicio:fechaInicioPlanificador, fechaFinal:fechaFinalPlanificador } });
   };
 
   // Actaliza el valor del curso seleccionado según el checkbox seleccionado
   const handleCheckboxChange = (index) => {
-    if (idCursoSeleccionado === index) {
+    if (idCursoSeleccionado === cursos[index].idCurso) {
         setidCursoSeleccionado(null);
         setCursoSeleccionado(""); // Limpiar el estado curso
     } else {
-        setidCursoSeleccionado(index); //indice del curso
+        setidCursoSeleccionado(cursos[index].idCurso); //indice del curso
         setCursoSeleccionado(cursos[index]);
     }
   };
@@ -63,7 +69,7 @@ const Intercambiar_Cursos = () => {
       axios.put('http://localhost:3001/intercambiarCursos', {
           idGrupo: idGrupo,
           idCurso1: idCurso,
-          idCurso2: idCursoSeleccionado + 1, //En mi MYSQL las inserciones empiezan en 1,por eso hay que sumarle 1
+          idCurso2: idCursoSeleccionado,
       })
       .then(response => { // En caso de que todo salga bien
           console.log('Cursos intercambiados correctamente:', response.data);
@@ -105,7 +111,7 @@ const Intercambiar_Cursos = () => {
                             <input
                                 type="checkbox"
                                 disabled={idCurso-1 === index}
-                                checked={idCursoSeleccionado === index}
+                                checked={idCursoSeleccionado === cursos[index].idCurso}
                                 onChange={() => handleCheckboxChange(index)}
                             />
                           </td>

@@ -104,6 +104,20 @@ BEGIN
     WHERE idgrupo = p_idGrupo AND idcurso = p_idCurso2;
 END
 
+CREATE PROCEDURE `GetCursosEnGrupo` (p_idGrupo INT)
+BEGIN
+	-- Obtengo la información de los cursos para ese grupo, si está disponible
+	SELECT 
+		COALESCE(curso.nombre) AS nombre_curso,
+        (curso.idcurso) AS idCurso,
+		IFNULL(grupoxcurso.fechaInicio, '') AS fechaInicio,
+		IFNULL(grupoxcurso.fechaFinal, '') AS fechaFinal,
+		IFNULL(grupoxcurso.horario, '') AS horario,
+		IFNULL(grupoxcurso.profesor, '') AS profesor
+	FROM Curso 
+	INNER JOIN GrupoxCurso ON curso.idCurso = grupoxcurso.idCurso AND grupoxcurso.idGrupo = p_idGrupo;
+END
+	
 select * from usuario
  -- CALL GetCursosxGrupo(1)
  -- CALL getHorarioGrupo(2)
