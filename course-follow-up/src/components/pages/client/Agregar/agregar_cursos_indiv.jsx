@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -12,8 +12,9 @@ import Navbar from "../../shared/navbar";
 
 const Agregar_Cursos_Indiv = () => {
   const navigate = useNavigate();
-
+  const mounted = useRef(false); // Declaramos mounted como un ref. Por bug que tiene el use effect
   const location = useLocation();
+
   //De la página anterior debemos traer 
 // cursos, idCursoSeleccionado,cursoSeleccionado, grupo, idGrupo, horario
   const { cursos} = location.state; 
@@ -117,8 +118,6 @@ const Agregar_Cursos_Indiv = () => {
     
     if (diferenciaMeses < 1) {
       setWarningMessage('Entre la fecha de inicio y la fecha final hay menos de 1 mes. Esto puede afectar la planificación del curso. \n ¿Desea continuar de todos modos?');
-
-      //setWarningMessage('No hay una distancia mínima de 1 mes entre la fecha de inicio y la fecha final.\n¿Desea continuar?');
       setShowWarning(true);
       return;
     }
@@ -189,6 +188,7 @@ const validarDistanciaUnaSemana = async () => {
    * Bug to fix: Que cuando se cambie de horario, obligue a cambiar fechas de inicio y fin
    */
   const handleConfirmar = () => {
+    console.log("Manejando confirmación...");
     //V#1.Validar que no haya información en blanco (El profe puede quedar en blanco)
     if (!fechaInicio || !fechaFinal || !horarioCurso) {
         console.log("Fecha inicio: ", fechaInicio);
@@ -215,13 +215,14 @@ const validarDistanciaUnaSemana = async () => {
 
     // V#7. Validar distancia de 1 semana entre cursos de de un mismo GRUPO
     validarDistanciaUnaSemana();
+
+    // Si las validaciones pasan sin errores, activar la actualización
+    setContinueUpdate(true);
   };
 
   useEffect(() => {
-    if (showWarning && !continueUpdate) {
-      setShowWarning(true);
-      return; // Detener la ejecución aquí para esperar la confirmación del usuario
-    }
+    if (!continueUpdate) return; // No hacer nada si continueUpdate sigue siendo false
+    console.log("Estamos entrando al Use Effect después de validaciones");
   
     // Si no hay advertencias o el usuario ha confirmado continuar, continuar con la actualización
     if (continueUpdate) {
@@ -235,15 +236,17 @@ const validarDistanciaUnaSemana = async () => {
       })
       .then(response => {
           console.log('Curso actualizado correctamente:', response.data);
+          alert("Curso actualizado correctamente");
           toast.success("Curso actualizado correctamente");
-          navigate('/AgregarCursos', { state: { idGrupo, numero, horario } });
+          navigate('/AgregarCursos', { state: { idGrupo, numero, horario } }); // Redirigir a la página deseada
       })
       .catch(error => {
+          alert("Error al actualizar curso");
           console.error('Error al actualizar curso:', error);
           toast.error("Error al actualizar el curso");
       });
     }
-  }, [showWarning, continueUpdate]);
+  }, [continueUpdate]);    
 
     const handleChange = (e) => {
         // console.log("Profesor: ", profesor);
@@ -262,9 +265,11 @@ const validarDistanciaUnaSemana = async () => {
     //  1. No coincide el horario curso con horario grup
     //  2. No hay duración mínima de un mes en el curso
     const handleContinue = () => {
+      console.log("Continuar actualización...");
       setShowWarning(false);
       setContinueUpdate(true);
-      //validarDiaFecha(); //Revisa que los días de fecha inicio y fecha fin coincidan con días de horario
+      console.log("showWarning:", showWarning); // Agrega esta línea
+      console.log("continueUpdate:", continueUpdate); // Agrega esta línea
     };
 
     const handleCerrarModal = () =>{
