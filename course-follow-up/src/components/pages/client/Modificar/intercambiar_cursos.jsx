@@ -33,6 +33,10 @@ const Intercambiar_Cursos = () => {
       });
   }, []);
 
+  useEffect(() => {
+    console.log("idCursoSeleccionado: " + idCursoSeleccionado)
+  }, [idCursoSeleccionado]);
+
   // MODIFICAR
   // Esto es para regresar a la pantalla anterior
   const handleBack = () => {
@@ -42,11 +46,11 @@ const Intercambiar_Cursos = () => {
 
   // Actaliza el valor del curso seleccionado según el checkbox seleccionado
   const handleCheckboxChange = (index) => {
-    if (idCursoSeleccionado === index) {
+    if (idCursoSeleccionado === cursos[index].idCurso) {
         setidCursoSeleccionado(null);
         setCursoSeleccionado(""); // Limpiar el estado curso
     } else {
-        setidCursoSeleccionado(index); //indice del curso
+        setidCursoSeleccionado(cursos[index].idCurso); //indice del curso
         setCursoSeleccionado(cursos[index]);
     }
   };
@@ -65,7 +69,7 @@ const Intercambiar_Cursos = () => {
       axios.put('http://localhost:3001/intercambiarCursos', {
           idGrupo: idGrupo,
           idCurso1: idCurso,
-          idCurso2: idCursoSeleccionado + 1, //En mi MYSQL las inserciones empiezan en 1,por eso hay que sumarle 1
+          idCurso2: idCursoSeleccionado,
       })
       .then(response => { // En caso de que todo salga bien
           console.log('Cursos intercambiados correctamente:', response.data);
@@ -107,7 +111,7 @@ const Intercambiar_Cursos = () => {
                             <input
                                 type="checkbox"
                                 disabled={idCurso-1 === index}
-                                checked={idCursoSeleccionado === index}
+                                checked={idCursoSeleccionado === cursos[index].idCurso}
                                 onChange={() => handleCheckboxChange(index)}
                             />
                           </td>
