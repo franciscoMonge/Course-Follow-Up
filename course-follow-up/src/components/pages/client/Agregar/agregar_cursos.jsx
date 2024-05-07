@@ -4,6 +4,10 @@ import axios from 'axios';
 import Navbar from "../../shared/navbar";
 import { useToastContainer } from 'react-toastify';
 
+// Código para la ventana donde hay una lista de cursos 
+// para un determinado grupo
+// y se selecciona uno para agregarle información.
+
 const Agregar_Cursos = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -27,7 +31,6 @@ const Agregar_Cursos = () => {
         setCursoSeleccionado(""); // Limpiar el estado curso
     } else {
         setidCursoSeleccionado(index); //indice del curso
-        console.log("aiudaa: ", cursos[index]);
         console.log("Esto se guarda CURSOS: ", cursos);
         console.log("Esto se guarda CURSOS[INDEX]: ", cursos[index]);
         console.log("Esto se guarda como idCurso: ", cursos[index].idCurso);

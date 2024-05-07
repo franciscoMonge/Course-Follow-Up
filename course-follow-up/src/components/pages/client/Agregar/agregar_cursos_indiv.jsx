@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import Navbar from "../../shared/navbar";
+
+// Código para la ventana donde se muestra 
+// la información de UN curso específico
+
 
 const Agregar_Cursos_Indiv = () => {
   const navigate = useNavigate();
@@ -50,12 +56,55 @@ const Agregar_Cursos_Indiv = () => {
       alert('Por favor completa todos los campos');
       return;
     }
-  
+
+    //Validar que la fecha ingresada coincida con el día del horario
+    
+    // Convertimos fechas a Date para poder usar getDay()
+    const inicioDateObject = new Date(fechaInicio);
+    const finDateObject = new Date(fechaFinal);
+
+    // Obtener el día correspondiente a las fechas
+    //(0= Domingo, 1= Lunes, 2= Martes, 3=Miércoles, 4=Jueves, ..., 6 para Sábado)
+    const diaInicio = inicioDateObject.getDay() + 1 ; //Devuelve un int. Hay que sumarle 1 porque hay un desfaz en zonas horarias por el String
+    const diaFin = finDateObject.getDay() + 1 ; //Devuelve un int     
+    const dias =['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    console.log('diaInicio', diaInicio);
+    console.log('diaFin',diaFin);
+
+    //Los únicos días permitidos serían L(1) y M(3)
+    if(horarioCurso === 'Lunes y Miércoles'){
+      console.log('Revisando miércoles y lunes');
+      if(diaInicio !== 1 && diaInicio !== 3){
+        toast.error('La fecha de inicio seleccionada es: ' + dias[diaInicio] + '. No corresponde a Lunes ni Miércoles.');
+        return;
+      }
+      if(diaFin !== 1 && diaFin !== 3){
+        console.log("ERRRORRR fecha");
+        toast.error('La fecha de finalización seleccionada es: ' + dias[diaFin] + '. No corresponde a Lunes ni Miércoles.');
+        return;
+      }
+    }
+    
+    //Los únicos días permitidos serían K(2) y J(4)
+    if(horarioCurso === 'Martes y Jueves'){
+      if(diaInicio !== 2 && diaInicio !== 4){
+        toast.error('La fecha de inicio seleccionada es: ' + dias[diaInicio] + '. No corresponde a Martes ni Jueves');
+        return;
+      }
+    
+      if(diaFin !== 2 && diaFin !== 4){
+        toast.error('La fecha de finalización seleccionada es: ' + dias[diaInicio] + '. No corresponde a Martes ni Jueves');
+        return;
+      }
+    }
+    
+
     // Validar que las fechas tengan concordancia
     if (fechaInicio > fechaFinal) {
       alert('La fecha de inicio debe ser anterior a la fecha final');
       return;
     }
+
   
     // Validar que haya una distancia mínima de 1 mes entre las fechas
     const fechaInicioObj = new Date(fechaInicio);
@@ -116,6 +165,7 @@ const Agregar_Cursos_Indiv = () => {
 <div>
   <Navbar />
   <div className="container" style={{ paddingTop: '80px' }}>
+    <ToastContainer position="top-center"/>
     <h3>Agregar Planificación</h3>
     <div className="row">
       <div className="col">
