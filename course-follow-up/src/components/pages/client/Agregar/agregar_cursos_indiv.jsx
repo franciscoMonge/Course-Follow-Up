@@ -126,23 +126,29 @@ const Agregar_Cursos_Indiv = () => {
   //Validar que el horario del curso coincida con el horario del grupo (OPCIONAL QUE SE CUMPLA)
   const validarHorarioCursoGrupo = () => {  
     if (horarioCurso == "Lunes y Miércoles" && horario !== "Lunes y Miércoles") { //Horario es horario del grupo
+      setContinueUpdate(false);
       setWarningMessage('El horario del curso  no coincide con el horario del grupo al que está asignado. Esto podría causar conflictos en la planificación.\n  ¿Desea continuar de todos modos?');
       setShowWarning(true);
       return;
     }
     if (horarioCurso == "L-M" && horario !== "Lunes y Miércoles") { //Horario es horario del grupo
+      setContinueUpdate(false);
       setWarningMessage('El horario del curso  no coincide con el horario del grupo al que está asignado. Esto podría causar conflictos en la planificación.\n  ¿Desea continuar de todos modos?');
       setShowWarning(true);
       return;
     }
     if (horarioCurso == "Martes y Jueves" && horario !== "Martes y Jueves") { //Horario es horario del grupo
+      setContinueUpdate(false);
       setWarningMessage('El horario del curso  no coincide con el horario del grupo al que está asignado. Esto podría causar conflictos en la planificación.\n  ¿Desea continuar de todos modos?');
       setShowWarning(true);
+      
       return;
     }
     if (horarioCurso == "K-J" && horario !== "Martes y Jueves") { //Horario es horario del grupo
+      setContinueUpdate(false);
       setWarningMessage('El horario del curso  no coincide con el horario del grupo al que está asignado. Esto podría causar conflictos en la planificación.\n  ¿Desea continuar de todos modos?');
       setShowWarning(true);
+
       return;
     }
     return;
@@ -199,7 +205,8 @@ const validarDistanciaUnaSemana = async () => {
       return;
     }
     //V#2.Validar que la fecha ingresada coincida con el día del horario
-    validarDiaFecha();     
+    validarDiaFecha();  
+
     //V#3.Validar que las fechas tengan concordancia
     if (fechaInicio > fechaFinal) {
       toast.error('La fecha de inicio debe ser anterior a la fecha final');
@@ -217,11 +224,11 @@ const validarDistanciaUnaSemana = async () => {
     validarDistanciaUnaSemana();
 
     // Si las validaciones pasan sin errores, activar la actualización
-    setContinueUpdate(true);
+    //setContinueUpdate(true);
   };
 
   useEffect(() => {
-    if (!continueUpdate) return; // No hacer nada si continueUpdate sigue siendo false
+    if (!continueUpdate){console.log("Continue Update Falso."); return;}; // No hacer nada si continueUpdate sigue siendo false
     console.log("Estamos entrando al Use Effect después de validaciones");
   
     // Si no hay advertencias o el usuario ha confirmado continuar, continuar con la actualización
@@ -252,7 +259,7 @@ const validarDistanciaUnaSemana = async () => {
           toast.error("Error al actualizar el curso");
       });
     }
-  }, [continueUpdate]);    
+  }, [continueUpdate,showWarning]);    
 
     const handleChange = (e) => {
         // console.log("Profesor: ", profesor);
@@ -277,12 +284,13 @@ const validarDistanciaUnaSemana = async () => {
       console.log("showWarning:", showWarning); // Agrega esta línea
       console.log("continueUpdate:", continueUpdate); // Agrega esta línea
     };
-
+    
     const handleCerrarModal = () =>{
       setShowWarning(false);
       setContinueUpdate(false);
-    }
-
+      console.log("showWarning:", showWarning); // Agrega esta línea
+      console.log("continueUpdate:", continueUpdate); // Agrega esta línea
+    };
 
 
     return (
