@@ -236,12 +236,18 @@ const validarDistanciaUnaSemana = async () => {
       })
       .then(response => {
           console.log('Curso actualizado correctamente:', response.data);
-          alert("Curso actualizado correctamente");
+          /** 
+           * Se agrega el set time out porque no le estaba dando tiempo al toast de mostrarse
+           * antes de que la pantalla se redirigiera a la lista de cursos
+           */
           toast.success("Curso actualizado correctamente");
-          navigate('/AgregarCursos', { state: { idGrupo, numero, horario } }); // Redirigir a la página deseada
+          //navigate('/AgregarCursos', { state: { idGrupo, numero, horario } }); // Redirigir a la página deseada
+          setTimeout(() => {
+            navigate('/AgregarCursos', { state: { idGrupo, numero, horario } });
+          }, 2000); // 2000 milisegundos = 2 segundos
       })
       .catch(error => {
-          alert("Error al actualizar curso");
+          //alert("Error al actualizar curso");
           console.error('Error al actualizar curso:', error);
           toast.error("Error al actualizar el curso");
       });
