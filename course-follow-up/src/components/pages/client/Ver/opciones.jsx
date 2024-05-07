@@ -22,7 +22,8 @@ function Opciones () {
     };
 
     const handleIntercambiar = () => {
-        alert('Intercambiar')
+        navigate('/IntercambiarCursos',{state:{idGrupo: grupo_id, numero: grupoNumero, idCurso: idcurso, nombreCurso: cursoNombre, fechaInicioPlanificador: fechaInicio, 
+            fechaFinalPlanificador: fechaFinal, añoPlanificador: añoPlanificador}});
     };
 
     const handleFusionar = () =>{
