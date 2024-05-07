@@ -7,6 +7,7 @@ const Intercambiar_Cursos = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const { idgrupoXcurso } = location.state;
   const {idGrupo} = location.state; // ID grupo entrante
   const {numero} = location.state; // Numero de grupo
   const {idCurso} = location.state; // ID Curso seleccionado para ser intercambiado
@@ -23,7 +24,7 @@ const Intercambiar_Cursos = () => {
 
   // Carga todos los cursos de la BD en la lista "cursos" 
   useEffect(() => {
-    axios.get(`http://localhost:3001/cursos/${idGrupo}`)
+    axios.get(`http://localhost:3001/cursosAgregados/${idGrupo}`)
       .then(response => {
         setCursos(response.data[0]);
       })
@@ -35,7 +36,8 @@ const Intercambiar_Cursos = () => {
   // MODIFICAR
   // Esto es para regresar a la pantalla anterior
   const handleBack = () => {
-    navigate('/App', { state: { añoPlanificador:añoPlanificador, fechaInicio:fechaInicioPlanificador, fechaFinal:fechaFinalPlanificador } });
+    navigate('/Opciones', { state: {idgrupoXcurso:idgrupoXcurso, grupo_id:idGrupo, grupoNumero:numero, idcurso:idCurso,
+      cursoNombre:nombreCurso, añoPlanificador:añoPlanificador, fechaInicio:fechaInicioPlanificador, fechaFinal:fechaFinalPlanificador } });
   };
 
   // Actaliza el valor del curso seleccionado según el checkbox seleccionado
