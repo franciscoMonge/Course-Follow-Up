@@ -163,9 +163,15 @@ app.get('/cursosAgregados/:idGrupo', async(req, res) =>{
 app.post('/actualizarCursos', async (req, res) => {
   try {
       const { idGrupo, idCurso, fechaInicio, fechaFinal, profesor, horario } = req.body;
-      console.log("ID GRUPO que va a la BD: ", idGrupo);
-      console.log("ID CURSO que va a la BD: ", idCurso);
-      console.log(typeof fechaFinal); // Debería imprimir 'string'
+
+      if(horario === "K-J"){
+        nuevoHorario = "Martes y Jueves";
+      }
+
+      if(horario === "L-M"){
+        nuevoHorario = "Lunes y Miércoles";
+      }
+
       const formatoEsperado = /^\d{4}-\d{2}-\d{2}$/;
       if(!formatoEsperado.test(fechaInicio)){
         console.log("formatear fecha inicio")
@@ -176,7 +182,7 @@ app.post('/actualizarCursos', async (req, res) => {
         const fechaFinalFormateada = fechaFinal.split('-').reverse().join('-');// Convertir a "YYYY-MM-DD"
       }
 
-      const result = await db.query("CALL updateCursoGrupo(?,?,?,?,?,?)", [idGrupo, idCurso, fechaInicio, fechaFinal, profesor, horario]);
+      const result = await db.query("CALL updateCursoGrupo(?,?,?,?,?,?)", [idGrupo, idCurso, fechaInicio, fechaFinal, profesor, nuevoHorario]);
     res.status(201).json({ mensaje: 'Curso actualizado correctamente', resultado: result });
   } catch (error) {
     console.error('Error al actualizar curso:', error);
@@ -344,6 +350,35 @@ app.put('/usuarios/updatePassword', async (req, res) => {
   } catch (error) {
       console.error('Error al actualizar contraseña:', error);
       res.status(500).json({ error: 'Error al actualizar contraseña' });
+  }
+});
+
+// Ruta para obtener si hay una distancia de 2 meses entre cursos iguales
+//0 es False, 1 es true
+app.get('/distanciaCursosIguales/:nombreCurso/:fechaInicio/:fechaFinal', async (req, res) => {
+  const { nombreCurso, fechaInicio, fechaFinal } = req.params;
+  try {
+    const resultado = await db.query("CALL  VerificarDistanciaCursos(?,?,?)", [nombreCurso, fechaInicio, fechaFinal]);
+    res.json(resultado);
+    
+  } catch (error) {
+    console.error('Error al obtener distancia de 2 meses:', error);
+    res.status(500).json({ error: 'Error al obtener distancia de 2 meses' });
+  }
+});
+
+
+
+// Ruta para obtener si hay una distancia de 1 SEMANA entre cursos de un MISMO GRUPOes
+app.get('/validarDistanciaUnaSemana/:idGrupo/:fechaInicio', async (req, res) => {
+  const { idGrupo,fechaInicio } = req.params;
+  try {
+    const resultado = await db.query("CALL VerificarDistanciaUnaSemana(?,?)", [idGrupo,fechaInicio]);
+    res.json(resultado);
+
+  } catch (error) {
+    console.error('Error al obtener distancia de 1 semana:', error);
+    res.status(500).json({ error: 'Error al obtener distancia de 1 semana' });
   }
 });
 
