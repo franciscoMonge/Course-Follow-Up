@@ -150,4 +150,4 @@ DELIMITER ;
  -- call VerificarDistanciaCursos("Introducción a la Logística",'2024-05-07','2024-06-11')
  -- select * from grupoxcurso 
 
-call VerificarDistanciaUnaSemana(1, '2024-05-07')
+--call VerificarDistanciaUnaSemana(1, '2024-05-07')
