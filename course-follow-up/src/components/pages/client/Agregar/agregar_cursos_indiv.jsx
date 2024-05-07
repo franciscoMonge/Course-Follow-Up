@@ -143,16 +143,18 @@ const Agregar_Cursos_Indiv = () => {
       setContinueUpdate(false);
       setWarningMessage('El horario del curso  no coincide con el horario del grupo al que está asignado. Esto podría causar conflictos en la planificación.\n  ¿Desea continuar de todos modos?');
       setShowWarning(true);
-      
       return;
     }
     if (horarioCurso == "K-J" && (horario !== "Martes y Jueves" && horario !== "K-J")) { //Horario es horario del grupo
       setContinueUpdate(false);
       setWarningMessage('El horario del curso  no coincide con el horario del grupo al que está asignado. Esto podría causar conflictos en la planificación.\n  ¿Desea continuar de todos modos?');
       setShowWarning(true);
-
       return;
     }
+    //Agregar esto porque cuando termina de validar no continua
+    setShowWarning(false);
+    setContinueUpdate(true);
+    
     return;
   } //Fin validar horario curso grupo
 
@@ -284,8 +286,8 @@ const validarDistanciaUnaSemana = async () => {
       console.log("Continuar actualización...");
       setShowWarning(false);
       setContinueUpdate(true);
-      console.log("showWarning:", showWarning); // Agrega esta línea
-      console.log("continueUpdate:", continueUpdate); // Agrega esta línea
+      console.log("showWarning:", showWarning); 
+      console.log("continueUpdate:", continueUpdate); 
     };
     
     const handleCerrarModal = () =>{
