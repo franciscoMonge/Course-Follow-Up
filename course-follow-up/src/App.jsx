@@ -13,6 +13,7 @@ import Modificar_Planificacion from './components/pages/client/Modificar/modific
 import Intercambiar_Cursos from './components/pages/client/Modificar/intercambiar_cursos';
 import Opciones from './components/pages/client/Ver/opciones';
 import Fusionar_Grupo from './components/pages/client/Ver/fusionarGrupo';
+import Modificar_Curso from './components/pages/client/Ver/modificarCurso';
 import './App.css'
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
         <Route path="/FusionarGrupo" element={<Fusionar_Grupo />}/>
         <Route path="*" element={<Navigate to="/" />} />
         <Route path="/IntercambiarCursos" element={<Intercambiar_Cursos />}/>
+        <Route path="/ModificarCursos" element={<Modificar_Curso />}/>
       </Routes>
     </Router>
   );

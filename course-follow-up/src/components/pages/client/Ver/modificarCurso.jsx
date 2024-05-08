@@ -10,14 +10,13 @@ import Navbar from "../../shared/navbar";
 // la información de UN curso específico
 
 
-const Agregar_Cursos_Indiv = () => {
+const Modificar_Curso = () => {
   const navigate = useNavigate();
   const mounted = useRef(false); // Declaramos mounted como un ref. Por bug que tiene el use effect
   const location = useLocation();
 
   //De la página anterior debemos traer 
 // cursos, idCursoSeleccionado,cursoSeleccionado, grupo, idGrupo, horario
-  const { cursos} = location.state; 
   const { idCurso} = location.state; //Este es el ID del cruso
   const {cursoSeleccionado} =  location.state; //Este es el OBJETO curso
   const {numero} = location.state;
@@ -298,7 +297,7 @@ const validarDistanciaUnaSemana = async () => {
 
     const handleBack = () => {
       
-      navigate('/AgregarCursos', { state: { idGrupo, numero, horario  } });
+        navigate('/SeleccionaAño', {});
     };
 
     //Maneja lo que se hace después de que la persona desee seguir actualizando cuando:
@@ -426,4 +425,4 @@ const validarDistanciaUnaSemana = async () => {
     );
   };
   
-  export default Agregar_Cursos_Indiv;
+  export default Modificar_Curso;
