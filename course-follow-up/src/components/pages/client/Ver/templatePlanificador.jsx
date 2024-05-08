@@ -139,7 +139,7 @@ const App1 = () => {
                       <div key={course.id} style={{ backgroundColor: group.color, color: 'white', padding: '5px' }}>
                         <hr />
                         <button className="btn btn-light" onClick={() => handleOpciones(course.idgrupoXcurso, course.grupo_id, course.idGRUPO, course.id, course.name)}>Opciones</button>
-                        
+                        <br />
                         {course.name}
                         <br />
                         {new Date(course.startDate).getMonth() === index && (
