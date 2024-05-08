@@ -3,6 +3,11 @@
 	npm install express
 	npm install cors
 	npm install mysql2
+swiper/react
+swiper/css 
+swiper/css/scrollbar 
+npm install swiper/react swiper/css swiper/css/scrollbar
+
 
 
 2.En OTRA terminal:

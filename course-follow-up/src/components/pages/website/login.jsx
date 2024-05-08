@@ -118,15 +118,20 @@ function Login () {
             }
         }
     };
-
-    return (
-        <div style={{ 
+/**
+ * 
+ *         
+ * <div 
+        style={{ 
             background: 'linear-gradient(to bottom, orange, blue)', // Degradado de naranja a azul
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
             minHeight: '100vh', // Ajusta el tamaño mínimo según sea necesario
-        }}>            
+        }}>  
+ */
+    return (
+        <div>            
         <Navbar/>
             <div className="container d-flex flex-column align-items-center justify-content-center vh-100">
                 <h1 className="mb-4">Course Follow-Up</h1>

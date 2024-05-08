@@ -49,6 +49,7 @@ const Agregar_Cursos_Indiv = () => {
   
   //Validar que la fecha ingresada coincida con el día del horario
   const validarDiaFecha = () => {
+    console.log("Validación dia-fecha");
     // Convertimos fechas a Date para poder usar getDay()
     const inicioDateObject = new Date(fechaInicio);
     const finDateObject = new Date(fechaFinal);
@@ -116,20 +117,24 @@ const Agregar_Cursos_Indiv = () => {
   }; //Fin validar dia fecha
 
   const validarDistanciaFechas = () =>{
+    console.log("Validación duracion minimo 1 mes");
     // Validar que el curso dure mínimo 1 mes (haya una distancia mínima de 1 mes entre las fechas de INICIO y FIN)(OPCIONAL)
     const fechaInicioObj = new Date(fechaInicio);
     const fechaFinalObj = new Date(fechaFinal);
     const diferenciaMeses = (fechaFinalObj.getFullYear() - fechaInicioObj.getFullYear()) * 12 + fechaFinalObj.getMonth() - fechaInicioObj.getMonth();
     
     if (diferenciaMeses < 1) {
+      setContinueUpdate(false); //Agregado fixing bug
       setWarningMessage('Entre la fecha de inicio y la fecha final hay menos de 1 mes. Esto puede afectar la planificación del curso. \n ¿Desea continuar de todos modos?');
       setShowWarning(true);
       return;
     }
+    //setContinueUpdate(true); //Agregado fixing bug
   } //Fin validar distancia fechas
 
   //Validar que el horario del curso coincida con el horario del grupo (OPCIONAL QUE SE CUMPLA)
   const validarHorarioCursoGrupo = () => {  
+    console.log("Validación horario grupo");
     console.log("Horario curso:",horarioCurso);
     console.log("Horario grupo:",horario);
     if (horarioCurso == "Lunes y Miércoles" && (horario !== "Lunes y Miércoles" && horario !== "L-M") ) { //Horario es horario del grupo
@@ -165,13 +170,14 @@ const Agregar_Cursos_Indiv = () => {
 
 //Revisa que haya distancia de 2 MESES entre CURSOS IGUALES
 const validarDistanciaCursosIguales = async () => { 
+  console.log("Validación 2 meses");
   try {
-    console.log("Validar distanciaa 2 meses");
     const cumpleDistancia = await axios.get(`http://localhost:3001/distanciaCursosIguales/${cursoSeleccionado.nombre_curso}/${fechaInicio}/${fechaFinal}`);
    //Así se debe obtener la info de la respuesta de BD cumpleDistancia.data[0][0][0].cumpleDistancia);
-  // 0 =False, 1=true
+    // 0 =False, 1=true
  
     if (cumpleDistancia.data[0][0][0].cumpleDistancia == 0) {
+      setContinueUpdate(false); //Agregado fixing bug
       setWarningMessage('No se cumple la distancia de 2 meses entre cursos iguales.\n¿Desea continuar de todos modos?');
       setShowWarning(true);
       return;
@@ -185,12 +191,12 @@ const validarDistanciaCursosIguales = async () => {
 
 //Revisa que haya distancia de UNA SEMANA entre cursos de UN MISMO GRUPO
 const validarDistanciaUnaSemana = async () => { 
+  console.log("Validación 1 semana");
   try {
     const cumpleDistancia = await axios.get(`http://localhost:3001/validarDistanciaUnaSemana/${idGrupo}/${fechaInicio}`);
-    console.log("CumpleDistanncia.data",cumpleDistancia.data);
-    console.log("CumpleDistancia: ", cumpleDistancia);
     
     if (cumpleDistancia.data[0][0][0].cumpleDistancia==0) {
+      setContinueUpdate(false); //Agregado fixing bug
       setWarningMessage('No se cumple la distancia de 1 semana respecto al último curso impartido a este grupo.\n¿Desea continuar de todos modos?');
       setShowWarning(true);
       return;
@@ -201,9 +207,6 @@ const validarDistanciaUnaSemana = async () => {
   }
 }
 
-
-
-
   /**
    * 
    * Bug to fix: Que cuando se cambie de horario, obligue a cambiar fechas de inicio y fin
@@ -211,6 +214,7 @@ const validarDistanciaUnaSemana = async () => {
   const handleConfirmar = () => {
     console.log("Manejando confirmación...");
     //V#1.Validar que no haya información en blanco (El profe puede quedar en blanco)
+    console.log("Validación espacios en blanco");
     if (!fechaInicio || !fechaFinal || !horarioCurso) {
         console.log("Fecha inicio: ", fechaInicio);
         console.log("Fecha final: ", fechaFinal);
@@ -221,21 +225,20 @@ const validarDistanciaUnaSemana = async () => {
     }
     //V#2.Validar que la fecha ingresada coincida con el día del horario
     validarDiaFecha();  
-
+    // V#5. Validar que el horario del curso coincida con el horario del grupo (OPCIONAL QUE SE CUMPLA)
+    validarHorarioCursoGrupo();
     //V#3.Validar que las fechas tengan concordancia
+    console.log("Validación concordancia fechas");
     if (fechaInicio > fechaFinal) {
       setContinueUpdate(false);
       toast.error('La fecha de inicio debe ser anterior a la fecha final');
-
       return;
     }
-    // V#4. Validar que haya una distancia mínima de 1 mes entre las fechas (OPCIONAL QUE SE CUMPLA)
-    validarDistanciaFechas();
-    // V#5. Validar que el horario del curso coincida con el horario del grupo (OPCIONAL QUE SE CUMPLA)
-    validarHorarioCursoGrupo();
-
     // V#6. Validar distancia de 2 meses entre cursos iguales
     validarDistanciaCursosIguales();
+
+    // V#4. Validar que haya una distancia mínima de 1 mes entre las fechas (OPCIONAL QUE SE CUMPLA)
+    validarDistanciaFechas();
 
     // V#7. Validar distancia de 1 semana entre cursos de de un mismo GRUPO
     validarDistanciaUnaSemana();
@@ -246,7 +249,13 @@ const validarDistanciaUnaSemana = async () => {
   };
 
   useEffect(() => {
-    if (!continueUpdate){console.log("Continue Update Falso."); return;}; // No hacer nada si continueUpdate sigue siendo false
+
+    
+    if (!continueUpdate){
+      console.log("Continue Update Falso.");
+      console.log("Cup: ",continueUpdate);
+      return;
+    }; // No hacer nada si continueUpdate sigue siendo false
     console.log("Estamos entrando al Use Effect después de validaciones");
   
     // Si no hay advertencias o el usuario ha confirmado continuar, continuar con la actualización

@@ -145,6 +145,7 @@ BEGIN
     SELECT cumpleDistancia;
 END;//
 
+
 -- Este procedimiento revisa que entre cursos del MISMO TIPO haya distancia de 2 MESES
 -- Si se dio el "Curso A" en Mayo para el "Grupo 40", para cualquier otro grupo el "Curso A" debe darse hasta Agosto
 CREATE PROCEDURE VerificarDistanciaCursos(
@@ -163,6 +164,7 @@ BEGIN
     SELECT COUNT(idgrupo) INTO cursoExistente
     FROM grupoxcurso
     WHERE idcurso = (SELECT idcurso FROM curso WHERE nombre = p_nombreCurso);
+    -- select cursoExistente; -- Nuevo fixing bug
 
     -- Si ningún curso lo ha registrado, entonces no hay restricciones
     IF cursoExistente = 0 THEN
@@ -172,10 +174,11 @@ BEGIN
         SELECT MAX(fechaFinal) INTO fechaFinalExistente
         FROM grupoxcurso
         WHERE idcurso = (SELECT idcurso FROM curso WHERE nombre = p_nombreCurso);
+        -- select fechaFinalExistente; -- Nuevo fixing bug
 
         -- Calcular la diferencia en meses entre las fechas
         SET mesesDiferencia = TIMESTAMPDIFF(MONTH, fechaFinalExistente, p_fechaInicio);
-        
+         -- select mesesDiferencia; -- Nuevo fixing bug
         -- Verificar si la distancia entre cursos es de al menos dos meses
         IF mesesDiferencia >= 2 THEN
             SET cumpleDistancia = TRUE;
@@ -190,4 +193,8 @@ END//
 
 DELIMITER ;
 
--- CALL  VerificarDistanciaCursos('Introducción a la Logística','2050-02-05','2050-03-06')
+
+select * from grupoxcurso where idCurso = 1;
+-- CALL  VerificarDistanciaCursos('Introducción a la Logística','2050-06-05','2050-05-06');
+SELECT TIMESTAMPDIFF(MONTH, '2050-03-06', '2050-04-05');
+¿
