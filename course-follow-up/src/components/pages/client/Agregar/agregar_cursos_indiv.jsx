@@ -84,29 +84,34 @@ const Agregar_Cursos_Indiv = () => {
     console.log('diaFin',diaFin);
 
     //Si el horario del GRUPO es LYM.Los únicos días permitidos serían L(1) y M(3)
-    if(horario === 'Lunes y Miércoles'){
+    if(horario === 'Lunes y Miércoles' || horario === 'L-M'){
       if(diaInicio !== 1 && diaInicio !== 3){
+        setContinueUpdate(false);
         toast.error('La fecha de inicio seleccionada es: ' + dias[diaInicio] + '. No corresponde a Lunes ni Miércoles.');
         return;
       }
       if(diaFin !== 1 && diaFin !== 3){
+        setContinueUpdate(false);
         toast.error('La fecha de finalización seleccionada es: ' + dias[diaFin] + '. No corresponde a Lunes ni Miércoles.');
         return;
       }
     }
     
     //Si el horario del GRUPO es KYJ. Los únicos días permitidos serían K(2) y J(4)
-    if(horario === 'Martes y Jueves'){
+    if(horario === 'Martes y Jueves'|| horario === 'K-J'){
       if(diaInicio !== 2 && diaInicio !== 4){
+        setContinueUpdate(false);
         toast.error('La fecha de inicio seleccionada es: ' + dias[diaInicio] + '. No corresponde a Martes ni Jueves');
         return;
       }
     
       if(diaFin !== 2 && diaFin !== 4){
+        setContinueUpdate(false);
         toast.error('La fecha de finalización seleccionada es: ' + dias[diaFin] + '. No corresponde a Martes ni Jueves');
         return;
       }
     }
+    setContinueUpdate(true); //Agregado ahorita fix bug 7 mayo
 
   }; //Fin validar dia fecha
 
@@ -152,8 +157,8 @@ const Agregar_Cursos_Indiv = () => {
       return;
     }
     //Agregar esto porque cuando termina de validar no continua
-    setShowWarning(false);
-    setContinueUpdate(true);
+    //setShowWarning(false);
+    //setContinueUpdate(true);
     
     return;
   } //Fin validar horario curso grupo
@@ -163,12 +168,15 @@ const validarDistanciaCursosIguales = async () => {
   try {
     console.log("Validar distanciaa 2 meses");
     const cumpleDistancia = await axios.get(`http://localhost:3001/distanciaCursosIguales/${cursoSeleccionado.nombre_curso}/${fechaInicio}/${fechaFinal}`);
-    if (!cumpleDistancia.data) {
+   //Así se debe obtener la info de la respuesta de BD cumpleDistancia.data[0][0][0].cumpleDistancia);
+  // 0 =False, 1=true
+ 
+    if (cumpleDistancia.data[0][0][0].cumpleDistancia == 0) {
       setWarningMessage('No se cumple la distancia de 2 meses entre cursos iguales.\n¿Desea continuar de todos modos?');
       setShowWarning(true);
       return;
     }
-    console.log("Todo good con la verif: ", cumpleDistancia.data);
+    
   } catch (error) {
     console.error('Error al verificar la distancia de 2 meses entre cursos iguales:', error);
     // Manejo del error
@@ -179,7 +187,10 @@ const validarDistanciaCursosIguales = async () => {
 const validarDistanciaUnaSemana = async () => { 
   try {
     const cumpleDistancia = await axios.get(`http://localhost:3001/validarDistanciaUnaSemana/${idGrupo}/${fechaInicio}`);
-    if (!cumpleDistancia.data) {
+    console.log("CumpleDistanncia.data",cumpleDistancia.data);
+    console.log("CumpleDistancia: ", cumpleDistancia);
+    
+    if (cumpleDistancia.data[0][0][0].cumpleDistancia==0) {
       setWarningMessage('No se cumple la distancia de 1 semana respecto al último curso impartido a este grupo.\n¿Desea continuar de todos modos?');
       setShowWarning(true);
       return;
@@ -213,7 +224,9 @@ const validarDistanciaUnaSemana = async () => {
 
     //V#3.Validar que las fechas tengan concordancia
     if (fechaInicio > fechaFinal) {
+      setContinueUpdate(false);
       toast.error('La fecha de inicio debe ser anterior a la fecha final');
+
       return;
     }
     // V#4. Validar que haya una distancia mínima de 1 mes entre las fechas (OPCIONAL QUE SE CUMPLA)

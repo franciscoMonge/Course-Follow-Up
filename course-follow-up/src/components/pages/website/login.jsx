@@ -8,6 +8,7 @@ import generarRandomPassword from "./generarPassword";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
+
 function Login () {
     const navigate = useNavigate();
 
@@ -31,7 +32,7 @@ function Login () {
     
     useEffect(() => {
         // Este se ejecuta cuando actas cambie
-        console.log('actas actualizadas:', usuarios[0]);
+        console.log('usuarios actualizados:', usuarios[0]);
         //console.log('keywords: ', actas[0].palabras_clave)
     }, [usuarios]);
 
@@ -118,9 +119,15 @@ function Login () {
         }
     };
 
-    return(
-        <div>
-            <Navbar/>
+    return (
+        <div style={{ 
+            background: 'linear-gradient(to bottom, orange, blue)', // Degradado de naranja a azul
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            minHeight: '100vh', // Ajusta el tamaño mínimo según sea necesario
+        }}>            
+        <Navbar/>
             <div className="container d-flex flex-column align-items-center justify-content-center vh-100">
                 <h1 className="mb-4">Course Follow-Up</h1>
                 <div className="card m-4 text-center" style={{ width: '500px'}}>

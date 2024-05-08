@@ -113,7 +113,6 @@ END //
 --    SELECT cumpleDistancia;
 -- END//
 
-
 -- Este procedimiento revisa que entre cursos de UN MISMO GRUPO haya distancia de 1 semana
 CREATE PROCEDURE VerificarDistanciaUnaSemana(
     IN p_idGrupo INT,
@@ -127,14 +126,19 @@ BEGIN
     SELECT MAX(fechaFinal) INTO ultimaFechaFinal 
     FROM grupoxcurso 
     WHERE idgrupo = p_idGrupo;
-
-    -- Verificar la distancia de una semana entre la fecha de inicio del nuevo curso y la fecha final del último curso
-    IF DATEDIFF(p_fechaInicio, ultimaFechaFinal) >= 7 THEN
-        -- Si la distancia es de al menos una semana, se cumple la restricción
-        SET cumpleDistancia = TRUE;
-    ELSE
-        -- Si la distancia no es de al menos una semana, no se cumple la restricción
-        SET cumpleDistancia = FALSE;
+    
+    IF ultimaFechaFinal != null THEN
+		-- Verificar la distancia de una semana entre la fecha de inicio del nuevo curso y la fecha final del último curso
+		IF DATEDIFF(p_fechaInicio, ultimaFechaFinal) >= 7 THEN
+			-- Si la distancia es de al menos una semana, se cumple la restricción
+			SET cumpleDistancia = TRUE;
+		ELSE
+			-- Si la distancia no es de al menos una semana, no se cumple la restricción
+			SET cumpleDistancia = FALSE;
+		END IF;
+	ELSE 
+		-- Si no hay cursos registrados para ese grupo, no hay nada que validar
+		SET cumpleDistancia = TRUE;
     END IF;
 
     -- Devolver el resultado
@@ -155,11 +159,12 @@ BEGIN
     DECLARE mesesDiferencia INT; -- Declaración de la variable mesesDiferencia
 
     -- Verificar si ya hay un curso del mismo tipo registrado
+    -- Cuenta cuántos grupos tienen el curso "x"
     SELECT COUNT(idgrupo) INTO cursoExistente
     FROM grupoxcurso
     WHERE idcurso = (SELECT idcurso FROM curso WHERE nombre = p_nombreCurso);
 
-    -- Si no hay cursos previos del mismo tipo, entonces no hay restricciones
+    -- Si ningún curso lo ha registrado, entonces no hay restricciones
     IF cursoExistente = 0 THEN
         SET cumpleDistancia = TRUE;
     ELSE
@@ -180,59 +185,9 @@ BEGIN
     END IF;
 
     -- Devolver el resultado
-    SELECT cumpleDistancia;
+    select cumpleDistancia;
 END//
 
 DELIMITER ;
 
--- select * from usuario
- -- CALL GetCursosxGrupo(1)
- -- CALL getHorarioGrupo(2) 
- -- call VerificarDistanciaCursos("Introducción a la Logística",'2050-02-05','2050-03-06')
- -- call prueba("Introducción a la Logística",'2050-02-05','2050-03-06')
- -- select * from grupoxcurso 
-
--- call VerificarDistanciaUnaSemana(1, '2024-05-07')
-
--- NO BORRARRRRR, ERA EL PROCEDIMIENTO ANTERIOR PERO DEJARLO EN CASO DE REVISIÓN
--- Este procedimiento revisa que entre cursos del MISMO TIPO haya distancia de 2 MESES
--- Si se dio el "Curso A" en Mayo para el "Grupo 40", para cualquier otro grupo el "Curso A" debe darse hasta Agosto
--- CREATE PROCEDURE VerificarDistanciaCursos(
---    IN p_nombreCurso VARCHAR(60),
---    IN p_fechaInicio DATE,
---    IN p_fechaFinal DATE
--- )
--- BEGIN
---    DECLARE cursoExistente INT;
---    DECLARE fechaFinalExistente DATE;
---    DECLARE cumpleDistancia BOOLEAN; -- Variable local para almacenar el resultado
--- 	 DECLARE mesesDiferencia INT;
-    -- Verificar si ya hay un curso del mismo tipo registrado
---    SELECT idgrupo INTO cursoExistente
---     FROM grupoxcurso
- --   WHERE idcurso = (SELECT idcurso FROM curso WHERE nombre = p_nombreCurso);
-    
-    -- Si no hay cursos previos del mismo tipo, entonces no hay restricciones
-  --  IF cursoExistente IS NULL THEN
-  --      SET cumpleDistancia = TRUE;
- --   END IF;
-    
-    -- Obtener la fecha de finalización del curso existente más reciente
-  --  SELECT MAX(fechaFinal) INTO fechaFinalExistente
-  --  FROM grupoxcurso
-  --  WHERE idcurso = (SELECT idcurso FROM curso WHERE nombre = p_nombreCurso);
-    
-    -- Calcular la diferencia en meses entre las fechas
-
-  --  SET mesesDiferencia = TIMESTAMPDIFF(MONTH, fechaFinalExistente, p_fechaInicio);
-    
-    -- Verificar si la distancia entre cursos es de al menos dos meses
---    IF mesesDiferencia >= 2 THEN
---        SET cumpleDistancia = TRUE;
---    ELSE
---        SET cumpleDistancia = FALSE;
---    END IF;
-    
-    -- Devolver el resultado
---    SELECT cumpleDistancia;
--- END//
+-- CALL  VerificarDistanciaCursos('Introducción a la Logística','2050-02-05','2050-03-06')
