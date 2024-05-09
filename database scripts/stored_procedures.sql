@@ -71,47 +71,6 @@ BEGIN
 	LEFT JOIN GrupoxCurso ON curso.idCurso = grupoxcurso.idCurso AND grupoxcurso.idGrupo = p_idGrupo;
 END //
 
--- Este procedimiento revisa que entre cursos del MISMO TIPO haya distancia de 2 MESES
--- Si se dio el "Curso A" en Mayo para el "Grupo 40", para cualquier otro grupo el "Curso A" debe darse hasta Agosto
--- CREATE PROCEDURE VerificarDistanciaCursos(
---    IN p_nombreCurso VARCHAR(60),
---    IN p_fechaInicio DATE,
---    IN p_fechaFinal DATE
--- )
--- BEGIN
---    DECLARE cursoExistente INT;
---    DECLARE fechaFinalExistente DATE;
---    DECLARE cumpleDistancia BOOLEAN; -- Variable local para almacenar el resultado
--- 	 DECLARE mesesDiferencia INT;
-    -- Verificar si ya hay un curso del mismo tipo registrado
---    SELECT idgrupo INTO cursoExistente
---     FROM grupoxcurso
- --   WHERE idcurso = (SELECT idcurso FROM curso WHERE nombre = p_nombreCurso);
-    
-    -- Si no hay cursos previos del mismo tipo, entonces no hay restricciones
-  --  IF cursoExistente IS NULL THEN
-  --      SET cumpleDistancia = TRUE;
- --   END IF;
-    
-    -- Obtener la fecha de finalización del curso existente más reciente
-  --  SELECT MAX(fechaFinal) INTO fechaFinalExistente
-  --  FROM grupoxcurso
-  --  WHERE idcurso = (SELECT idcurso FROM curso WHERE nombre = p_nombreCurso);
-    
-    -- Calcular la diferencia en meses entre las fechas
-
-  --  SET mesesDiferencia = TIMESTAMPDIFF(MONTH, fechaFinalExistente, p_fechaInicio);
-    
-    -- Verificar si la distancia entre cursos es de al menos dos meses
---    IF mesesDiferencia >= 2 THEN
---        SET cumpleDistancia = TRUE;
---    ELSE
---        SET cumpleDistancia = FALSE;
---    END IF;
-    
-    -- Devolver el resultado
---    SELECT cumpleDistancia;
--- END//
 
 -- Este procedimiento revisa que entre cursos de UN MISMO GRUPO haya distancia de 1 semana
 CREATE PROCEDURE VerificarDistanciaUnaSemana(
