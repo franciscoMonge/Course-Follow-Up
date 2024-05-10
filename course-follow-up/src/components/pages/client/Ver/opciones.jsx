@@ -10,6 +10,8 @@ function Opciones () {
     const grupoNumero = location?.state?.grupoNumero;
     const idcurso = location?.state?.idcurso;
     const cursoNombre = location?.state?.cursoNombre;
+    const cursoSeleccionado = location?.state?.cursoSeleccionado;
+    const horario = location?.state?.horario;
     const fechaInicio = location.state.fechaInicio;
     const fechaFinal = location.state.fechaFinal;
     const añoPlanificador = location.state.añoPlanificador;
@@ -19,6 +21,7 @@ function Opciones () {
 
     const handleModificar = () => {
         alert('Modificar')
+        //navigate('/ModificarCursos', {state:{idCurso: idcurso, cursoSeleccionado: cursoSeleccionado, numero: grupoNumero, idGrupo: grupo_id, horario: horario}});
     };
 
     const handleIntercambiar = () => {

@@ -103,9 +103,9 @@ const App1 = () => {
     navigate('/Modificar_Planificacion', { state: { courses, añoPlanificador}})
   }
 
-  const handleOpciones = (idgrupoXcurso, grupo_id, grupoNumero, idcurso, cursoNombre) =>{
+  const handleOpciones = (idgrupoXcurso, grupo_id, grupoNumero, idcurso, cursoNombre, cursoSeleccionado, horario ) =>{
     navigate('/Opciones',{state:{idgrupoXcurso: idgrupoXcurso, grupo_id: grupo_id, grupoNumero: grupoNumero, idcurso: idcurso, cursoNombre: cursoNombre, fechaInicio: fechaInicio, fechaFinal: fechaFinal, 
-      añoPlanificador: añoPlanificador}});
+      añoPlanificador: añoPlanificador, cursoSeleccionado: cursoSeleccionado, horario: horario}});
   }
 
 
@@ -138,8 +138,8 @@ const App1 = () => {
                     .map((course) => (
                       <div key={course.id} style={{ backgroundColor: group.color, color: 'white', padding: '5px' }}>
                         <hr />
-                        <button className="btn btn-light" onClick={() => handleOpciones(course.idgrupoXcurso, course.grupo_id, course.idGRUPO, course.id, course.name)}>Opciones</button>
-                        
+                        <button className="btn btn-light" onClick={() => handleOpciones(course.idgrupoXcurso, course.grupo_id, course.idGRUPO, course.id, course.name, course, course.horario)}>Opciones</button>
+                        <br />
                         {course.name}
                         <br />
                         {new Date(course.startDate).getMonth() === index && (
@@ -154,6 +154,7 @@ const App1 = () => {
                             <br />
                           </>
                         )}
+                        Horario: {course.horario}
                         <div>
                         <strong>Fusión:</strong>{' '}
                           {fusiones.length > 0 &&
