@@ -25,7 +25,7 @@ function Ver_Planificador() {
             alert("No ha seleccionado o creado un planificador, por favor inténtelo de nuevo.");
         }
         else {
-            navigate('/App', { state: { fechaInicio, fechaFinal, añoPlanificador } });
+            navigate('/App', { state: { fechaInicio: fechaInicio, fechaFinal: fechaFinal, añoPlanificador: añoPlanificador }});
         }
     };
 
