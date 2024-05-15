@@ -122,7 +122,7 @@ function Login () {
         <div>
             <Navbar/>
             <div className="container d-flex flex-column align-items-center justify-content-center vh-100">
-                <h1 className="mb-4">Course Follow-Up</h1>
+                <h1 className="mb-4" style={{ color: 'white'}}>Course Follow-Up</h1>
                 <div className="card m-4 text-center" style={{ width: '500px'}}>
                     <div className="card-header">
                         <h2>Login</h2>
@@ -146,9 +146,9 @@ function Login () {
                             />
                             <button 
                                 type="button" 
-                                className="btn position-absolute end-0 top-50 translate-middle-y"
+                                className="btn position-absolute end-0 translate-middle-y"
                                 onClick={() => setShowPassword(!showPassword)}
-                                style={{ marginRight: "15px", marginTop: "5px" }}
+                                style={{ marginRight: "15px" }}
                             >
                                 <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
                             </button>

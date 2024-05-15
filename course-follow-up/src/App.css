@@ -4,3 +4,47 @@
   padding: 2rem;
   text-align: center;
 }
+
+body {
+  background: linear-gradient(to bottom, #007bff, #ff8c00);
+  margin: 0;
+}
+
+.btn-primary {
+background-color: #092D4E; /* Color de fondo del botón primario */
+color: #ffffff; /* Color de texto del botón primario */
+border: none; /* Eliminar el borde del botón primario */
+padding: 10px 20px; /* Espaciado interno del botón primario */
+border-radius: 20px; /* Radio de borde del botón primario */
+margin-bottom: 20px;
+}
+
+.btn-primary:hover {
+background-color: #0056b3; /* Cambio de color de fondo al pasar el cursor sobre el botón primario */
+}
+
+.btn-back {
+background-color: #006769       ; /* Color de fondo del botón primario */
+color: #ffffff; /* Color de texto del botón primario */
+border: none; /* Eliminar el borde del botón primario */
+padding: 10px 20px; /* Espaciado interno del botón primario */
+border-radius: 20px; /* Radio de borde del botón primario */
+margin-bottom: 20px;
+}
+
+.btn-back:hover {
+background-color: #9DDE8B ; /* Cambio de color de fondo al pasar el cursor sobre el botón primario */
+}
+
+.btn-danger {
+background-color: #C40C0C       ; /* Color de fondo del botón primario */
+color: #ffffff; /* Color de texto del botón primario */
+border: none; /* Eliminar el borde del botón primario */
+padding: 10px 20px; /* Espaciado interno del botón primario */
+border-radius: 20px; /* Radio de borde del botón primario */
+margin-bottom: 20px;
+}
+
+.btn-danger:hover {
+background-color: #e39c8d  ; /* Cambio de color de fondo al pasar el cursor sobre el botón primario */
+}
