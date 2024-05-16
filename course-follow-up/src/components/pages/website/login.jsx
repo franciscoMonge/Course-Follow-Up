@@ -47,7 +47,6 @@ function Login () {
     }
 
     const validarFormatoCorreo = (correo) => {
-        console.log("CORREO", correo);
         const regex = /@(estudiantec\.cr|itcr\.ac\.cr)$/i;
         return regex.test(correo);
     };
@@ -129,6 +128,7 @@ function Login () {
                     </div>
                     <div className="card-body">
                         <div className="form-group">
+                            <br/>
                             <label>Dirección de correo electrónico:</label>
                             <input 
                                 type="text" 
@@ -138,6 +138,7 @@ function Login () {
                             />
                         </div>
                         <div className="form-group">
+                            <br/>
                             <label>Contraseña:</label>
                             <input 
                                 type= {showPassword ? "text" : "password"} 
@@ -146,9 +147,9 @@ function Login () {
                             />
                             <button 
                                 type="button" 
-                                className="btn position-absolute end-0 translate-middle-y"
+                                className="btn position-absolute end-0 top-50 translate-middle-y"
                                 onClick={() => setShowPassword(!showPassword)}
-                                style={{ marginRight: "15px" }}
+                                style={{ marginRight: "15px", marginTop: '10px' }}
                             >
                                 <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
                             </button>
