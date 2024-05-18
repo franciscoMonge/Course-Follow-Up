@@ -174,13 +174,7 @@ const App1 = () => {
         </tbody>
       </table>
       <div>
-        <button style={ { backgroundColor: 'black'}} onClick={handleBack}>
-          Volver
-        </button>
-        
-        <button style={{ background: '#092D4E', marginLeft: '20px'}} onClick={handleModify}>
-          Modificar
-        </button>
+        <button className="btn btn-back" onClick={handleBack}>Volver</button>
       </div>
     </div>
   );

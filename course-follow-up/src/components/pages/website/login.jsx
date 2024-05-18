@@ -47,7 +47,6 @@ function Login () {
     }
 
     const validarFormatoCorreo = (correo) => {
-        console.log("CORREO", correo);
         const regex = /@(estudiantec\.cr|itcr\.ac\.cr)$/i;
         return regex.test(correo);
     };
@@ -122,13 +121,14 @@ function Login () {
         <div>
             <Navbar/>
             <div className="container d-flex flex-column align-items-center justify-content-center vh-100">
-                <h1 className="mb-4">Course Follow-Up</h1>
+                <h1 className="mb-4" style={{ color: 'white'}}>Course Follow-Up</h1>
                 <div className="card m-4 text-center" style={{ width: '500px'}}>
                     <div className="card-header">
                         <h2>Login</h2>
                     </div>
                     <div className="card-body">
                         <div className="form-group">
+                            <br/>
                             <label>Dirección de correo electrónico:</label>
                             <input 
                                 type="text" 
@@ -138,6 +138,7 @@ function Login () {
                             />
                         </div>
                         <div className="form-group">
+                            <br/>
                             <label>Contraseña:</label>
                             <input 
                                 type= {showPassword ? "text" : "password"} 
@@ -148,7 +149,7 @@ function Login () {
                                 type="button" 
                                 className="btn position-absolute end-0 top-50 translate-middle-y"
                                 onClick={() => setShowPassword(!showPassword)}
-                                style={{ marginRight: "15px", marginTop: "5px" }}
+                                style={{ marginRight: "15px", marginTop: '10px' }}
                             >
                                 <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
                             </button>

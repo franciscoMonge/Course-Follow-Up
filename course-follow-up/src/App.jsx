@@ -14,6 +14,9 @@ import Intercambiar_Cursos from './components/pages/client/Modificar/intercambia
 import Opciones from './components/pages/client/Ver/opciones';
 import Fusionar_Grupo from './components/pages/client/Ver/fusionarGrupo';
 import Modificar_Curso from './components/pages/client/Ver/modificarCurso';
+import MiCuenta from './components/pages/client/Cuenta/mi_cuenta';
+import EditarCuenta from './components/pages/client/Cuenta/edlitar_cuenta';
+import GestionarAdministradores from './components/pages/client/Cuenta/gestionar_administradores';
 import './App.css'
 
 function App() {
@@ -36,6 +39,9 @@ function App() {
         <Route path="*" element={<Navigate to="/" />} />
         <Route path="/IntercambiarCursos" element={<Intercambiar_Cursos />}/>
         <Route path="/ModificarCursos" element={<Modificar_Curso />}/>
+        <Route path="/MiCuenta" element={<MiCuenta />}/>
+        <Route path="/EditarCuenta" element={<EditarCuenta />}/>
+        <Route path="/GestionarAdministradores" element={<GestionarAdministradores />}/>
       </Routes>
     </Router>
   );

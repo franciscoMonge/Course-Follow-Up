@@ -31,7 +31,7 @@ function DropdownMenu() {
     };
 
     const handleItemCuenta= (e) => {
-        console.log('Opción de menú clickeada:', e.target.innerText);
+        navigate('/MiCuenta');
     };
 
     return (

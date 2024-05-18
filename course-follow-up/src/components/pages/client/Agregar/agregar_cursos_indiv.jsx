@@ -419,7 +419,7 @@ const validarDistanciaUnaSemana = async () => {
           </div>
           <div className="m-3">
             <hr />
-            <button className="btn btn-danger m-4" onClick={handleBack}>Volver</button>
+            <button className="btn btn-back m-4" onClick={handleBack}>Volver</button>
           </div>
         </div>
       </div>
