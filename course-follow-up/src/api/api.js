@@ -63,7 +63,7 @@ app.get('/usuarios', async(req, res) =>{
       const [usuarios] = await db.query("SELECT * FROM coursefollowup.usuario");
       
       const usuariosDesencriptados = usuarios.map(usuario => ({
-        id: usuario.id,
+        idusuario: usuario.idusuario,
         nombre: usuario.nombre,
         apellidos: usuario.apellidos,
         correo: decryptData(usuario.correo),
@@ -78,6 +78,36 @@ app.get('/usuarios', async(req, res) =>{
         console.error('Error al obtener usuarios:', error);
         res.status(500).json({ error: 'Error al obtener usuarios' });
     }
+});
+
+// Ruta para obtener un usuario por ID
+app.get('/usuario/:idUsuario', async(req, res) => {
+  const { idUsuario } = req.params;
+  try {
+      // Obtener el usuario de la base de datos
+      const [usuarios] = await db.query("SELECT * FROM coursefollowup.usuario WHERE idusuario = ?", [idUsuario]);
+      
+      if (usuarios.length === 0) {
+          return res.status(404).json({ error: 'Usuario no encontrado' });
+      }
+
+      const usuario = usuarios[0];
+      const usuarioDesencriptado = {
+          idusuario: usuario.idusuario,
+          nombre: usuario.nombre,
+          apellidos: usuario.apellidos,
+          correo: decryptData(usuario.correo),
+          contraseña: decryptData(usuario.contraseña),
+          admin: usuario.admin
+      };
+
+      console.log("Usuario encontrado", usuarioDesencriptado);
+
+      res.json(usuarioDesencriptado);
+  } catch(error) {
+      console.error('Error al obtener usuario:', error);
+      res.status(500).json({ error: 'Error al obtener usuario' });
+  }
 });
 
 // Ruta para agregar un nuevo usuario
@@ -101,6 +131,31 @@ app.post('/usuarios', async (req, res) => {
       res.status(500).json({ error: 'Error al agregar usuario' });
     }
   });
+
+// Ruta para actualizar un usuario --> Editar Cuenta
+app.put('/usuario/:idUsuario', async (req, res) => {
+  const { idUsuario } = req.params;
+  const { correo, contraseña } = req.body;
+
+  // Encriptar los datos sensibles antes de almacenarlos en la base de datos
+  const correoEncriptado = encryptData(correo); 
+  const psswrdEncriptado = encryptData(contraseña);
+
+  try {
+      const query = 'UPDATE coursefollowup.usuario SET correo = ?, contraseña = ? WHERE idusuario = ?';
+      const [results] = await db.query(query, [correoEncriptado, psswrdEncriptado, idUsuario]);
+
+      if (results.affectedRows === 0) {
+          res.status(404).send('Usuario no encontrado');
+      } else {
+          res.send('Usuario actualizado correctamente');
+      }
+  } catch (error) {
+      console.error('Error al actualizar usuario:', error);
+      res.status(500).send('Error al actualizar usuario');
+  }
+});
+
 
 //Ruta para obtener todos los grupos
 app.get('/grupos', async(req, res) =>{

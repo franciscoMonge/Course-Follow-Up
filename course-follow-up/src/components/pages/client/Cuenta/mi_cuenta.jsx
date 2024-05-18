@@ -1,13 +1,46 @@
 import Navbar from "../../shared/navbar";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../website/user_context";
+import axios from 'axios';
 
 function MiCuenta () {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
+    const { idUsuario } = useContext(UserContext);
+    const [usuarioEncontrado, setusuarioEncontrado] = useState([]);
+
+    console.log('ID USUARIO: ', idUsuario);
+
+    const [usuario, setUsuarios] = useState({
+        nombre: '',
+        apellidos: '',
+        correo: '',
+        contraseña: ''
+    });
+
+    // Carga todas las actas de la BD en la lista "actas"
+    useEffect(() =>{
+        axios.get(`http://localhost:3001/usuario/${idUsuario}`)
+        .then(response =>{
+            setUsuarios(response.data);
+
+        })
+        .catch(error => {
+            console.log('ERROR: Carga Fallida de usuario', error);
+        });
+    }, [idUsuario]);
+    
+    useEffect(() => {
+        // Este se ejecuta cuando actas cambie
+        console.log('usuario:', usuario[0]);
+        //console.log('keywords: ', actas[0].palabras_clave)
+    }, [usuario]);
+
+    //const usuarioEncontrado = usuario.find(usuario => usuario.idusuario === idUsuario);
 
     const handleBack = () =>{
         navigate('/MainPage');
@@ -28,23 +61,22 @@ function MiCuenta () {
             <h1 style={{ color: 'white'}} >Mi Cuenta</h1>
             
             <div className="card m-4 p-4" style={{ textAlign: 'left'}}>
-                
                 <div className="form-group">
                     <br/>
                     <h5 style={{ display: 'inline'}}>Nombre: </h5>
-                    <label style={{ display: 'inline', fontSize: 'larger'}}> Mariana</label>
+                    <label style={{ display: 'inline', fontSize: 'larger'}}> {usuario.nombre}</label>
                 </div>
                 
                 <div className="form-group">
                     <br/>
                     <h5 style={{ display: 'inline'}}>Apellido: </h5>
-                    <label style={{ display: 'inline', fontSize: 'larger'}}> Fernández</label>
+                    <label style={{ display: 'inline', fontSize: 'larger'}}> {usuario.apellidos}</label>
                 </div>
                 
                 <div className="form-group">
                     <br/>
                     <h5 style={{ display: 'inline'}}>Dirección de correo: </h5>
-                    <label style={{ display: 'inline', fontSize: 'larger'}}> marianafdmz@estudiantec.cr</label>
+                    <label style={{ display: 'inline', fontSize: 'larger'}}> {usuario.correo}</label>
                 </div>
                 
                 <div className="form-group">
@@ -53,7 +85,7 @@ function MiCuenta () {
                     <input
                         type= {showPassword ? "text" : "password"} 
                         className="form-control m-2" 
-                        value= '123445'
+                        value= {usuario.contraseña}
                         readOnly
                     />
                     <button 

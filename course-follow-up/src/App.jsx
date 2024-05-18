@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { UserProvider } from './components/pages/website/user_context';
 import Login from './components/pages/website/login'
 import Register from './components/pages/website/register'
 import MainPage from './components/pages/client/main_page';
@@ -21,29 +22,31 @@ import './App.css'
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Login />}/>
-        <Route path="/Register" element={<Register />}/>
-        <Route path="/MainPage" element={<MainPage />}/>
-        <Route path="/AgregarPlanificador" element={<Agregar_Planificador />}/>
-        <Route path="/Modificar_Planificacion" element={<Modificar_Planificacion />}/>
-        <Route path="/AgregarGrupo" element={<Agregar_Grupo />}/>
-        <Route path="/CrearGrupo" element={<Crear_Grupo />}/>
-        <Route path="/AgregarCursos" element={<Agregar_Cursos />}/>
-        <Route path="/AgregarCursoIndividual" element={<Agregar_Cursos_Indiv />}/>
-        <Route path="/SeleccionaAño" element={<Ver_Planificador />}/>
-        <Route path="/App" element={<App1 />}/>
-        <Route path="/Opciones" element={<Opciones />}/>
-        <Route path="/FusionarGrupo" element={<Fusionar_Grupo />}/>
-        <Route path="*" element={<Navigate to="/" />} />
-        <Route path="/IntercambiarCursos" element={<Intercambiar_Cursos />}/>
-        <Route path="/ModificarCursos" element={<Modificar_Curso />}/>
-        <Route path="/MiCuenta" element={<MiCuenta />}/>
-        <Route path="/EditarCuenta" element={<EditarCuenta />}/>
-        <Route path="/GestionarAdministradores" element={<GestionarAdministradores />}/>
-      </Routes>
-    </Router>
+    <UserProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />}/>
+          <Route path="/Register" element={<Register />}/>
+          <Route path="/MainPage" element={<MainPage />}/>
+          <Route path="/AgregarPlanificador" element={<Agregar_Planificador />}/>
+          <Route path="/Modificar_Planificacion" element={<Modificar_Planificacion />}/>
+          <Route path="/AgregarGrupo" element={<Agregar_Grupo />}/>
+          <Route path="/CrearGrupo" element={<Crear_Grupo />}/>
+          <Route path="/AgregarCursos" element={<Agregar_Cursos />}/>
+          <Route path="/AgregarCursoIndividual" element={<Agregar_Cursos_Indiv />}/>
+          <Route path="/SeleccionaAño" element={<Ver_Planificador />}/>
+          <Route path="/App" element={<App1 />}/>
+          <Route path="/Opciones" element={<Opciones />}/>
+          <Route path="/FusionarGrupo" element={<Fusionar_Grupo />}/>
+          <Route path="*" element={<Navigate to="/" />} />
+          <Route path="/IntercambiarCursos" element={<Intercambiar_Cursos />}/>
+          <Route path="/ModificarCursos" element={<Modificar_Curso />}/>
+          <Route path="/MiCuenta" element={<MiCuenta />}/>
+          <Route path="/EditarCuenta" element={<EditarCuenta />}/>
+          <Route path="/GestionarAdministradores" element={<GestionarAdministradores />}/>
+        </Routes>
+      </Router>
+    </UserProvider>
   );
 }
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../shared/navbar";
 import axios from 'axios';
@@ -7,9 +7,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import generarRandomPassword from "./generarPassword";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+import { UserContext } from "./user_context";
+
 
 function Login () {
     const navigate = useNavigate();
+    const { setIdUsuario } = useContext(UserContext);
 
     //Datos de Login
     const [usuarios, setUsuarios] = useState([]);
@@ -68,6 +71,7 @@ function Login () {
             if (usuarioEncontrado) {
                 sessionStorage.setItem('usuarioActual', correo);
                 // El usuario y la contraseña coinciden
+                setIdUsuario(usuarioEncontrado.idusuario);
                 navigate('/MainPage',{});
                 console.log("Inicio de sesión exitoso");
             } else {
