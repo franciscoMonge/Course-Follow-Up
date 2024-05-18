@@ -21,7 +21,7 @@ function Opciones () {
 
     const handleModificar = () => {
         alert('Modificar')
-        //navigate('/ModificarCursos', {state:{idCurso: idcurso, cursoSeleccionado: cursoSeleccionado, numero: grupoNumero, idGrupo: grupo_id, horario: horario}});
+        navigate('/ModificarCursos', {state:{idCurso: idcurso, cursoSeleccionado: cursoSeleccionado, numero: grupoNumero, idGrupo: grupo_id, horario: horario}});
     };
 
     const handleIntercambiar = () => {

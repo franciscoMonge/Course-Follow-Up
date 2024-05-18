@@ -24,6 +24,9 @@ const Modificar_Curso = () => {
   const { horario} = location.state; //Este es el horario del GRUPO
 
 
+  console.log('VER AQUI FRAN: ', cursoSeleccionado);
+
+
   // Variables para guardar los cambios
   const [profesor, setProfesor] = useState('');
   const [fechaInicio, setFechaInicio] = useState('');
@@ -38,9 +41,11 @@ const Modificar_Curso = () => {
 
   useEffect(() => {
     if (cursoSeleccionado) {
+      const formattedStartDate = new Date(cursoSeleccionado.startDate).toISOString().split('T')[0];
+      const formattedEndDate = new Date(cursoSeleccionado.endDate).toISOString().split('T')[0];
+      setFechaInicio(formattedStartDate || '');
+      setFechaFinal(formattedEndDate || '');
       setProfesor(cursoSeleccionado.profesor || '');
-      setFechaInicio(cursoSeleccionado.fechaInicio || '');
-      setFechaFinal(cursoSeleccionado.fechaFinal || '');
       setHorarioCurso(cursoSeleccionado.horario || '');
     }
     
@@ -171,7 +176,7 @@ const Modificar_Curso = () => {
 const validarDistanciaCursosIguales = async () => { 
   console.log("Validación 2 meses");
   try {
-    const cumpleDistancia = await axios.get(`http://localhost:3001/distanciaCursosIguales/${cursoSeleccionado.nombre_curso}/${fechaInicio}/${fechaFinal}`);
+    const cumpleDistancia = await axios.get(`http://localhost:3001/distanciaCursosIguales/${cursoSeleccionado.name}/${fechaInicio}/${fechaFinal}`);
    //Así se debe obtener la info de la respuesta de BD cumpleDistancia.data[0][0][0].cumpleDistancia);
     // 0 =False, 1=true
  
@@ -367,7 +372,7 @@ const validarDistanciaUnaSemana = async () => {
             <div className="col-md-12 mb-12">
               <div className="card">
                 <div className="card-body">
-                  <h5 className="card-title">{cursoSeleccionado.nombre_curso}</h5>
+                  <h5 className="card-title">{cursoSeleccionado.name}</h5>
                   <div className="form-group">
                     <label>Profesor:</label>
                     <input
