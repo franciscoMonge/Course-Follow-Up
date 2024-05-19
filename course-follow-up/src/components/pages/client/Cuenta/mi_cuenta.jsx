@@ -10,6 +10,7 @@ function MiCuenta () {
     const [showPassword, setShowPassword] = useState(false);
 
     const handleBack = () =>{
+        sessionStorage.setItem('miCuenta', 'close') 
         navigate('/MainPage');
     };
 
