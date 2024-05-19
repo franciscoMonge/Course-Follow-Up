@@ -16,6 +16,21 @@ const App1 = () => {
   const [fusiones, setFusiones] = useState([]);
 
   useEffect(() => {
+    // Guarda los estilos anteriores para restaurarlos después
+    const previousStyles = {
+      background: document.body.style.background,
+    };
+
+    // Aplica los nuevos estilos
+    document.body.style.background = '#ffffff';
+
+    // Restaura los estilos anteriores cuando el componente se desmonta
+    return () => {
+      document.body.style.background = previousStyles.background;
+    };
+  }, []);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const [coursesResponse, fusionesResponse] = await Promise.all([
