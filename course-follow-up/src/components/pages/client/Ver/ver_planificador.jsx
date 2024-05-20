@@ -20,6 +20,7 @@ function Ver_Planificador() {
         }
     }, [añoPlanificador]);
 
+
     const handleContinuar = () => {
         if (añoPlanificador === "") {
             alert("No ha seleccionado o creado un planificador, por favor inténtelo de nuevo.");

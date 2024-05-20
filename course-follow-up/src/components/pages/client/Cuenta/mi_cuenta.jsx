@@ -43,6 +43,7 @@ function MiCuenta () {
     //const usuarioEncontrado = usuario.find(usuario => usuario.idusuario === idUsuario);
 
     const handleBack = () =>{
+        sessionStorage.setItem('miCuenta', 'close') 
         navigate('/MainPage');
     };
 
