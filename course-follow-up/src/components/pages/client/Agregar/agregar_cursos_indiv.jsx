@@ -17,10 +17,9 @@ const AgregarCursosIndiv = () => {
 
   const [showWarning, setShowWarning] = useState(false);
   const [warningMessage, setWarningMessage] = useState('');
-  const [continueUpdate, setContinueUpdate] = useState(false);
   const [pendingValidations, setPendingValidations] = useState([]);
+  const [validationIndex, setValidationIndex] = useState(0);
 
-  // Llenar datos del curso en el formulario si ya existen
   useEffect(() => {
     if (cursoSeleccionado) {
       setProfesor(cursoSeleccionado.profesor || '');
@@ -30,7 +29,6 @@ const AgregarCursosIndiv = () => {
     }
   }, [cursoSeleccionado, horario]);
 
-  // Validación del día de la semana según el horario seleccionado
   const validarDiaFecha = () => {
     const inicioDateObject = new Date(fechaInicio);
     const finDateObject = new Date(fechaFinal);
@@ -63,7 +61,6 @@ const AgregarCursosIndiv = () => {
     return true;
   };
 
-  // Validación de la distancia entre fechas de inicio y finalización
   const validarDistanciaFechas = () => {
     const fechaInicioObj = new Date(fechaInicio);
     const fechaFinalObj = new Date(fechaFinal);
@@ -77,7 +74,6 @@ const AgregarCursosIndiv = () => {
     return true;
   };
 
-  // Validación del horario del curso con respecto al horario del grupo
   const validarHorarioCursoGrupo = () => {
     if ((horarioCurso === "Lunes y Miércoles" || horarioCurso === "L-M") && (horario !== "Lunes y Miércoles" && horario !== "L-M")) {
       setWarningMessage('El horario del curso no coincide con el horario del grupo al que está asignado. Esto podría causar conflictos en la planificación.\n  ¿Desea continuar de todos modos?');
@@ -92,7 +88,6 @@ const AgregarCursosIndiv = () => {
     return true;
   };
 
-  // Validación de la distancia mínima de 2 meses entre cursos iguales
   const validarDistanciaCursosIguales = async () => {
     try {
       const cumpleDistancia = await axios.get(`http://localhost:3001/distanciaCursosIguales/${cursoSeleccionado.nombre_curso}/${fechaInicio}/${fechaFinal}`);
@@ -107,7 +102,6 @@ const AgregarCursosIndiv = () => {
     return true;
   };
 
-  // Validación de la distancia mínima de 1 semana entre cursos del mismo grupo
   const validarDistanciaUnaSemana = async () => {
     try {
       const cumpleDistancia = await axios.get(`http://localhost:3001/validarDistanciaUnaSemana/${idGrupo}/${fechaInicio}`);
@@ -121,147 +115,172 @@ const AgregarCursosIndiv = () => {
     }
     return true;
   };
-    
-    // Manejar la confirmación de cambios
-    const handleConfirmar = async () => {
-      if (!fechaInicio || !fechaFinal || !horarioCurso) {
-        toast.error('Por favor completa todos los campos');
+
+  const handleConfirmar = async () => {
+    if (!fechaInicio || !fechaFinal || !horarioCurso) {
+      toast.error('Por favor completa todos los campos');
+      return;
+    }
+
+    const validations = [
+      { func: validarDiaFecha, isAsync: false },
+      { func: validarHorarioCursoGrupo, isAsync: false },
+      { func: () => fechaInicio <= fechaFinal, isAsync: false, errorMessage: 'La fecha de inicio debe ser anterior a la fecha final' },
+      { func: validarDistanciaCursosIguales, isAsync: true },
+      { func: validarDistanciaFechas, isAsync: false },
+      { func: validarDistanciaUnaSemana, isAsync: true },
+    ];
+
+    for (let i = 0; i < validations.length; i++) {
+      const { func, isAsync, errorMessage } = validations[i];
+      const result = isAsync ? await func() : func();
+      if (!result) {
+        if (errorMessage) {
+          toast.error(errorMessage);
+        } else {
+          setValidationIndex(i);
+        }
         return;
       }
-  
-      if (!validarDiaFecha()) {
-        setPendingValidations([validarHorarioCursoGrupo, validarDistanciaCursosIguales, validarDistanciaUnaSemana]);
+    }
+
+    actualizarCurso();
+  };
+
+  const actualizarCurso = () => {
+    axios.post('http://localhost:3001/actualizarCursos', {
+      idGrupo: idGrupo,
+      idCurso: idCurso,
+      fechaInicio: fechaInicio,
+      fechaFinal: fechaFinal,
+      profesor: profesor,
+      horario: horarioCurso
+    })
+    .then(response => {
+      console.log('Curso actualizado correctamente:', response.data);
+      toast.success("Curso actualizado correctamente");
+      setTimeout(() => {
+        navigate('/AgregarCursos', { state: { idGrupo, numero, horario } });
+      }, 3000);
+    })
+    .catch(error => {
+      console.error('Error al actualizar curso:', error);
+      toast.error("Error al actualizar el curso");
+    });
+  };
+
+  const handleContinue = async () => {
+    setShowWarning(false);
+    const validations = [
+      { func: validarDiaFecha, isAsync: false },
+      { func: validarHorarioCursoGrupo, isAsync: false },
+      { func: () => fechaInicio <= fechaFinal, isAsync: false, errorMessage: 'La fecha de inicio debe ser anterior a la fecha final' },
+      { func: validarDistanciaCursosIguales, isAsync: true },
+      { func: validarDistanciaFechas, isAsync: false },
+      { func: validarDistanciaUnaSemana, isAsync: true },
+    ];
+
+    for (let i = validationIndex + 1; i < validations.length; i++) {
+      const { func, isAsync, errorMessage } = validations[i];
+      const result = isAsync ? await func() : func();
+      if (!result) {
+        if (errorMessage) {
+          toast.error(errorMessage);
+        } else {
+          setValidationIndex(i);
+        }
         return;
       }
-  
-      if (!validarHorarioCursoGrupo()) {
-        setPendingValidations([validarDistanciaCursosIguales, validarDistanciaUnaSemana]);
-        return;
-      }
-  
-      if (fechaInicio > fechaFinal) {
-        toast.error('La fecha de inicio debe ser anterior a la fecha final');
-        return;
-      }
-  
-      if (!await validarDistanciaCursosIguales()) {
-        setPendingValidations([validarDistanciaUnaSemana]);
-        return;
-      }
-  
-      if (!validarDistanciaFechas()) {
-        setPendingValidations([]);
-        return;
-      }
-  
-      if (!await validarDistanciaUnaSemana()) {
-        setPendingValidations([]);
-        return;
-      }
-  
-      setContinueUpdate(true);
-    };
-  
-    // Manejar la continuación de la acción a pesar de la advertencia
-    const handleContinue = () => {
-      setShowWarning(false);
-      const currentValidation = pendingValidations.shift();
-      if (currentValidation) {
-        currentValidation();
-      } else {
-        setContinueUpdate(true);
-      }
-    };
-  
-    // Manejar la cancelación de la acción a pesar de la advertencia
-    const handleCancel = () => {
-      setShowWarning(false);
-      setPendingValidations([]);
-    };
-  
-    // Cerrar el modal de advertencia
-    const handleCerrarModal = () => {
-      setShowWarning(false);
-    };
-  
-    // Manejar el regreso a la pantalla anterior
-    const handleBack = () => {
-      navigate('/AgregarCursos', { state: { idGrupo, numero, horario } });
-    };
-  
-    // Manejar el cambio en el select del horario
-    const handleChange = (e) => {
-      setHorarioCurso(e.target.value);
-    };
-  
-    return (
-      <div>
-        <Navbar />
-        <div className="container" style={{ paddingTop: '80px' }}>
-          <ToastContainer position="top-center" />
-          <h3>Agregar Planificación</h3>
-          {showWarning && (
-            <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
-              <div className="modal-dialog" role="document">
-                <div className="modal-content">
-                  <div className="modal-header">
-                    <h5 className="modal-title">Advertencia</h5>
-                    <button type="button" className="btn-close" onClick={handleCerrarModal}></button>
-                  </div>
-                  <div className="modal-body">
-                    {warningMessage}
-                  </div>
-                  <div className="modal-footer">
-                    <button type="button" className="btn btn-secondary" onClick={handleCancel}>Cerrar</button>
-                    <button type="button" className="btn btn-primary" onClick={handleContinue}>Continuar</button>
-                  </div>
+    }
+
+    actualizarCurso();
+  };
+
+  const handleCancel = () => {
+    setShowWarning(false);
+    setValidationIndex(0);
+  };
+
+  const handleCerrarModal = () => {
+    setShowWarning(false);
+  };
+
+  const handleBack = () => {
+    navigate('/AgregarCursos', { state: { idGrupo, numero, horario } });
+  };
+
+  const handleChange = (e) => {
+    setHorarioCurso(e.target.value);
+  };
+
+  return (
+    <div>
+      <Navbar />
+      <div className="container" style={{ paddingTop: '80px' }}>
+        <ToastContainer position="top-center" />
+        <h3>Agregar Planificación</h3>
+        {showWarning && (
+          <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
+            <div className="modal-dialog" role="document">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">Advertencia</h5>
+                  <button type="button" className="btn-close" onClick={handleCerrarModal}></button>
+                </div>
+                <div className="modal-body">
+                  {warningMessage}
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-secondary" onClick={handleCancel}>Cerrar</button>
+                  <button type="button" className="btn btn-primary" onClick={handleContinue}>Continuar</button>
                 </div>
               </div>
             </div>
-          )}
-          <div className="row">
-            <div className="col">
-              <div className="form-group">
-                <span className="badge bg-light text-dark">
-                  <h5>Grupo:</h5>
-                  <h5>{numero}</h5>
-                </span>
-              </div>
-            </div>
-            <div className="col">
-              <div className="form-group">
-                <span className="badge bg-light text-dark">
-                  <h5>Horario del grupo:</h5>
-                  <h5>{horario}</h5>
-                </span>
-              </div>
+          </div>
+        )}
+        <div className="row">
+          <div className="col">
+            <div className="form-group">
+              <span className="badge bg-light text-dark">
+                <h5>Grupo:</h5>
+                <h5>{numero}</h5>
+              </span>
             </div>
           </div>
-          <br></br>
-          <div className="row">
-            <div className="col-md-12 mb-12">
-              <div className="card">
-                <div className="card-body">
-                  <h5 className="card-title">{cursoSeleccionado.nombre_curso}</h5>
-                  <div className="form-group">
-                    <label>Profesor:</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={profesor}
-                      onChange={(e) => setProfesor(e.target.value)}
-                    />
-                  </div>
-                  <div className='form-group'>
-                    <label>Fecha Inicio:</label>
-                    <input
-                      type="date"
-                      className="form-control"
-                      value={fechaInicio}
-                      onChange={(e) => setFechaInicio(e.target.value)}
-                    />
-                  </div>
-                  <div className='form-group'>
+          <div className="col">
+            <div className="form-group">
+              <span className="badge bg-light text-dark">
+                <h5>Horario del grupo:</h5>
+                <h5>{horario}</h5>
+              </span>
+            </div>
+          </div>
+        </div>
+        <br></br>
+        <div className="row">
+          <div className="col-md-12 mb-12">
+            <div className="card">
+              <div className="card-body">
+                <h5 className="card-title">{cursoSeleccionado.nombre_curso}</h5>
+                <div className="form-group">
+                  <label>Profesor:</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={profesor}
+                    onChange={(e) => setProfesor(e.target.value)}
+                  />
+                </div>
+                <div className='form-group'>
+                  <label>Fecha Inicio:</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={fechaInicio}
+                    onChange={(e) => setFechaInicio(e.target.value)}
+                  />
+                </div>
+                <div className='form-group'>
                   <label>Fecha Final:</label>
                   <input
                     type="date"
@@ -300,5 +319,4 @@ const AgregarCursosIndiv = () => {
   );
 };
 
-export default AgregarCursosIndiv;                  
-     
+export default AgregarCursosIndiv;
