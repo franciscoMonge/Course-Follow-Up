@@ -85,7 +85,9 @@ const Agregar_Cursos_Indiv = () => {
     console.log('diaFin',diaFin);
 
     //Si el horario del GRUPO es LYM.Los únicos días permitidos serían L(1) y M(3)
-    if(horario === 'Lunes y Miércoles' || horario === 'L-M'){
+    //if(horario === 'Lunes y Miércoles' || horario === 'L-M'){
+    //Si el horario del CURSO es LYM.Los únicos días permitidos serían L(1) y M(3)
+    if(horarioCurso === 'Lunes y Miércoles' || horarioCurso === 'L-M'){
       if(diaInicio !== 1 && diaInicio !== 3){
         setContinueUpdate(false);
         toast.error('La fecha de inicio seleccionada es: ' + dias[diaInicio] + '. No corresponde a Lunes ni Miércoles.');
@@ -99,7 +101,9 @@ const Agregar_Cursos_Indiv = () => {
     }
     
     //Si el horario del GRUPO es KYJ. Los únicos días permitidos serían K(2) y J(4)
-    if(horario === 'Martes y Jueves'|| horario === 'K-J'){
+    //if(horario === 'Martes y Jueves'|| horario === 'K-J'){
+    //Si el horario del CURSO es KYJ. Los únicos días permitidos serían K(2) y J(4)
+    if(horarioCurso === 'Martes y Jueves'|| horarioCurso === 'K-J'){    
       if(diaInicio !== 2 && diaInicio !== 4){
         setContinueUpdate(false);
         toast.error('La fecha de inicio seleccionada es: ' + dias[diaInicio] + '. No corresponde a Martes ni Jueves');
@@ -221,8 +225,6 @@ const validarDistanciaUnaSemana = async () => {
         console.log("Fecha final: ", fechaFinal);
         console.log("Horario Curso: ", horarioCurso);
         console.log("Profesor: ", profesor);
-        console.log("---------------------------");
-        console.log(cursoSeleccionado);
       toast.error('Por favor completa todos los campos');
       return;
     }
