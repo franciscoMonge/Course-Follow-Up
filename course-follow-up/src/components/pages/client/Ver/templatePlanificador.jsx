@@ -85,6 +85,7 @@ const App1 = () => {
         endDate: new Date(course.fechaFinal),
         profesor: course.profesor,
         horario: course.cursoHorario,
+        jornada: course.jornada,
       });
     });
 
@@ -176,6 +177,8 @@ const App1 = () => {
                           </>
                         )}
                         Horario: {course.horario}
+                        <br />
+                        Jornada: {course.jornada}
                         <div>
                         <strong>Fusión:</strong>{' '}
                           {fusiones.length > 0 &&
