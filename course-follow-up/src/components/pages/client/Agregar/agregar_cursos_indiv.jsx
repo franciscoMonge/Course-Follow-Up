@@ -319,8 +319,6 @@ const AgregarCursosIndiv = () => {
                     aria-label=".form-select-sm example"
                     onChange={handleChangeJornada}
                     value={
-                      jornadaCurso === 'Diurno' ? 'Diurno☀️' :
-                      jornadaCurso === 'Nocturno' ? 'Nocturno🌒' :
                       jornadaCurso // Si no coincide con ninguno de los casos anteriores, se utiliza el valor actual de horarioCurso
                     }
                   >
