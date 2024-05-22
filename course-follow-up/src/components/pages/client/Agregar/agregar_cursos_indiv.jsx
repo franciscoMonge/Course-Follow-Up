@@ -27,6 +27,7 @@ const AgregarCursosIndiv = () => {
       setFechaInicio(cursoSeleccionado.fechaInicio || '');
       setFechaFinal(cursoSeleccionado.fechaFinal || '');
       setHorarioCurso(cursoSeleccionado.horario || horario || '');
+      setJornadaCurso('');
     }
   }, [cursoSeleccionado, horario]);
 
@@ -155,7 +156,8 @@ const AgregarCursosIndiv = () => {
       fechaInicio: fechaInicio,
       fechaFinal: fechaFinal,
       profesor: profesor,
-      horario: horarioCurso
+      horario: horarioCurso,
+      jornada: jornadaCurso,
     })
     .then(response => {
       console.log('Curso actualizado correctamente:', response.data);

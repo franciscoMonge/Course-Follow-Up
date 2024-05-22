@@ -149,7 +149,7 @@ app.get('/cursos/:idGrupo', async(req, res) =>{
 // Ruta para agregar un nuevo curso a un grupo
 app.post('/actualizarCursos', async (req, res) => {
   try {
-      const { idGrupo, idCurso, fechaInicio, fechaFinal, profesor, horario } = req.body;
+      const { idGrupo, idCurso, fechaInicio, fechaFinal, profesor, horario,jornada } = req.body;
 
       if(horario === "K-J"){
         nuevoHorario = "Martes y Jueves";
@@ -169,7 +169,7 @@ app.post('/actualizarCursos', async (req, res) => {
         const fechaFinalFormateada = fechaFinal.split('-').reverse().join('-');// Convertir a "YYYY-MM-DD"
       }
 
-      const result = await db.query("CALL updateCursoGrupo(?,?,?,?,?,?)", [idGrupo, idCurso, fechaInicio, fechaFinal, profesor, nuevoHorario]);
+      const result = await db.query("CALL updateCursoGrupo(?,?,?,?,?,?,?)", [idGrupo, idCurso, fechaInicio, fechaFinal, profesor, nuevoHorario,jornada]);
     res.status(201).json({ mensaje: 'Curso actualizado correctamente', resultado: result });
   } catch (error) {
     console.error('Error al actualizar curso:', error);

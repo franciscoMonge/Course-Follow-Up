@@ -9,7 +9,8 @@ CREATE PROCEDURE updateCursoGrupo (
     IN p_fechaInicio VARCHAR(20),
     IN p_fechaFinal varchar(20),
     IN p_profesor VARCHAR(200),
-    IN p_horario VARCHAR(45)
+    IN p_horario VARCHAR(45),
+    IN p_jornada VARCHAR(45)
 )
 BEGIN
     DECLARE curso_existente INT;
@@ -32,12 +33,13 @@ BEGIN
             fechaInicio = IF(p_fechaInicio IS NOT NULL AND p_fechaInicio <> '', p_fechaInicio, fechaInicio),
             fechaFinal = IF(p_fechaFinal IS NOT NULL AND p_fechaFinal <> '', p_fechaFinal, fechaFinal),
             profesor = IF(p_profesor IS NOT NULL AND p_profesor <> '', p_profesor, profesor),
-            horario = IF(p_horario IS NOT NULL AND p_horario <> '', p_horario, horario)
+            horario = IF(p_horario IS NOT NULL AND p_horario <> '', p_horario, horario),
+            jornada = IF(p_jornada IS NOT NULL AND p_jornada <> '', p_jornada, jornada)
         WHERE idGrupo = p_idGrupo AND idcurso = p_idCurso;
     ELSE
         -- Si el curso NO existe para ese grupo, se CREA un nuevo registro
-        INSERT INTO grupoxcurso (idGrupo, idcurso, fechaInicio, fechaFinal, profesor, horario)
-        VALUES (p_idGrupo, p_idCurso, p_fechaInicio, p_fechaFinal, p_profesor, p_horario);
+        INSERT INTO grupoxcurso (idGrupo, idcurso, fechaInicio, fechaFinal, profesor, horario,jornada)
+        VALUES (p_idGrupo, p_idCurso, p_fechaInicio, p_fechaFinal, p_profesor, p_horario,p_jornada);
     END IF;
 END //
 
