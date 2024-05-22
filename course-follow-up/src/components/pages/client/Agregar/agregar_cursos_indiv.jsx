@@ -1,434 +1,288 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 import Navbar from "../../shared/navbar";
 
-
-// Código para la ventana donde se muestra 
-// la información de UN curso específico
-
-
-const Agregar_Cursos_Indiv = () => {
+const AgregarCursosIndiv = () => {
   const navigate = useNavigate();
-  const mounted = useRef(false); // Declaramos mounted como un ref. Por bug que tiene el use effect
   const location = useLocation();
+  const { cursos, idCurso, cursoSeleccionado, numero, idGrupo, horario } = location.state;
 
-  //De la página anterior debemos traer 
-// cursos, idCursoSeleccionado,cursoSeleccionado, grupo, idGrupo, horario
-  const { cursos} = location.state; 
-  const { idCurso} = location.state; //Este es el ID del cruso
-  const {cursoSeleccionado} =  location.state; //Este es el OBJETO curso
-  const {numero} = location.state;
-  const { idGrupo } = location.state; //Este es el ID del grupo
-  const { horario} = location.state; //Este es el horario del GRUPO
-
-
-  // Variables para guardar los cambios
   const [profesor, setProfesor] = useState('');
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFinal, setFechaFinal] = useState('');
-  const [horarioCurso, setHorarioCurso] = useState(''); 
+  const [horarioCurso, setHorarioCurso] = useState('');
 
-  //Modals para errores de fechas
-  const [showWarning, setShowWarning] = useState(false); 
-  const [warningMessage, setWarningMessage] = useState(''); // Mensaje de advertencia
+  const [showWarning, setShowWarning] = useState(false);
+  const [warningMessage, setWarningMessage] = useState('');
   const [continueUpdate, setContinueUpdate] = useState(false);
-
 
   useEffect(() => {
     if (cursoSeleccionado) {
       setProfesor(cursoSeleccionado.profesor || '');
       setFechaInicio(cursoSeleccionado.fechaInicio || '');
       setFechaFinal(cursoSeleccionado.fechaFinal || '');
-      setHorarioCurso(cursoSeleccionado.horario || horario || ''); //Se agrega la variable horario que se obtiene de location
+      setHorarioCurso(cursoSeleccionado.horario || horario || '');
     }
-    
-  }, [cursoSeleccionado,horario]);
-  
-  //Validar que la fecha ingresada coincida con el día del horario
+  }, [cursoSeleccionado, horario]);
+
   const validarDiaFecha = () => {
-    console.log("Validación dia-fecha");
-    // Convertimos fechas a Date para poder usar getDay()
     const inicioDateObject = new Date(fechaInicio);
     const finDateObject = new Date(fechaFinal);
 
-    // Obtener el día correspondiente a las fechas
-    //(Domingo = 0, 1= Lunes, 2= Martes, 3=Miércoles, 4=Jueves, ..., 6 para Sábado)
-    /**
-     * EXPLICACIÓN:
-     * Get day tiene un desfase, por lo que devuelve un día atrás las fechas. Ejemplo: El 01 de mayo 2024
-     * lo identifica como martes, o sea (2) en vez de (3).
-     * Para solucionar este problema se ha sumado "1" en todos los casos
-     * Pero cuando se presenta el caso que una fecha es Domingo, get day la identifica como 6 y
-     * nuestra solución lo pndría como 7 (valor inexistente en arreglo de días)
-     * Por ende se ha implementado otra solución, cuando getday es =6, ponemos el valor en 0 (Domingo)
-     */
-    let diaInicio = 0;
-    let diaFin = 0;
-    if(inicioDateObject.getDay() === 6){
-      diaInicio = 0;//Se pone en 0 representando al domingo
-    }
-    else{
-       diaInicio = inicioDateObject.getDay() + 1 ; //Devuelve un int. Hay que sumarle 1 porque hay un desfaz en zonas horarias por el String
-    }
-     
-    if(finDateObject.getDay() === 6){
-      diaFin = 0;//Se pone en 0 representando al domingo
-    }
-    else{
-      diaFin = finDateObject.getDay() + 1 ;  //Devuelve un int. Hay que sumarle 1 porque hay un desfaz en zonas horarias por el String
-    }  
-    const dias =['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-    console.log('diaInicio', diaInicio);
-    console.log('diaFin',diaFin);
+    let diaInicio = inicioDateObject.getDay() === 6 ? 0 : inicioDateObject.getDay() + 1;
+    let diaFin = finDateObject.getDay() === 6 ? 0 : finDateObject.getDay() + 1;
+    const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 
-    //Si el horario del GRUPO es LYM.Los únicos días permitidos serían L(1) y M(3)
-    //if(horario === 'Lunes y Miércoles' || horario === 'L-M'){
-    //Si el horario del CURSO es LYM.Los únicos días permitidos serían L(1) y M(3)
-    if(horarioCurso === 'Lunes y Miércoles' || horarioCurso === 'L-M'){
-      if(diaInicio !== 1 && diaInicio !== 3){
-        setContinueUpdate(false);
+    if (horarioCurso === 'Lunes y Miércoles' || horarioCurso === 'L-M') {
+      if (diaInicio !== 1 && diaInicio !== 3) {
         toast.error('La fecha de inicio seleccionada es: ' + dias[diaInicio] + '. No corresponde a Lunes ni Miércoles.');
-        return;
+        return false;
       }
-      if(diaFin !== 1 && diaFin !== 3){
-        setContinueUpdate(false);
+      if (diaFin !== 1 && diaFin !== 3) {
         toast.error('La fecha de finalización seleccionada es: ' + dias[diaFin] + '. No corresponde a Lunes ni Miércoles.');
-        return;
+        return false;
       }
     }
-    
-    //Si el horario del GRUPO es KYJ. Los únicos días permitidos serían K(2) y J(4)
-    //if(horario === 'Martes y Jueves'|| horario === 'K-J'){
-    //Si el horario del CURSO es KYJ. Los únicos días permitidos serían K(2) y J(4)
-    if(horarioCurso === 'Martes y Jueves'|| horarioCurso === 'K-J'){    
-      if(diaInicio !== 2 && diaInicio !== 4){
-        setContinueUpdate(false);
+
+    if (horarioCurso === 'Martes y Jueves' || horarioCurso === 'K-J') {
+      if (diaInicio !== 2 && diaInicio !== 4) {
         toast.error('La fecha de inicio seleccionada es: ' + dias[diaInicio] + '. No corresponde a Martes ni Jueves');
-        return;
+        return false;
       }
-    
-      if(diaFin !== 2 && diaFin !== 4){
-        setContinueUpdate(false);
+      if (diaFin !== 2 && diaFin !== 4) {
         toast.error('La fecha de finalización seleccionada es: ' + dias[diaFin] + '. No corresponde a Martes ni Jueves');
-        return;
+        return false;
       }
     }
-    setContinueUpdate(true); //Agregado ahorita fix bug 7 mayo
+    return true;
+  };
 
-  }; //Fin validar dia fecha
-
-  const validarDistanciaFechas = () =>{
-    console.log("Validación duracion minimo 1 mes");
-    // Validar que el curso dure mínimo 1 mes (haya una distancia mínima de 1 mes entre las fechas de INICIO y FIN)(OPCIONAL)
+  const validarDistanciaFechas = () => {
     const fechaInicioObj = new Date(fechaInicio);
     const fechaFinalObj = new Date(fechaFinal);
     const diferenciaMeses = (fechaFinalObj.getFullYear() - fechaInicioObj.getFullYear()) * 12 + fechaFinalObj.getMonth() - fechaInicioObj.getMonth();
-    
+
     if (diferenciaMeses < 1) {
-      setContinueUpdate(false); //Agregado fixing bug
       setWarningMessage('Entre la fecha de inicio y la fecha final hay menos de 1 mes. Esto puede afectar la planificación del curso. \n ¿Desea continuar de todos modos?');
       setShowWarning(true);
-      return;
+      return false;
     }
-    //setContinueUpdate(true); //Agregado fixing bug
-  } //Fin validar distancia fechas
+    return true;
+  };
 
-  //Validar que el horario del curso coincida con el horario del grupo (OPCIONAL QUE SE CUMPLA)
-  const validarHorarioCursoGrupo = () => {  
-    console.log("Validación horario grupo");
-    console.log("Horario curso:",horarioCurso);
-    console.log("Horario grupo:",horario);
-    if (horarioCurso == "Lunes y Miércoles" && (horario !== "Lunes y Miércoles" && horario !== "L-M") ) { //Horario es horario del grupo
-      setContinueUpdate(false);
-      setWarningMessage('El horario del curso  no coincide con el horario del grupo al que está asignado. Esto podría causar conflictos en la planificación.\n  ¿Desea continuar de todos modos?');
+  const validarHorarioCursoGrupo = () => {
+    if ((horarioCurso === "Lunes y Miércoles" || horarioCurso === "L-M") && (horario !== "Lunes y Miércoles" && horario !== "L-M")) {
+      setWarningMessage('El horario del curso no coincide con el horario del grupo al que está asignado. Esto podría causar conflictos en la planificación.\n  ¿Desea continuar de todos modos?');
       setShowWarning(true);
-      return;
+      return false;
     }
-    if (horarioCurso == "L-M" && (horario !== "Lunes y Miércoles" && horario !== "L-M")) { //Horario es horario del grupo
-      setContinueUpdate(false);
-      setWarningMessage('El horario del curso  no coincide con el horario del grupo al que está asignado. Esto podría causar conflictos en la planificación.\n  ¿Desea continuar de todos modos?');
+    if ((horarioCurso === "Martes y Jueves" || horarioCurso === "K-J") && (horario !== "Martes y Jueves" && horario !== "K-J")) {
+      setWarningMessage('El horario del curso no coincide con el horario del grupo al que está asignado. Esto podría causar conflictos en la planificación.\n  ¿Desea continuar de todos modos?');
       setShowWarning(true);
-      return;
+      return false;
     }
-    if (horarioCurso == "Martes y Jueves" && (horario !== "Martes y Jueves" && horario !== "K-J")) { //Horario es horario del grupo
-      setContinueUpdate(false);
-      setWarningMessage('El horario del curso  no coincide con el horario del grupo al que está asignado. Esto podría causar conflictos en la planificación.\n  ¿Desea continuar de todos modos?');
-      setShowWarning(true);
-      return;
-    }
-    if (horarioCurso == "K-J" && (horario !== "Martes y Jueves" && horario !== "K-J")) { //Horario es horario del grupo
-      setContinueUpdate(false);
-      setWarningMessage('El horario del curso  no coincide con el horario del grupo al que está asignado. Esto podría causar conflictos en la planificación.\n  ¿Desea continuar de todos modos?');
-      setShowWarning(true);
-      return;
-    }
-    //Agregar esto porque cuando termina de validar no continua
-    //setShowWarning(false);
-    //setContinueUpdate(true);
-    
-    return;
-  } //Fin validar horario curso grupo
+    return true;
+  };
 
-//Revisa que haya distancia de 2 MESES entre CURSOS IGUALES
-const validarDistanciaCursosIguales = async () => { 
-  console.log("Validación 2 meses");
-  try {
-    const cumpleDistancia = await axios.get(`http://localhost:3001/distanciaCursosIguales/${cursoSeleccionado.nombre_curso}/${fechaInicio}/${fechaFinal}`);
-   //Así se debe obtener la info de la respuesta de BD cumpleDistancia.data[0][0][0].cumpleDistancia);
-    // 0 =False, 1=true
- 
-    if (cumpleDistancia.data[0][0][0].cumpleDistancia == 0) {
-      setContinueUpdate(false); //Agregado fixing bug
-      setWarningMessage('No se cumple la distancia de 2 meses entre cursos iguales.\n¿Desea continuar de todos modos?');
-      setShowWarning(true);
-      return;
+  const validarDistanciaCursosIguales = async () => {
+    try {
+      const cumpleDistancia = await axios.get(`http://localhost:3001/distanciaCursosIguales/${cursoSeleccionado.nombre_curso}/${fechaInicio}/${fechaFinal}`);
+      if (cumpleDistancia.data[0][0][0].cumpleDistancia == 0) {
+        setWarningMessage('No se cumple la distancia de 2 meses entre cursos iguales.\n¿Desea continuar de todos modos?');
+        setShowWarning(true);
+        return false;
+      }
+    } catch (error) {
+      console.error('Error al verificar la distancia de 2 meses entre cursos iguales:', error);
     }
-    
-  } catch (error) {
-    console.error('Error al verificar la distancia de 2 meses entre cursos iguales:', error);
-    // Manejo del error
-  }
-}
+    return true;
+  };
 
-//Revisa que haya distancia de UNA SEMANA entre cursos de UN MISMO GRUPO
-const validarDistanciaUnaSemana = async () => { 
-  console.log("Validación 1 semana");
-  try {
-    const cumpleDistancia = await axios.get(`http://localhost:3001/validarDistanciaUnaSemana/${idGrupo}/${fechaInicio}`);
-    
-    if (cumpleDistancia.data[0][0][0].cumpleDistancia==0) {
-      setContinueUpdate(false); //Agregado fixing bug
-      setWarningMessage('No se cumple la distancia de 1 semana respecto al último curso impartido a este grupo.\n¿Desea continuar de todos modos?');
-      setShowWarning(true);
-      return;
+  const validarDistanciaUnaSemana = async () => {
+    try {
+      const cumpleDistancia = await axios.get(`http://localhost:3001/validarDistanciaUnaSemana/${idGrupo}/${fechaInicio}`);
+      if (cumpleDistancia.data[0][0][0].cumpleDistancia == 0) {
+        setWarningMessage('No se cumple la distancia de 1 semana respecto al último curso impartido a este grupo.\n¿Desea continuar de todos modos?');
+        setShowWarning(true);
+        return false;
+      }
+    } catch (error) {
+      console.error('Error al verificar la distancia de 1 semana entre cursos del mismo grupo:', error);
     }
-  } catch (error) {
-    console.error('Error al verificar la distancia de 1 semana entre cursos del mismo grupo:', error);
-    // Manejo del error
-  }
-}
+    return true;
+  };
 
-  /**
-   * 
-   * Bug to fix: Que cuando se cambie de horario, obligue a cambiar fechas de inicio y fin
-   */
-  const handleConfirmar = () => {
-    console.log("Manejando confirmación...");
-
-    //V#1.Validar que no haya información en blanco (El profe puede quedar en blanco)
-    console.log("Validación espacios en blanco");
+  const handleConfirmar = async () => {
     if (!fechaInicio || !fechaFinal || !horarioCurso) {
-        console.log("Fecha inicio: ", fechaInicio);
-        console.log("Fecha final: ", fechaFinal);
-        console.log("Horario Curso: ", horarioCurso);
-        console.log("Profesor: ", profesor);
       toast.error('Por favor completa todos los campos');
       return;
     }
-    //V#2.Validar que la fecha ingresada coincida con el día del horario
-    validarDiaFecha();  
-    // V#5. Validar que el horario del curso coincida con el horario del grupo (OPCIONAL QUE SE CUMPLA)
-    validarHorarioCursoGrupo();
-    //V#3.Validar que las fechas tengan concordancia
-    console.log("Validación concordancia fechas");
+
+    if (!validarDiaFecha()) return;
+    if (!validarHorarioCursoGrupo()) return;
     if (fechaInicio > fechaFinal) {
-      setContinueUpdate(false);
       toast.error('La fecha de inicio debe ser anterior a la fecha final');
       return;
     }
-    // V#6. Validar distancia de 2 meses entre cursos iguales
-    validarDistanciaCursosIguales();
+    if (!await validarDistanciaCursosIguales()) return;
+    if (!validarDistanciaFechas()) return;
+    if (!await validarDistanciaUnaSemana()) return;
 
-    // V#4. Validar que haya una distancia mínima de 1 mes entre las fechas (OPCIONAL QUE SE CUMPLA)
-    validarDistanciaFechas();
-
-    // V#7. Validar distancia de 1 semana entre cursos de de un mismo GRUPO
-    validarDistanciaUnaSemana();
-
-    // NO SIRVE PONERLO ACÁAAA. Hay que dejarlo comentado si no muestra el modal y la actualización at the same time
-    //setContinueUpdate(true);
- 
+    setContinueUpdate(true);
   };
 
   useEffect(() => {
+    if (!continueUpdate) return;
 
-    
-    if (!continueUpdate){
-      console.log("Continue Update Falso.");
-      console.log("Cup: ",continueUpdate);
-      return;
-    }; // No hacer nada si continueUpdate sigue siendo false
-    console.log("Estamos entrando al Use Effect después de validaciones");
-  
-    // Si no hay advertencias o el usuario ha confirmado continuar, continuar con la actualización
-    if (continueUpdate) {
-      axios.post('http://localhost:3001/actualizarCursos', {
-          idGrupo: idGrupo,
-          idCurso: idCurso,
-          fechaInicio: fechaInicio,
-          fechaFinal: fechaFinal,
-          profesor: profesor,
-          horario: horarioCurso
-      })
-      .then(response => {
-          console.log('Curso actualizado correctamente:', response.data);
-          /** 
-           * Se agrega el set time out porque no le estaba dando tiempo al toast de mostrarse
-           * antes de que la pantalla se redirigiera a la lista de cursos
-           */
-          toast.success("Curso actualizado correctamente");
-          //navigate('/AgregarCursos', { state: { idGrupo, numero, horario } }); // Redirigir a la página deseada
-          setTimeout(() => {
-            navigate('/AgregarCursos', { state: { idGrupo, numero, horario } });
-          }, 2000); // 2000 milisegundos = 2 segundos
-      })
-      .catch(error => {
-          //alert("Error al actualizar curso");
-          console.error('Error al actualizar curso:', error);
-          toast.error("Error al actualizar el curso");
-      });
-    }
-  }, [continueUpdate,showWarning]);    
+    axios.post('http://localhost:3001/actualizarCursos', {
+      idGrupo: idGrupo,
+      idCurso: idCurso,
+      fechaInicio: fechaInicio,
+      fechaFinal: fechaFinal,
+      profesor: profesor,
+      horario: horarioCurso
+    })
+    .then(response => {
+      toast.success("Curso actualizado correctamente");
+      setTimeout(() => {
+        navigate('/AgregarCursos', { state: { idGrupo, numero, horario } });
+      }, 3000);
+    })
+    .catch(error => {
+      console.error('Error al actualizar curso:', error);
+      toast.error("Error al actualizar el curso");
+    });
+  }, [continueUpdate]);
 
-    const handleChange = (e) => {
-        // console.log("Profesor: ", profesor);
-        // console.log("Profesor .: ", cursoSeleccionado.profesor);
-        console.log('INFO DEL SELECT')
-        console.log(e.target.value)
-        setHorarioCurso(e.target.value);
-    };
+  const handleChange = (e) => {
+    setHorarioCurso(e.target.value);
+  };
 
-    const handleBack = () => {
-      
-      navigate('/AgregarCursos', { state: { idGrupo, numero, horario  } });
-    };
+  const handleContinue = () => {
+    setShowWarning(false);
+    setContinueUpdate(true);
+  };
 
-    //Maneja lo que se hace después de que la persona desee seguir actualizando cuando:
-    //  1. No coincide el horario curso con horario grup
-    //  2. No hay duración mínima de un mes en el curso
-    const handleContinue = () => {
-      console.log("Continuar actualización...");
-      setShowWarning(false);
-      setContinueUpdate(true);
-      console.log("showWarning:", showWarning); 
-      console.log("continueUpdate:", continueUpdate); 
-    };
-    
-    const handleCerrarModal = () =>{
-      setShowWarning(false);
-      setContinueUpdate(false);
-      console.log("showWarning:", showWarning); // Agrega esta línea
-      console.log("continueUpdate:", continueUpdate); // Agrega esta línea
-    };
+  const handleCancel = () => {
+    setShowWarning(false);
+    setContinueUpdate(false);
+  };
 
+  const handleCerrarModal = () => {
+    setShowWarning(false);
+  };
 
-    return (
-      <div>
-        <Navbar />
-        <div className="container" style={{ paddingTop: '80px' }}>
-          <ToastContainer position="top-center"/>
-          <h3>Agregar Planificación</h3>
-          {showWarning && (
-            <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
-              <div className="modal-dialog" role="document">
-                <div className="modal-content">
-                  <div className="modal-header">
-                    <h5 className="modal-title">Advertencia</h5>
-                    <button type="button" className="btn-close" onClick={handleCerrarModal}></button>
-                  </div>
-                  <div className="modal-body">
-                    {warningMessage}
-                  </div>
-                  <div className="modal-footer">
-                    <button type="button" className="btn btn-secondary" onClick={handleCerrarModal}>Cerrar</button>
-                    <button type="button" className="btn btn-primary" onClick={handleContinue}>Continuar</button>
-                  </div>
+  const handleBack = () => {
+    navigate('/AgregarCursos', { state: { idGrupo, numero, horario } });
+  };
+
+  return (
+    <div>
+      <Navbar />
+      <div className="container" style={{ paddingTop: '80px' }}>
+        <ToastContainer position="top-center" />
+        <h3>Agregar Planificación</h3>
+        {showWarning && (
+          <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
+            <div className="modal-dialog" role="document">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title">Advertencia</h5>
+                  <button type="button" className="btn-close" onClick={handleCerrarModal}></button>
+                </div>
+                <div className="modal-body">
+                  {warningMessage}
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn btn-secondary" onClick={handleCancel}>Cerrar</button>
+                  <button type="button" className="btn btn-primary" onClick={handleContinue}>Continuar</button>
                 </div>
               </div>
             </div>
-          )}
-          <div className="row">
-            <div className="col">
-              <div className="form-group">
-                <span className="badge bg-light text-dark">
-                  <h5>Grupo:</h5>
-                  <h5>{numero}</h5> 
-                </span>
-              </div>
-            </div>
-            <div className="col">
-              <div className="form-group">
-                <span className="badge bg-light text-dark">
-                  <h5>Horario del grupo:</h5>
-                  <h5>{horario}</h5>  
-                </span>
-              </div>
+          </div>
+        )}
+        <div className="row">
+          <div className="col">
+            <div className="form-group">
+              <span className="badge bg-light text-dark">
+                <h5>Grupo:</h5>
+                <h5>{numero}</h5>
+              </span>
             </div>
           </div>
-          <br></br>
-          <div className="row">
-            <div className="col-md-12 mb-12">
-              <div className="card">
-                <div className="card-body">
-                  <h5 className="card-title">{cursoSeleccionado.nombre_curso}</h5>
-                  <div className="form-group">
-                    <label>Profesor:</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={profesor}
-                      onChange={(e) => setProfesor(e.target.value)}
-                    />
-                  </div>
-                  <div className='form-group'>
-                    <label>Fecha Inicio:</label>
-                    <input
-                      type="date"
-                      className="form-control"
-                      value={fechaInicio}
-                      onChange={(e) => setFechaInicio(e.target.value)}
-                    />
-                  </div>
-                  <div className='form-group'>
-                    <label>Fecha Final:</label>
-                    <input
-                      type="date"
-                      className="form-control"
-                      value={fechaFinal}
-                      onChange={(e) => setFechaFinal(e.target.value)}
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>Horario:</label>
-                    <select 
-                    className="form-select form-select-sm" 
-                    aria-label=".form-select-sm example" 
+          <div className="col">
+            <div className="form-group">
+              <span className="badge bg-light text-dark">
+                <h5>Horario del grupo:</h5>
+                <h5>{horario}</h5>
+              </span>
+            </div>
+          </div>
+        </div>
+        <br />
+        <div className="row">
+          <div className="col-md-12 mb-12">
+            <div className="card">
+              <div className="card-body">
+                <h5 className="card-title">{cursoSeleccionado.nombre_curso}</h5>
+                <div className="form-group">
+                  <label>Profesor:</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={profesor}
+                    onChange={(e) => setProfesor(e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Fecha Inicio:</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={fechaInicio}
+                    onChange={(e) => setFechaInicio(e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Fecha Final:</label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={fechaFinal}
+                    onChange={(e) => setFechaFinal(e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Horario:</label>
+                  <select
+                    className="form-select form-select-sm"
+                    aria-label=".form-select-sm example"
                     onChange={handleChange}
                     value={
                       horarioCurso === 'Lunes y Miércoles' ? 'L-M' :
-                      horarioCurso === 'Martes y Jueves' ? 'K-J' :
-                      horarioCurso // Si no coincide con ninguno de los casos anteriores, se utiliza el valor actual de horarioCurso
+                        horarioCurso === 'Martes y Jueves' ? 'K-J' :
+                          horarioCurso
                     }
                   >
                     <option value="L-M">L-M</option>
                     <option value="K-J">K-J</option>
                   </select>
-                  </div>
-                  <button className="btn btn-success m-4" onClick={handleConfirmar}>Confirmar cambios</button>
                 </div>
+                <button className="btn btn-success m-4" onClick={handleConfirmar}>Confirmar cambios</button>
               </div>
             </div>
           </div>
-          <div className="m-3">
-            <hr />
-            <button className="btn btn-danger m-4" onClick={handleBack}>Volver</button>
-          </div>
+        </div>
+        <div className="m-3">
+          <hr />
+          <button className="btn btn-danger m-4" onClick={handleBack}>Volver</button>
         </div>
       </div>
-    );
-  };
-  
-  export default Agregar_Cursos_Indiv;
+    </div>
+  );
+};
+
+export default AgregarCursosIndiv;
