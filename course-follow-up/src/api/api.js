@@ -156,6 +156,27 @@ app.put('/usuario/:idUsuario', async (req, res) => {
   }
 });
 
+// Ruta para actualizar un usuario --> Editar Cuenta
+app.put('/editarUsuario/:idUsuario', async (req, res) => {
+  const { idUsuario } = req.params;
+  const { admin } = req.body;
+
+
+  try {
+      const query = 'UPDATE coursefollowup.usuario SET admin = ? WHERE idusuario = ?';
+      const [results] = await db.query(query, [admin, idUsuario]);
+
+      if (results.affectedRows === 0) {
+          res.status(404).send('Usuario no encontrado');
+      } else {
+          res.send('Usuario actualizado correctamente');
+      }
+  } catch (error) {
+      console.error('Error al actualizar usuario:', error);
+      res.status(500).send('Error al actualizar usuario');
+  }
+});
+
 
 //Ruta para obtener todos los grupos
 app.get('/grupos', async(req, res) =>{

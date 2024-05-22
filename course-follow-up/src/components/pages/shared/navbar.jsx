@@ -31,7 +31,7 @@ function DropdownMenu() {
     };
 
     const handleItemCuenta= (e) => {
-        sessionStorage.setItem('miCuenta', 'open');
+        //sessionStorage.setItem('miCuenta', 'open');
         navigate('/MiCuenta');
     };
 
@@ -47,7 +47,7 @@ function DropdownMenu() {
 function Navbar () {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [usuarioActual, setUsuarioActual] = useState('');
-    const [miCuentaActiva, setmiCuentaActiva] = useState('');
+    //const [miCuentaActiva, setmiCuentaActiva] = useState('');
 
     // Al cargar el componente y cada vez que usuarioActual cambie, verifica si hay un usuario actual en la sesión
     useEffect(() => {
@@ -55,12 +55,6 @@ function Navbar () {
         console.log("ACTUAL", usuario);
         setUsuarioActual(usuario);
     }, [usuarioActual]);
-
-    useEffect(() => {
-        const cuenta = sessionStorage.getItem('miCuenta');
-        console.log("CUENTA", cuenta);
-        setmiCuentaActiva(cuenta);
-    }, [miCuentaActiva]);
     
 
     const handleToggleDropdown = () => {
@@ -68,7 +62,6 @@ function Navbar () {
         setDropdownOpen(!dropdownOpen); // Cambia el estado para mostrar u ocultar el menú desplegable
     };
 
-    console.log('Type of miCuentaActiva:', typeof miCuentaActiva);
 
     return(
         <nav style={{ backgroundColor: '#092D4E' }} className="navbar navbar-expand-lg navbar-dark fixed-top">
@@ -77,12 +70,12 @@ function Navbar () {
                 <img src={logo} alt="Logo" height="70" width="150" className="mr-3" />
                 </div>
                 <div className="ml-auto d-flex align-items-center">
-                    {(usuarioActual && miCuentaActiva === 'close' )&& (
+                    {(usuarioActual && (
                         <div className="position-relative">
                             <FontAwesomeIcon icon={faUser} style={{ color: 'white', fontSize: '40px', cursor: 'pointer' }} onClick={handleToggleDropdown} />
                             {dropdownOpen && <DropdownMenu />}
                         </div>
-                    )}
+                    ))}
 
                     <img src={tecLogo} alt="TEC_Logo" height="50" width="220" className="mr-3" />
                 </div>

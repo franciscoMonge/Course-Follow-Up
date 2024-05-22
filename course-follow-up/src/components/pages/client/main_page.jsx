@@ -1,10 +1,20 @@
 import Navbar from "../shared/navbar";
 import { useNavigate} from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
 
 function MainPage () {
     const navigate = useNavigate();
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    useEffect(() => {
+        const adminStatus = sessionStorage.getItem('isAdmin') === '1';
+        setIsAdmin(adminStatus);
+    }, []);
+
     const handleAgregar = () => {
-        navigate('/AgregarGrupo',{});
+        if (isAdmin) {
+            navigate('/AgregarGrupo');
+        }
     };
 
     const handleVer = () => {
@@ -22,7 +32,7 @@ function MainPage () {
                     </div>
                     <div className="card-body">
                         <div className="m-3">
-                            <button className="btn btn-primary btn-lg" onClick={handleAgregar}>Agregar Planificador</button>
+                            <button className="btn btn-primary btn-lg" onClick={handleAgregar} disabled={!isAdmin}>Agregar Planificador</button>
                         </div>
                         <div className="m-3">
                             <button className="btn btn-primary btn-lg" onClick={handleVer}>Ver Planificador</button>

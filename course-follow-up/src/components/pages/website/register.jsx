@@ -1,5 +1,5 @@
 // Importación de librerías
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { useNavigate} from "react-router-dom";
 import Navbar from "../shared/navbar";
 import axios from 'axios';
@@ -7,12 +7,13 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-
+import { UserContext } from "./user_context";
 
 
 function Signup () {
     // Declaración de variable para navegar entre páginas
     const navigate = useNavigate();
+    const { setIdUsuario } = useContext(UserContext);
 
     //Datos de Registro
     const [usuarios, setUsuarios] = useState([]);
@@ -108,6 +109,7 @@ function Signup () {
                 
                 toast.success('Usuario registrado exitosamente.');
                 sessionStorage.setItem('usuarioActual', correo);
+                //setIdUsuario(usuarioEncontrado.idusuario);
                 navigate('/MainPage',{});
             }
             catch(err){

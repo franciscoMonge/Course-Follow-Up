@@ -70,8 +70,10 @@ function Login () {
 
             if (usuarioEncontrado) {
                 sessionStorage.setItem('usuarioActual', correo);
+                sessionStorage.setItem('isAdmin', usuarioEncontrado.admin.data[0]); // Guardar el rol del usuario
                 // El usuario y la contraseña coinciden
                 setIdUsuario(usuarioEncontrado.idusuario);
+                //alert(usuarioEncontrado.admin.data[0]);
                 navigate('/MainPage',{});
                 console.log("Inicio de sesión exitoso");
             } else {

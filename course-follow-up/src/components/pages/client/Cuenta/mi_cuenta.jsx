@@ -12,6 +12,12 @@ function MiCuenta () {
     const [showPassword, setShowPassword] = useState(false);
     const { idUsuario } = useContext(UserContext);
     const [usuarioEncontrado, setusuarioEncontrado] = useState([]);
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    useEffect(() => {
+        const adminStatus = sessionStorage.getItem('isAdmin') === '1';
+        setIsAdmin(adminStatus);
+    }, []);
 
     console.log('ID USUARIO: ', idUsuario);
 
@@ -43,7 +49,7 @@ function MiCuenta () {
     //const usuarioEncontrado = usuario.find(usuario => usuario.idusuario === idUsuario);
 
     const handleBack = () =>{
-        sessionStorage.setItem('miCuenta', 'close') 
+        //sessionStorage.setItem('miCuenta', 'close') 
         navigate('/MainPage');
     };
 
@@ -52,7 +58,9 @@ function MiCuenta () {
     };
 
     const handleAccount = () => {
-        navigate('/GestionarAdministradores');
+        if (isAdmin) {
+            navigate('/GestionarAdministradores');
+        }
     };
 
     return(
@@ -108,7 +116,7 @@ function MiCuenta () {
             </div>
             
             <div  style={{ textAlign: 'center' }}>
-                <button className="btn btn-primary" onClick={handleAccount}>Gestionar Administradores</button>
+                <button className="btn btn-primary" onClick={handleAccount} disabled={!isAdmin}>Gestionar Administradores</button>
                 <br />
                 <button className="btn btn-danger">Eliminar Cuenta</button>
                 <br />

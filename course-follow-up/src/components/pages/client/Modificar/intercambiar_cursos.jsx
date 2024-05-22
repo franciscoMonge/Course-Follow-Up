@@ -87,7 +87,6 @@ const Intercambiar_Cursos = () => {
     <div>
       <Navbar/>
       <div className="container justify-content-center align-items-center vh-100" style={{ paddingTop: '100px' }}>
-        <h2 className="card-title" style={{ paddingBottom: '10px' }}>INTERCAMBIAR CURSO</h2>
         <div className="card">
           <div className="card-body">
             <p className="card-text">Intercambiar el curso <b><i>{nombreCurso}</i></b> del <b>Grupo {numero}</b> con:</p>
