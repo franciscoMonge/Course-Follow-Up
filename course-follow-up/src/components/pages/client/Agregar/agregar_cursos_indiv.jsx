@@ -14,6 +14,7 @@ const AgregarCursosIndiv = () => {
   const [fechaInicio, setFechaInicio] = useState('');
   const [fechaFinal, setFechaFinal] = useState('');
   const [horarioCurso, setHorarioCurso] = useState('');
+  const [jornadaCurso, setJornadaCurso] = useState('');
 
   const [showWarning, setShowWarning] = useState(false);
   const [warningMessage, setWarningMessage] = useState('');
@@ -213,6 +214,9 @@ const AgregarCursosIndiv = () => {
     setHorarioCurso(e.target.value);
   };
 
+  const handleChangeJornada = (e) => {
+    setJornadaCurso(e.target.value);
+  };
   return (
     <div>
       <Navbar />
@@ -303,6 +307,18 @@ const AgregarCursosIndiv = () => {
                   >
                     <option value="L-M">L-M</option>
                     <option value="K-J">K-J</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Jornada:</label>
+                  <select
+                    className="form-select form-select-sm"
+                    aria-label=".form-select-sm example"
+                    onChange={handleChangeJornada}
+                  >
+                    <option value="Diurno">Diurno☀️</option>
+                    <option value="Nocturno">Nocturno🌒</option>
                   </select>
                 </div>
                 <button className="btn btn-success m-4" onClick={handleConfirmar}>Confirmar cambios</button>
