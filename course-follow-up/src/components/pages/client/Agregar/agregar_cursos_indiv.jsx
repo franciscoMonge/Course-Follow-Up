@@ -42,7 +42,7 @@ const Agregar_Cursos_Indiv = () => {
       setProfesor(cursoSeleccionado.profesor || '');
       setFechaInicio(cursoSeleccionado.fechaInicio || '');
       setFechaFinal(cursoSeleccionado.fechaFinal || '');
-      setHorarioCurso(cursoSeleccionado.horario || '');
+      setHorarioCurso(cursoSeleccionado.horario || horario || ''); //Se agrega la variable horario que se obtiene de location
     }
     
   }, [cursoSeleccionado,horario]);
@@ -213,6 +213,7 @@ const validarDistanciaUnaSemana = async () => {
    */
   const handleConfirmar = () => {
     console.log("Manejando confirmación...");
+
     //V#1.Validar que no haya información en blanco (El profe puede quedar en blanco)
     console.log("Validación espacios en blanco");
     if (!fechaInicio || !fechaFinal || !horarioCurso) {
@@ -220,6 +221,8 @@ const validarDistanciaUnaSemana = async () => {
         console.log("Fecha final: ", fechaFinal);
         console.log("Horario Curso: ", horarioCurso);
         console.log("Profesor: ", profesor);
+        console.log("---------------------------");
+        console.log(cursoSeleccionado);
       toast.error('Por favor completa todos los campos');
       return;
     }
