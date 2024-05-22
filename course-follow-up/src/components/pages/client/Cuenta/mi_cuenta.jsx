@@ -118,8 +118,6 @@ function MiCuenta () {
             <div  style={{ textAlign: 'center' }}>
                 <button className="btn btn-primary" onClick={handleAccount} disabled={!isAdmin}>Gestionar Administradores</button>
                 <br />
-                <button className="btn btn-danger">Eliminar Cuenta</button>
-                <br />
                 <button className="btn btn-back" onClick={handleBack}>Volver</button>
             </div>
            

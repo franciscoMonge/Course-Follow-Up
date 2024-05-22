@@ -4,6 +4,12 @@ import axios from 'axios';
 
 const App1 = () => {
   const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+    useEffect(() => {
+        const adminStatus = sessionStorage.getItem('isAdmin') === '1';
+        setIsAdmin(adminStatus);
+    }, []);
 
   const location = useLocation();
   const fechaInicio = location.state.fechaInicio;
@@ -153,7 +159,7 @@ const App1 = () => {
                     .map((course) => (
                       <div key={course.id} style={{ backgroundColor: group.color, color: 'white', padding: '5px' }}>
                         <hr />
-                        <button className="btn btn-light" onClick={() => handleOpciones(course.idgrupoXcurso, course.grupo_id, course.idGRUPO, course.id, course.name, course, course.horario)}>Opciones</button>
+                        <button className="btn btn-light" disabled={!isAdmin} onClick={() => handleOpciones(course.idgrupoXcurso, course.grupo_id, course.idGRUPO, course.id, course.name, course, course.horario)}>Opciones</button>
                         <br />
                         {course.name}
                         <br />

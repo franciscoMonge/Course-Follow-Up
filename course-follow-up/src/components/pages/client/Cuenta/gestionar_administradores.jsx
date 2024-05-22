@@ -95,17 +95,6 @@ function GestionarAdministradores () {
                 <h1 style={{ color: 'white'}} >Gestionar Administradores</h1>
 
                 <div className="d-flex align-items-center">
-                    <input 
-                        type="search" 
-                        placeholder="Buscar..." 
-                        value={searchTerm} 
-                        onChange={handleChange} 
-                        className="form-control m-2" 
-                    />
-                    <button className="btn btn-primary" 
-                        style={{ marginTop: '15px'}}
-                        onClick={handleSearch}>Buscar
-                    </button>
 
                     <button className="btn btn-back" 
                         style={ { marginTop: '15px', marginLeft: '10px'}}
