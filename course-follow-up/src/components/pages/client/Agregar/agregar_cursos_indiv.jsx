@@ -27,7 +27,7 @@ const AgregarCursosIndiv = () => {
       setFechaInicio(cursoSeleccionado.fechaInicio || '');
       setFechaFinal(cursoSeleccionado.fechaFinal || '');
       setHorarioCurso(cursoSeleccionado.horario || horario || '');
-      setJornadaCurso('');
+      setJornadaCurso(cursoSeleccionado.jornada || '');
     }
   }, [cursoSeleccionado, horario]);
 
@@ -318,6 +318,11 @@ const AgregarCursosIndiv = () => {
                     className="form-select form-select-sm"
                     aria-label=".form-select-sm example"
                     onChange={handleChangeJornada}
+                    value={
+                      jornadaCurso === 'Diurno' ? 'Diurno☀️' :
+                      jornadaCurso === 'Nocturno' ? 'Nocturno🌒' :
+                      jornadaCurso // Si no coincide con ninguno de los casos anteriores, se utiliza el valor actual de horarioCurso
+                    }
                   >
                     <option value="Diurno">Diurno☀️</option>
                     <option value="Nocturno">Nocturno🌒</option>
