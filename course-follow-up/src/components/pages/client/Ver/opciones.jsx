@@ -20,7 +20,7 @@ function Opciones () {
     console.log('curso id ', idcurso);
 
     const handleModificar = () => {
-        //alert('Modificar')
+        alert('Modificar')
         navigate('/ModificarCursos', {state:{idCurso: idcurso, cursoSeleccionado: cursoSeleccionado, numero: grupoNumero, idGrupo: grupo_id, horario: horario}});
     };
 
@@ -49,9 +49,7 @@ function Opciones () {
                 <h2>Opciones</h2>
             </div>
             <div className="card-body">
-                <div className="m-3">
-                    <button className="btn btn-light btn-lg" style={{ width: '100%' }} onClick={handleModificar}>Modificar Curso</button>
-                </div>
+                
                 <div className="m-3">
                     <button className="btn btn-light btn-lg" style={{ width: '100%' }} onClick={handleFusionar}>Fusionar Grupo</button>
                 </div>

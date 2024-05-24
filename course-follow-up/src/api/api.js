@@ -63,7 +63,7 @@ app.get('/usuarios', async(req, res) =>{
       const [usuarios] = await db.query("SELECT * FROM coursefollowup.usuario");
       
       const usuariosDesencriptados = usuarios.map(usuario => ({
-        id: usuario.id,
+        idusuario: usuario.idusuario,
         nombre: usuario.nombre,
         apellidos: usuario.apellidos,
         correo: decryptData(usuario.correo),
@@ -78,6 +78,36 @@ app.get('/usuarios', async(req, res) =>{
         console.error('Error al obtener usuarios:', error);
         res.status(500).json({ error: 'Error al obtener usuarios' });
     }
+});
+
+// Ruta para obtener un usuario por ID
+app.get('/usuario/:idUsuario', async(req, res) => {
+  const { idUsuario } = req.params;
+  try {
+      // Obtener el usuario de la base de datos
+      const [usuarios] = await db.query("SELECT * FROM coursefollowup.usuario WHERE idusuario = ?", [idUsuario]);
+      
+      if (usuarios.length === 0) {
+          return res.status(404).json({ error: 'Usuario no encontrado' });
+      }
+
+      const usuario = usuarios[0];
+      const usuarioDesencriptado = {
+          idusuario: usuario.idusuario,
+          nombre: usuario.nombre,
+          apellidos: usuario.apellidos,
+          correo: decryptData(usuario.correo),
+          contraseña: decryptData(usuario.contraseña),
+          admin: usuario.admin
+      };
+
+      console.log("Usuario encontrado", usuarioDesencriptado);
+
+      res.json(usuarioDesencriptado);
+  } catch(error) {
+      console.error('Error al obtener usuario:', error);
+      res.status(500).json({ error: 'Error al obtener usuario' });
+  }
 });
 
 // Ruta para agregar un nuevo usuario
@@ -101,6 +131,52 @@ app.post('/usuarios', async (req, res) => {
       res.status(500).json({ error: 'Error al agregar usuario' });
     }
   });
+
+// Ruta para actualizar un usuario --> Editar Cuenta
+app.put('/usuario/:idUsuario', async (req, res) => {
+  const { idUsuario } = req.params;
+  const { correo, contraseña } = req.body;
+
+  // Encriptar los datos sensibles antes de almacenarlos en la base de datos
+  const correoEncriptado = encryptData(correo); 
+  const psswrdEncriptado = encryptData(contraseña);
+
+  try {
+      const query = 'UPDATE coursefollowup.usuario SET correo = ?, contraseña = ? WHERE idusuario = ?';
+      const [results] = await db.query(query, [correoEncriptado, psswrdEncriptado, idUsuario]);
+
+      if (results.affectedRows === 0) {
+          res.status(404).send('Usuario no encontrado');
+      } else {
+          res.send('Usuario actualizado correctamente');
+      }
+  } catch (error) {
+      console.error('Error al actualizar usuario:', error);
+      res.status(500).send('Error al actualizar usuario');
+  }
+});
+
+// Ruta para actualizar un usuario --> Editar Cuenta
+app.put('/editarUsuario/:idUsuario', async (req, res) => {
+  const { idUsuario } = req.params;
+  const { admin } = req.body;
+
+
+  try {
+      const query = 'UPDATE coursefollowup.usuario SET admin = ? WHERE idusuario = ?';
+      const [results] = await db.query(query, [admin, idUsuario]);
+
+      if (results.affectedRows === 0) {
+          res.status(404).send('Usuario no encontrado');
+      } else {
+          res.send('Usuario actualizado correctamente');
+      }
+  } catch (error) {
+      console.error('Error al actualizar usuario:', error);
+      res.status(500).send('Error al actualizar usuario');
+  }
+});
+
 
 //Ruta para obtener todos los grupos
 app.get('/grupos', async(req, res) =>{
@@ -162,7 +238,7 @@ app.get('/cursosAgregados/:idGrupo', async(req, res) =>{
 // Ruta para agregar un nuevo curso a un grupo
 app.post('/actualizarCursos', async (req, res) => {
   try {
-      const { idGrupo, idCurso, fechaInicio, fechaFinal, profesor, horario } = req.body;
+      const { idGrupo, idCurso, fechaInicio, fechaFinal, profesor, horario,jornada } = req.body;
 
       if(horario === "K-J"){
         nuevoHorario = "Martes y Jueves";
@@ -182,7 +258,7 @@ app.post('/actualizarCursos', async (req, res) => {
         const fechaFinalFormateada = fechaFinal.split('-').reverse().join('-');// Convertir a "YYYY-MM-DD"
       }
 
-      const result = await db.query("CALL updateCursoGrupo(?,?,?,?,?,?)", [idGrupo, idCurso, fechaInicio, fechaFinal, profesor, nuevoHorario]);
+      const result = await db.query("CALL updateCursoGrupo1(?,?,?,?,?,?,?)", [idGrupo, idCurso, fechaInicio, fechaFinal, profesor, nuevoHorario,jornada]);
     res.status(201).json({ mensaje: 'Curso actualizado correctamente', resultado: result });
   } catch (error) {
     console.error('Error al actualizar curso:', error);
@@ -212,7 +288,7 @@ app.get('/cursosXFecha', async (req, res) => {
     const { fechaInicio, fechaFinal } = req.query;
 
     const [cursos] = await db.query(`
-      SELECT gxc.idgrupoXcurso, g.idgrupo ,g.numero AS grupoNumero, g.horario AS grupoHorario, c.idcurso, c.nombre AS cursoNombre, gxc.fechaInicio, gxc.fechaFinal, gxc.profesor, gxc.horario AS cursoHorario
+      SELECT gxc.idgrupoXcurso, g.idgrupo ,g.numero AS grupoNumero, g.horario AS grupoHorario, c.idcurso, c.nombre AS cursoNombre, gxc.fechaInicio, gxc.fechaFinal, gxc.profesor, gxc.horario AS cursoHorario, gxc.jornada as jornada
       FROM grupoXcurso gxc
       JOIN grupo g ON gxc.idgrupo = g.idgrupo
       JOIN curso c ON gxc.idcurso = c.idcurso

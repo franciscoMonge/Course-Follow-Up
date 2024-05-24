@@ -4,6 +4,12 @@ import axios from 'axios';
 
 const App1 = () => {
   const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+    useEffect(() => {
+        const adminStatus = sessionStorage.getItem('isAdmin') === '1';
+        setIsAdmin(adminStatus);
+    }, []);
 
   const location = useLocation();
   const fechaInicio = location.state.fechaInicio;
@@ -14,6 +20,21 @@ const App1 = () => {
 
   const [courses, setCourses] = useState([]);
   const [fusiones, setFusiones] = useState([]);
+
+  useEffect(() => {
+    // Guarda los estilos anteriores para restaurarlos después
+    const previousStyles = {
+      background: document.body.style.background,
+    };
+
+    // Aplica los nuevos estilos
+    document.body.style.background = '#ffffff';
+
+    // Restaura los estilos anteriores cuando el componente se desmonta
+    return () => {
+      document.body.style.background = previousStyles.background;
+    };
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -64,6 +85,7 @@ const App1 = () => {
         endDate: new Date(course.fechaFinal),
         profesor: course.profesor,
         horario: course.cursoHorario,
+        jornada: course.jornada,
       });
     });
 
@@ -138,7 +160,7 @@ const App1 = () => {
                     .map((course) => (
                       <div key={course.id} style={{ backgroundColor: group.color, color: 'white', padding: '5px' }}>
                         <hr />
-                        <button className="btn btn-light" onClick={() => handleOpciones(course.idgrupoXcurso, course.grupo_id, course.idGRUPO, course.id, course.name, course, course.horario)}>Opciones</button>
+                        <button className="btn btn-light" disabled={!isAdmin} onClick={() => handleOpciones(course.idgrupoXcurso, course.grupo_id, course.idGRUPO, course.id, course.name, course, course.horario)}>Opciones</button>
                         <br />
                         {course.name}
                         <br />
@@ -155,6 +177,8 @@ const App1 = () => {
                           </>
                         )}
                         Horario: {course.horario}
+                        <br />
+                        Jornada: {course.jornada}
                         <div>
                         <strong>Fusión:</strong>{' '}
                           {fusiones.length > 0 &&
@@ -174,13 +198,7 @@ const App1 = () => {
         </tbody>
       </table>
       <div>
-        <button style={ { backgroundColor: 'black'}} onClick={handleBack}>
-          Volver
-        </button>
-        
-        <button style={{ background: '#092D4E', marginLeft: '20px'}} onClick={handleModify}>
-          Modificar
-        </button>
+        <button className="btn btn-back" onClick={handleBack}>Volver</button>
       </div>
     </div>
   );
