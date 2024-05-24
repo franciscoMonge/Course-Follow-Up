@@ -20,8 +20,8 @@ function Opciones () {
     console.log('curso id ', idcurso);
 
     const handleModificar = () => {
-        alert('Modificar')
-        //navigate('/ModificarCursos', {state:{idCurso: idcurso, cursoSeleccionado: cursoSeleccionado, numero: grupoNumero, idGrupo: grupo_id, horario: horario}});
+        //alert('Modificar')
+        navigate('/ModificarCursos', {state:{idCurso: idcurso, cursoSeleccionado: cursoSeleccionado, numero: grupoNumero, idGrupo: grupo_id, horario: horario}});
     };
 
     const handleIntercambiar = () => {
