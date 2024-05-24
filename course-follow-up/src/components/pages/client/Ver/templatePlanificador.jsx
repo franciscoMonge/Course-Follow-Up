@@ -12,14 +12,18 @@ const App1 = () => {
     }, []);
 
   const location = useLocation();
-  const fechaInicio = location.state.fechaInicio;
-  const fechaFinal = location.state.fechaFinal;
-  const añoPlanificador = location.state.añoPlanificador;
-
-  console.log('FechaInicio: ', fechaInicio,' FechaFinal: ', fechaFinal, ' año: ', añoPlanificador);
+  const fechaInicioObtenido = location.state.fechaInicio;
+  const fechaFinalObtenido = location.state.fechaFinal;
+  const añoPlanificadorObtenido = location.state.añoPlanificador;
 
   const [courses, setCourses] = useState([]);
   const [fusiones, setFusiones] = useState([]);
+
+  const [añoPlanificador, setAñoPlanificador] = useState(añoPlanificadorObtenido);
+  const [fechaInicio, setFechaInicio] = useState(fechaInicioObtenido);
+  const [fechaFinal, setFechaFinal] = useState(fechaFinalObtenido);
+
+  console.log('FechaInicio: ', fechaInicio,' FechaFinal: ', fechaFinal, ' año: ', añoPlanificador);
 
   useEffect(() => {
     // Guarda los estilos anteriores para restaurarlos después
@@ -41,12 +45,12 @@ const App1 = () => {
       try {
         const [coursesResponse, fusionesResponse] = await Promise.all([
           axios.get(`http://localhost:3001/cursosXFecha?fechaInicio=${fechaInicio}&fechaFinal=${fechaFinal}`),
-          axios.get('http://localhost:3001/fusiones')
+          //axios.get('http://localhost:3001/fusiones')
         ]);
   
         const groupedCourses = groupCoursesByGroup(coursesResponse.data);
         setCourses(groupedCourses);
-        setFusiones(fusionesResponse.data);
+        //setFusiones(fusionesResponse.data);
       } catch (error) {
         console.error('Error al obtener datos:', error);
       }
@@ -54,6 +58,13 @@ const App1 = () => {
   
     fetchData();
   }, [fechaInicio, fechaFinal]);
+
+  useEffect(() => {
+    const fechaInicio = `${añoPlanificador}-01-01`;
+    const fechaFinal = `${añoPlanificador}-12-31`;
+    setFechaInicio(fechaInicio);
+    setFechaFinal(fechaFinal);
+  }, [añoPlanificador])
 
 
   const groupCoursesByGroup = (data) => {
@@ -116,6 +127,13 @@ const App1 = () => {
 
   const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
+  const handlePrevious = () =>{
+    setAñoPlanificador(`${parseInt(añoPlanificador, 10) - 1}`)
+  };
+
+  const handleNext = () =>{
+    setAñoPlanificador(`${parseInt(añoPlanificador, 10) + 1}`)
+  };
 
   const handleBack = () =>{
     navigate('/SeleccionaAño',{});
@@ -134,69 +152,81 @@ const App1 = () => {
   return (
     <div>
       <h1 className="mb-4">Planificador de Cursos {añoPlanificador}</h1>
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Grupo</th>
-            {months.map((month) => (
-              <th key={month}>{month}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {courses.map((group) => (
-            <tr key={group.groupId}>
-              <td style={{ backgroundColor: group.color, color: 'white', fontWeight: 'bold' }}>
-                {group.groupId} - {group.horario}
-              </td>
-              {months.map((month, index) => (
-                <td key={`${group.groupId}-${index}`}>
-                  {group.courses
-                    .filter(
-                      (course) =>
-                        new Date(course.startDate).getMonth() === index ||
-                        new Date(course.endDate).getMonth() === index
-                    )
-                    .map((course) => (
-                      <div key={course.id} style={{ backgroundColor: group.color, color: 'white', padding: '5px' }}>
-                        <hr />
-                        <button className="btn btn-light" disabled={!isAdmin} onClick={() => handleOpciones(course.idgrupoXcurso, course.grupo_id, course.idGRUPO, course.id, course.name, course, course.horario)}>Opciones</button>
-                        <br />
-                        {course.name}
-                        <br />
-                        {new Date(course.startDate).getMonth() === index && (
-                          <>
-                            Inicio: {new Date(course.startDate).getDate()} {months[new Date(course.startDate).getMonth()]}
-                            <br />
-                          </>
-                        )}
-                        {new Date(course.endDate).getMonth() === index && (
-                          <>
-                            Fin: {new Date(course.endDate).getDate()} {months[new Date(course.endDate).getMonth()]}
-                            <br />
-                          </>
-                        )}
-                        Horario: {course.horario}
-                        <br />
-                        Jornada: {course.jornada}
-                        <div>
-                        <strong>Fusión:</strong>{' '}
-                          {fusiones.length > 0 &&
-                            getFusionesForIdGrupoXCurso(course.idgrupoXcurso, fusiones).map((fusion, index) => (
-                              <span key={index}>
-                                #{fusion}
-                                {index < getFusionesForIdGrupoXCurso(course.idgrupoXcurso, fusiones).length - 1 ? ' - ' : ''}
-                              </span>
-                            ))}
-                        </div>
-                      </div>
-                    ))}
-                </td>
+      <div className="d-flex">
+        <button className="text-black bg-transparent border-0 p-0" onClick={handlePrevious}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" className="bi bi-arrow-left-circle" viewBox="0 0 16 16">
+            <path fillRule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
+          </svg>
+        </button>
+        <table className="table m-2">
+          <thead>
+            <tr>
+              <th>Grupo</th>
+              {months.map((month) => (
+                <th key={month}>{month}</th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {courses.map((group) => (
+              <tr key={group.groupId}>
+                <td style={{ backgroundColor: group.color, color: 'white', fontWeight: 'bold' }}>
+                  {group.groupId} - {group.horario}
+                </td>
+                {months.map((month, index) => (
+                  <td key={`${group.groupId}-${index}`}>
+                    {group.courses
+                      .filter(
+                        (course) =>
+                          new Date(course.startDate).getMonth() === index ||
+                          new Date(course.endDate).getMonth() === index
+                      )
+                      .map((course) => (
+                        <div key={course.id} style={{ backgroundColor: group.color, color: 'white', padding: '5px' }}>
+                          <hr />
+                          <button className="btn btn-light" disabled={!isAdmin} onClick={() => handleOpciones(course.idgrupoXcurso, course.grupo_id, course.idGRUPO, course.id, course.name, course, course.horario)}>Opciones</button>
+                          <br />
+                          {course.name}
+                          <br />
+                          {new Date(course.startDate).getMonth() === index && (
+                            <>
+                              Inicio: {new Date(course.startDate).getDate()} {months[new Date(course.startDate).getMonth()]}
+                              <br />
+                            </>
+                          )}
+                          {new Date(course.endDate).getMonth() === index && (
+                            <>
+                              Fin: {new Date(course.endDate).getDate()} {months[new Date(course.endDate).getMonth()]}
+                              <br />
+                            </>
+                          )}
+                          Horario: {course.horario}
+                          <br />
+                          Jornada: {course.jornada}
+                          <div>
+                          <strong>Fusión:</strong>{' '}
+                            {fusiones.length > 0 &&
+                              getFusionesForIdGrupoXCurso(course.idgrupoXcurso, fusiones).map((fusion, index) => (
+                                <span key={index}>
+                                  #{fusion}
+                                  {index < getFusionesForIdGrupoXCurso(course.idgrupoXcurso, fusiones).length - 1 ? ' - ' : ''}
+                                </span>
+                              ))}
+                          </div>
+                        </div>
+                      ))}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <button className="text-black bg-transparent border-0 p-0" onClick={handleNext}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" className="bi bi-arrow-right-circle" viewBox="0 0 16 16">
+            <path fillRule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
+          </svg>
+        </button>
+      </div>
       <div>
         <button className="btn btn-back" onClick={handleBack}>Volver</button>
       </div>

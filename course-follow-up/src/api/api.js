@@ -258,7 +258,7 @@ app.post('/actualizarCursos', async (req, res) => {
         const fechaFinalFormateada = fechaFinal.split('-').reverse().join('-');// Convertir a "YYYY-MM-DD"
       }
 
-      const result = await db.query("CALL updateCursoGrupo1(?,?,?,?,?,?,?)", [idGrupo, idCurso, fechaInicio, fechaFinal, profesor, nuevoHorario,jornada]);
+      const result = await db.query("CALL updateCursoGrupo(?,?,?,?,?,?,?)", [idGrupo, idCurso, fechaInicio, fechaFinal, profesor, nuevoHorario,jornada]);
     res.status(201).json({ mensaje: 'Curso actualizado correctamente', resultado: result });
   } catch (error) {
     console.error('Error al actualizar curso:', error);
@@ -324,21 +324,21 @@ app.get('/gruposXFecha', async (req, res) => {
 });
 
 
-//Ruta para obtener todos los fusiones
-app.get('/fusiones', async(req, res) =>{
-  try{
-      const [fusiones] = await db.query(`SELECT f.*, g1.numero AS numero_grupo_1, g2.numero AS numero_grupo_2
-      FROM fusion f
-      JOIN grupoxcurso gc1 ON f.idgrupoXcurso1 = gc1.idgrupoXcurso
-      JOIN grupoxcurso gc2 ON f.idgrupoXcurso2 = gc2.idgrupoXcurso
-      JOIN grupo g1 ON gc1.idgrupo = g1.idgrupo
-      JOIN grupo g2 ON gc2.idgrupo = g2.idgrupo;`);
-      res.json(fusiones);
-  } catch(error){
-      console.error('Error al obtener fusiones:', error);
-      res.status(500).json({ error: 'Error al obtener fusiones' });
-  }
-});
+// //Ruta para obtener todos los fusiones
+// app.get('/fusiones', async(req, res) =>{
+//   try{
+//       const [fusiones] = await db.query(`SELECT f.*, g1.numero AS numero_grupo_1, g2.numero AS numero_grupo_2
+//       FROM fusion f
+//       JOIN grupoxcurso gc1 ON f.idgrupoXcurso1 = gc1.idgrupoXcurso
+//       JOIN grupoxcurso gc2 ON f.idgrupoXcurso2 = gc2.idgrupoXcurso
+//       JOIN grupo g1 ON gc1.idgrupo = g1.idgrupo
+//       JOIN grupo g2 ON gc2.idgrupo = g2.idgrupo;`);
+//       res.json(fusiones);
+//   } catch(error){
+//       console.error('Error al obtener fusiones:', error);
+//       res.status(500).json({ error: 'Error al obtener fusiones' });
+//   }
+// });
 
 // Ruta para agregar una nueva fusión
 app.post('/fusion', async (req, res) => {
