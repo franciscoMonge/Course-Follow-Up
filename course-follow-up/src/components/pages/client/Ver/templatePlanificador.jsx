@@ -139,9 +139,6 @@ const App1 = () => {
     navigate('/SeleccionaAño',{});
   };
 
-  const handleModify = () => {
-    navigate('/Modificar_Planificacion', { state: { courses, añoPlanificador}})
-  }
 
   const handleOpciones = (idgrupoXcurso, grupo_id, grupoNumero, idcurso, cursoNombre, cursoSeleccionado, horario ) =>{
     navigate('/Opciones',{state:{idgrupoXcurso: idgrupoXcurso, grupo_id: grupo_id, grupoNumero: grupoNumero, idcurso: idcurso, cursoNombre: cursoNombre, fechaInicio: fechaInicio, fechaFinal: fechaFinal, 
