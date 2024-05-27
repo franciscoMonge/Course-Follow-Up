@@ -45,12 +45,12 @@ const App1 = () => {
       try {
         const [coursesResponse, fusionesResponse] = await Promise.all([
           axios.get(`http://localhost:3001/cursosXFecha?fechaInicio=${fechaInicio}&fechaFinal=${fechaFinal}`),
-          axios.get('http://localhost:3001/fusiones')
+          //axios.get('http://localhost:3001/fusiones')
         ]);
   
         const groupedCourses = groupCoursesByGroup(coursesResponse.data);
         setCourses(groupedCourses);
-        setFusiones(fusionesResponse.data);
+        //setFusiones(fusionesResponse.data);
       } catch (error) {
         console.error('Error al obtener datos:', error);
       }
