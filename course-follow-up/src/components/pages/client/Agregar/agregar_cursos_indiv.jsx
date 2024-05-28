@@ -18,7 +18,6 @@ const AgregarCursosIndiv = () => {
 
   const [showWarning, setShowWarning] = useState(false);
   const [warningMessage, setWarningMessage] = useState('');
-  const [pendingValidations, setPendingValidations] = useState([]);
   const [validationIndex, setValidationIndex] = useState(0);
 
   useEffect(() => {

@@ -14,11 +14,6 @@ function Agregar_Planificador() {
     const [planificadorSeleccionado, setPlanificadorSeleccionado] = useState(null);
     const [planificador, setPlanificador] = useState("");
     const [nuevoPlanificador, setNuevoPlanificador] = useState("");
-    const [nombrePlanificador, setNombrePlanificador] = useState("");
-    const [fechaInicio, setFechaInicio] = useState("");
-    const [fechaFinal, setFechaFinal] = useState("");
-
-    const [showError, setShowError] = useState(false);
 
 
     // Carga todas los planificadores de la BD en la lista "planificadores existentes" 

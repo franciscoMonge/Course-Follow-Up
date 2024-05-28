@@ -68,7 +68,6 @@ const App1 = () => {
 
 
   const groupCoursesByGroup = (data) => {
-    console.log('AQUI FRAN: ', data);
     const groupMap = new Map();
 
     data.forEach((course) => {

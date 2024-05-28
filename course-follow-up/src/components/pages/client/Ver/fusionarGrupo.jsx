@@ -67,9 +67,6 @@ function Fusionar_Grupo() {
         }
     };
 
-    const handleCrearGrupo = () =>{
-        navigate('/CrearGrupo', {});
-    };
 
     const handleContinuar = () => {
         // Suponiendo que tienes un array de objetos 'a' que quieres buscar

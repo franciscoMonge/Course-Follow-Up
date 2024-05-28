@@ -11,7 +11,6 @@ function MiCuenta () {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const { idUsuario } = useContext(UserContext);
-    const [usuarioEncontrado, setusuarioEncontrado] = useState([]);
     const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {

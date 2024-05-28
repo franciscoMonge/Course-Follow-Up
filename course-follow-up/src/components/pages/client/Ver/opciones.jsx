@@ -19,11 +19,7 @@ function Opciones () {
     console.log('idgrupoXcurso ', idgrupoXcurso);
     console.log('curso id ', idcurso);
 
-    const handleModificar = () => {
-        alert('Modificar')
-        navigate('/ModificarCursos', {state:{idCurso: idcurso, cursoSeleccionado: cursoSeleccionado, numero: grupoNumero, idGrupo: grupo_id, horario: horario}});
-    };
-
+    
     const handleIntercambiar = () => {
         navigate('/IntercambiarCursos',{state:{idGrupo:grupo_id, numero:grupoNumero, idCurso:idcurso,
             nombreCurso:cursoNombre, añoPlanificador: añoPlanificador, fechaInicioPlanificador:fechaInicio,

@@ -5,7 +5,6 @@ import axios from 'axios';
 
 function GestionarAdministradores () {
     const navigate = useNavigate();
-    const [searchTerm, setSearchTerm] = useState('');
     const [usuarios, setUsuarios] = useState([]);
     const [userSelected, setUserSelected] = useState(null);
     const [idUsuario, setIdUsuario] = useState('');
@@ -28,13 +27,6 @@ function GestionarAdministradores () {
         console.log('usuarios:', usuarios[0]);
     }, [usuarios]);
 
-    const handleChange = (event) => {
-        setSearchTerm(event.target.value);
-    };
-
-    const handleSearch = () => {
-        console.log('Buscando:', searchTerm);
-    };
 
     const handleBack = () =>{
         navigate('/MiCuenta');
