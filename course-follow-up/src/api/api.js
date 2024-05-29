@@ -275,7 +275,7 @@ app.put('/intercambiarCursos', async (req, res) => {
       console.log("ID CURSO_2 que va a la BD: ", idCurso2);
 
       const result = await db.query("CALL intercambiarCursos(?,?,?)", [idGrupo, idCurso1, idCurso2]);
-      res.status(201).json({ mensaje: 'Curso actualizado correctamente', resultado: result });
+      res.status(201).json({ mensaje: 'Cursos intercambiados correctamente', resultado: result });
   } catch (error) {
     console.error('Error al intercambiar los cursos:', error);
     res.status(500).json({ error: 'Error al intercambiar los cursos' });
