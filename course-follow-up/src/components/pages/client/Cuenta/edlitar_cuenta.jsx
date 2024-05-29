@@ -97,7 +97,7 @@ function EditarCuenta () {
                                 type="button" 
                                 className="btn position-absolute end-0 top-50 translate-middle-y"
                                 onClick={() => setShowPassword(!showPassword)}
-                                style={{ marginRight: "15px", marginTop: '125px' }}
+                                style={{ marginRight: "15px", marginTop: '25px' }}
                             >
                                 <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
                             </button>
@@ -116,7 +116,7 @@ function EditarCuenta () {
                                 type="button" 
                                 className="btn position-absolute end-0 top-50 translate-middle-y"
                                 onClick={() => setShowPassword(!showPassword)}
-                                style={{ marginRight: "15px", marginTop: '228px' }}
+                                style={{ marginRight: "15px", marginTop: '133px' }}
                             >
                                 <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
                             </button>

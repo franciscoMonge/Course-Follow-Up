@@ -243,7 +243,7 @@ const AgregarCursosIndiv = () => {
           </div>
         )}
     <div className="row">
-    <h3>Agregar Planificación</h3>
+    <h3 style={{ color: 'white'}}>Agregar Planificación</h3>
     <div className="col">
           <div className="form-group">
             <span className="badge bg-light text-dark">
