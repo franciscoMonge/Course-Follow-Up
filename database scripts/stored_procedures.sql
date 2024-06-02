@@ -154,8 +154,55 @@ END//
 
 DELIMITER ;
 
+CREATE PROCEDURE intercambiarCursos(
+	IN p_idGrupo INT,
+    IN p_idCurso1 INT,
+    IN p_idCurso2 INT
+)
+BEGIN
+	DECLARE fechaInicioCurso1 DATE;
+    DECLARE fechaFinalCurso1 DATE;
+    
+    DECLARE fechaInicioCurso2 DATE;
+    DECLARE fechaFinalCurso2 DATE;
+    
+    SELECT fechaInicio, fechaFinal INTO fechaInicioCurso1, fechaFinalCurso1
+    FROM grupoxcurso
+    WHERE idgrupo = p_idGrupo AND idcurso = p_idCurso1;
+    
+    SELECT fechaInicio, fechaFinal INTO fechaInicioCurso2, fechaFinalCurso2
+    FROM grupoxcurso
+    WHERE idgrupo = p_idGrupo AND idcurso = p_idCurso2;
+    
+	UPDATE grupoxcurso SET 
+		fechaInicio = fechaInicioCurso2,
+		fechaFinal = fechaFinalCurso2
+    WHERE idgrupo = p_idGrupo AND idcurso = p_idCurso1;
+    
+    UPDATE grupoxcurso SET 
+		fechaInicio = fechaInicioCurso1,
+		fechaFinal = fechaFinalCurso1
+    WHERE idgrupo = p_idGrupo AND idcurso = p_idCurso2;
+END
 
-select * from grupoxcurso where idCurso = 1;
--- CALL  VerificarDistanciaCursos('Introducción a la Logística','2050-06-05','2050-05-06');
-SELECT TIMESTAMPDIFF(MONTH, '2050-03-06', '2050-04-05');
-¿
+CREATE PROCEDURE `GetCursosEnGrupo` (p_idGrupo INT)
+BEGIN
+	-- Obtengo la información de los cursos para ese grupo, si está disponible
+	SELECT 
+		COALESCE(curso.nombre) AS nombre_curso,
+        (curso.idcurso) AS idCurso,
+		IFNULL(grupoxcurso.fechaInicio, '') AS fechaInicio,
+		IFNULL(grupoxcurso.fechaFinal, '') AS fechaFinal,
+		IFNULL(grupoxcurso.horario, '') AS horario,
+		IFNULL(grupoxcurso.profesor, '') AS profesor
+	FROM Curso 
+	INNER JOIN GrupoxCurso ON curso.idCurso = grupoxcurso.idCurso AND grupoxcurso.idGrupo = p_idGrupo;
+END
+	
+select * from usuario
+ -- CALL GetCursosxGrupo(1)
+ -- CALL getHorarioGrupo(2) 
+ -- call VerificarDistanciaCursos("Introducción a la Logística",'2024-05-07','2024-06-11')
+ -- select * from grupoxcurso 
+
+call VerificarDistanciaUnaSemana(1, '2024-05-07')

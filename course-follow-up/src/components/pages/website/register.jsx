@@ -1,16 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate} from "react-router-dom";
+// Importación de librerías
+import React, { useEffect, useContext, useState } from "react";
+import { useNavigate} from "react-router-dom";
 import Navbar from "../shared/navbar";
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-
+import { UserContext } from "./user_context";
 
 
 function Signup () {
+    // Declaración de variable para navegar entre páginas
     const navigate = useNavigate();
+    const { setIdUsuario } = useContext(UserContext);
 
     //Datos de Registro
     const [usuarios, setUsuarios] = useState([]);
@@ -27,9 +30,7 @@ function Signup () {
     useEffect(() =>{
         axios.get('http://localhost:3001/usuarios')
         .then(response =>{
-            console.log('nuevo EFFECT2222');
             setUsuarios(response.data);
-            //console.log('ok: ',usuarios[0].nombre)
         })
         .catch(error => {
             console.log('ERROR: Carga Fallida de usuarios', error);
@@ -38,29 +39,31 @@ function Signup () {
 
     useEffect(() => {
         // Este se ejecuta cuando actas cambie
-        console.log('usuarios actualizados:', usuarios[0]);
-        //console.log('keywords: ', actas[0].palabras_clave)
     }, [usuarios]);
     
+    // Función para devolverse al login
     const handleBack = () => {
         navigate('/',{});
     }
 
+    // Función para validar el formato de la contraseña
     const validarPassword = (password) => {
         const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$#(=?+}{\]\[]).{8,}$/;
         return regex.test(password);
     };
 
+    // Función para validar el largo de los inputs
     const validarInput = (input) => {
         return input.length >= 4;
     };
     
+    // Función para validar el formato del correo
     const validarFormatoCorreo = (correo) => {
-        console.log("CORREO", correo);
         const regex = /@(estudiantec\.cr|itcr\.ac\.cr)$/i;
         return regex.test(correo);
     };
     
+    // Función para realizar el registro
     const handleRegister = async () => {
         const usuarioEncontrado = usuarios.find(usuario => usuario.correo === correo);
 
@@ -94,7 +97,6 @@ function Signup () {
             };
     
             try{
-                // console.log('revisarrrrrr ',datos)
                 const response = await axios.post('http://localhost:3001/usuarios', datos);
                 console.log(response.data);
 
@@ -107,6 +109,7 @@ function Signup () {
                 
                 toast.success('Usuario registrado exitosamente.');
                 sessionStorage.setItem('usuarioActual', correo);
+                //setIdUsuario(usuarioEncontrado.idusuario);
                 navigate('/MainPage',{});
             }
             catch(err){
@@ -121,7 +124,7 @@ function Signup () {
                 <Navbar/>
             </div>
             <div className="container d-flex flex-column align-items-center justify-content-center mt-5 vh-auto">
-                <h1 className="mb-2" style={ { marginTop: "80px"}}>Course Follow-Up</h1>
+                <h1 className="mb-2" style={ { marginTop: "80px", color: 'white'}}>Course Follow-Up</h1>
                 <div className="card m-4 text-center" style={{ width: '500px', overflowY: 'auto'}}>
                     <div className="card-header">
                         <h2>Crear Cuenta</h2>
@@ -165,7 +168,7 @@ function Signup () {
                                 type="button" 
                                 className="btn position-absolute end-0 top-50 translate-middle-y"
                                 onClick={() => setShowPassword(!showPassword)}
-                                style={{ marginRight: "15px", marginTop: "56px" }}
+                                style={{ marginRight: "15px", marginTop: '46px'}}
                             >
                                 <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
                             </button>
@@ -181,14 +184,14 @@ function Signup () {
                                 type="button" 
                                 className="btn position-absolute end-0 top-50 translate-middle-y"
                                 onClick={() => setShowPassword(!showPassword)}
-                                style={{ marginRight: "15px", marginTop: "134px" }}
+                                style={{ marginRight: "15px", marginTop:'125px'}}
                             >
                                 <FontAwesomeIcon icon={showPassword ? faEye : faEyeSlash} />
                             </button>
                         </div>
                         <div className="m-3">
                             <hr />
-                            <button className="btn btn-danger m-4" onClick={handleBack}>Volver</button>
+                            <button className="btn btn-back m-4" onClick={handleBack}>Volver</button>
                             <button className="btn btn-primary m-4" onClick={handleRegister}>Registrarse</button>
                             <ToastContainer position="top-center"/>
                         </div>

@@ -79,7 +79,7 @@ const Agregar_Cursos = () => {
     <div>
       <Navbar />
       <div className="container" style={{ paddingTop: '80px' }}>
-        <h3>Agregar Cursos</h3>
+        <h3 style={{ color: 'white'}}>Agregar Cursos</h3>
         <div className="row">
           <div className="col">
             <div className="form-group">
@@ -98,7 +98,7 @@ const Agregar_Cursos = () => {
             </div>
           </div>
         <div className="row">
-        <label>Seleccione un curso:</label>
+        <label style={{ color: 'white'}}>Seleccione un curso:</label>
         <div className="table-responsive" style={{ maxHeight: '300px' }}>
                     <table className="table">
                         <thead>
@@ -130,7 +130,7 @@ const Agregar_Cursos = () => {
 
         <div className="m-3">
                             <hr />
-                            <button className="btn btn-danger m-4" onClick={handleBack}>Volver</button>
+                            <button className="btn btn-back m-4" onClick={handleBack}>Volver</button>
                             <button className="btn btn-primary m-4" onClick={handleContinuar}>
                                 Continuar
                             </button>

@@ -63,7 +63,7 @@ app.get('/usuarios', async(req, res) =>{
       const [usuarios] = await db.query("SELECT * FROM railway.usuario");
       
       const usuariosDesencriptados = usuarios.map(usuario => ({
-        id: usuario.id,
+        idusuario: usuario.idusuario,
         nombre: usuario.nombre,
         apellidos: usuario.apellidos,
         correo: decryptData(usuario.correo),
@@ -78,6 +78,36 @@ app.get('/usuarios', async(req, res) =>{
         console.error('Error al obtener usuarios:', error);
         res.status(500).json({ error: 'Error al obtener usuarios' });
     }
+});
+
+// Ruta para obtener un usuario por ID
+app.get('/usuario/:idUsuario', async(req, res) => {
+  const { idUsuario } = req.params;
+  try {
+      // Obtener el usuario de la base de datos
+      const [usuarios] = await db.query("SELECT * FROM coursefollowup.usuario WHERE idusuario = ?", [idUsuario]);
+      
+      if (usuarios.length === 0) {
+          return res.status(404).json({ error: 'Usuario no encontrado' });
+      }
+
+      const usuario = usuarios[0];
+      const usuarioDesencriptado = {
+          idusuario: usuario.idusuario,
+          nombre: usuario.nombre,
+          apellidos: usuario.apellidos,
+          correo: decryptData(usuario.correo),
+          contraseña: decryptData(usuario.contraseña),
+          admin: usuario.admin
+      };
+
+      console.log("Usuario encontrado", usuarioDesencriptado);
+
+      res.json(usuarioDesencriptado);
+  } catch(error) {
+      console.error('Error al obtener usuario:', error);
+      res.status(500).json({ error: 'Error al obtener usuario' });
+  }
 });
 
 // Ruta para agregar un nuevo usuario
@@ -101,6 +131,52 @@ app.post('/usuarios', async (req, res) => {
       res.status(500).json({ error: 'Error al agregar usuario' });
     }
   });
+
+// Ruta para actualizar un usuario --> Editar Cuenta
+app.put('/usuario/:idUsuario', async (req, res) => {
+  const { idUsuario } = req.params;
+  const { correo, contraseña } = req.body;
+
+  // Encriptar los datos sensibles antes de almacenarlos en la base de datos
+  const correoEncriptado = encryptData(correo); 
+  const psswrdEncriptado = encryptData(contraseña);
+
+  try {
+      const query = 'UPDATE coursefollowup.usuario SET correo = ?, contraseña = ? WHERE idusuario = ?';
+      const [results] = await db.query(query, [correoEncriptado, psswrdEncriptado, idUsuario]);
+
+      if (results.affectedRows === 0) {
+          res.status(404).send('Usuario no encontrado');
+      } else {
+          res.send('Usuario actualizado correctamente');
+      }
+  } catch (error) {
+      console.error('Error al actualizar usuario:', error);
+      res.status(500).send('Error al actualizar usuario');
+  }
+});
+
+// Ruta para actualizar un usuario --> Editar Cuenta
+app.put('/editarUsuario/:idUsuario', async (req, res) => {
+  const { idUsuario } = req.params;
+  const { admin } = req.body;
+
+
+  try {
+      const query = 'UPDATE coursefollowup.usuario SET admin = ? WHERE idusuario = ?';
+      const [results] = await db.query(query, [admin, idUsuario]);
+
+      if (results.affectedRows === 0) {
+          res.status(404).send('Usuario no encontrado');
+      } else {
+          res.send('Usuario actualizado correctamente');
+      }
+  } catch (error) {
+      console.error('Error al actualizar usuario:', error);
+      res.status(500).send('Error al actualizar usuario');
+  }
+});
+
 
 //Ruta para obtener todos los grupos
 app.get('/grupos', async(req, res) =>{
@@ -146,6 +222,19 @@ app.get('/cursos/:idGrupo', async(req, res) =>{
   }
 });
 
+// Ruta para obtner los cursos por idGrupo
+app.get('/cursosAgregados/:idGrupo', async(req, res) =>{
+  const idGrupo = req.params.idGrupo;
+  try{
+      const [cursos] = await db.query("CALL GetCursosEnGrupo(?)", [idGrupo]);
+      res.json(cursos);
+
+  } catch(error){
+      console.error('Error al obtener cursos:', error);
+      res.status(500).json({ error: 'Error al obtener cursos' });
+  }
+});
+
 // Ruta para agregar un nuevo curso a un grupo
 app.post('/actualizarCursos', async (req, res) => {
   try {
@@ -177,6 +266,21 @@ app.post('/actualizarCursos', async (req, res) => {
   }
 });
 
+// Ruta para intercambiar cursos de un grupo
+app.put('/intercambiarCursos', async (req, res) => {
+  try {
+      const { idGrupo, idCurso1, idCurso2} = req.body;
+      console.log("ID GRUPO que va a la BD: ", idGrupo);
+      console.log("ID CURSO_1 que va a la BD: ", idCurso1);
+      console.log("ID CURSO_2 que va a la BD: ", idCurso2);
+
+      const result = await db.query("CALL intercambiarCursos(?,?,?)", [idGrupo, idCurso1, idCurso2]);
+      res.status(201).json({ mensaje: 'Curso actualizado correctamente', resultado: result });
+  } catch (error) {
+    console.error('Error al intercambiar los cursos:', error);
+    res.status(500).json({ error: 'Error al intercambiar los cursos' });
+  }
+});
 
 // Ruta para obtener cursos filtrados por fecha
 app.get('/cursosXFecha', async (req, res) => {
@@ -197,6 +301,65 @@ app.get('/cursosXFecha', async (req, res) => {
     res.status(500).json({ error: 'Error al obtener cursos por fecha' });
   }
 });
+
+
+// Ruta para obtener grupos filtrados por fecha
+// Para la tabla de grupos a fusionar
+app.get('/gruposXFecha', async (req, res) => {
+  try {
+    const { fechaInicio, fechaFinal, grupo_id, idcurso } = req.query;
+    console.log('REVISAR AQUI 333: ', idcurso);
+    const [cursos] = await db.query(`
+      SELECT gxc.idgrupoXcurso ,g.numero AS grupoNumero
+      FROM grupoXcurso gxc
+      JOIN grupo g ON gxc.idgrupo = g.idgrupo
+      WHERE gxc.fechaInicio >= ? AND gxc.fechaFinal <= ? AND gxc.idgrupo != ? AND gxc.idcurso = ?
+    `, [fechaInicio, fechaFinal, grupo_id, idcurso]);
+
+    res.json(cursos);
+  } catch (error) {
+    console.error('Error al obtener cursos por fecha:', error);
+    res.status(500).json({ error: 'Error al obtener cursos por fecha' });
+  }
+});
+
+
+//Ruta para obtener todos los fusiones
+app.get('/fusiones', async(req, res) =>{
+  try{
+      const [fusiones] = await db.query(`SELECT f.*, g1.numero AS numero_grupo_1, g2.numero AS numero_grupo_2
+      FROM fusion f
+      JOIN grupoxcurso gc1 ON f.idgrupoXcurso1 = gc1.idgrupoXcurso
+      JOIN grupoxcurso gc2 ON f.idgrupoXcurso2 = gc2.idgrupoXcurso
+      JOIN grupo g1 ON gc1.idgrupo = g1.idgrupo
+      JOIN grupo g2 ON gc2.idgrupo = g2.idgrupo;`);
+      res.json(fusiones);
+  } catch(error){
+      console.error('Error al obtener fusiones:', error);
+      res.status(500).json({ error: 'Error al obtener fusiones' });
+  }
+});
+
+// Ruta para agregar una nueva fusión
+app.post('/fusion', async (req, res) => {
+  try {
+      const { idgrupoXcurso1, idgrupoXcurso } = req.body;
+      
+      // Insertar el nuevo fusion en la base de datos
+      const result = await db.query("INSERT INTO coursefollowup.fusion (idgrupoXcurso1, idgrupoXcurso2) VALUES (?, ?)", [idgrupoXcurso1, idgrupoXcurso]);
+      
+      // Obtener el ID de la fusion insertada
+      const idFusionResult = await db.query("SELECT LAST_INSERT_ID() AS idfusion");
+
+      // Devolver el ID de la fusion insertado
+      res.status(201).json({ mensaje: 'Fusion agregado correctamente', idFusionResult });
+  } catch (error) {
+      console.error('Error al agregar fusion:', error);
+      res.status(500).json({ error: 'Error al agregar fusion' });
+  }
+});
+
+// ----------------------------------------------------------------------------------------------------------------------
 
 
 // Ruta para enviar correos de recuperación de contraseña

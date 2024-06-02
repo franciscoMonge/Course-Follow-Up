@@ -1,7 +1,6 @@
 import Navbar from "../../shared/navbar";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from 'axios';
 
 function Ver_Planificador() {
     const navigate = useNavigate();
@@ -20,12 +19,13 @@ function Ver_Planificador() {
         }
     }, [añoPlanificador]);
 
+
     const handleContinuar = () => {
         if (añoPlanificador === "") {
             alert("No ha seleccionado o creado un planificador, por favor inténtelo de nuevo.");
         }
         else {
-            navigate('/App', { state: { fechaInicio, fechaFinal, añoPlanificador } });
+            navigate('/App', { state: { fechaInicio: fechaInicio, fechaFinal: fechaFinal, añoPlanificador: añoPlanificador }});
         }
     };
 
@@ -64,7 +64,7 @@ function Ver_Planificador() {
                 </div>
                 <div className="m-3">
                 <hr />
-                <button className="btn btn-danger m-4" onClick={handleBack}>Volver</button>
+                <button className="btn btn-back m-4" onClick={handleBack}>Volver</button>
                 <button className="btn btn-primary m-4" onClick={handleContinuar}>
                     Continuar
                 </button>

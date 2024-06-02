@@ -14,11 +14,6 @@ function Agregar_Planificador() {
     const [planificadorSeleccionado, setPlanificadorSeleccionado] = useState(null);
     const [planificador, setPlanificador] = useState("");
     const [nuevoPlanificador, setNuevoPlanificador] = useState("");
-    const [nombrePlanificador, setNombrePlanificador] = useState("");
-    const [fechaInicio, setFechaInicio] = useState("");
-    const [fechaFinal, setFechaFinal] = useState("");
-
-    const [showError, setShowError] = useState(false);
 
 
     // Carga todas los planificadores de la BD en la lista "planificadores existentes" 
@@ -122,7 +117,7 @@ function Agregar_Planificador() {
                 </div>
                 <div className="m-3">
                 <hr />
-                <button className="btn btn-danger m-4" onClick={handleBack}>Volver</button>
+                <button className="btn btn-back m-4" onClick={handleBack}>Volver</button>
                 <button className="btn btn-primary m-4" onClick={handleContinuar}>
                     Continuar
                 </button>

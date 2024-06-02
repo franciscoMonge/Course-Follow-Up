@@ -18,7 +18,6 @@ const AgregarCursosIndiv = () => {
 
   const [showWarning, setShowWarning] = useState(false);
   const [warningMessage, setWarningMessage] = useState('');
-  const [pendingValidations, setPendingValidations] = useState([]);
   const [validationIndex, setValidationIndex] = useState(0);
 
   useEffect(() => {
@@ -220,12 +219,11 @@ const AgregarCursosIndiv = () => {
     setJornadaCurso(e.target.value);
   };
   return (
-    <div>
-      <Navbar />
-      <div className="container" style={{ paddingTop: '80px' }}>
-        <ToastContainer position="top-center" />
-        <h3>Agregar Planificación</h3>
-        {showWarning && (
+<div>
+  <Navbar />
+  <div className="container" style={{ paddingTop: '80px' }}>
+    <ToastContainer position="top-center" />
+    {showWarning && (
           <div className="modal" tabIndex="-1" role="dialog" style={{ display: 'block' }}>
             <div className="modal-dialog" role="document">
               <div className="modal-content">
@@ -244,99 +242,102 @@ const AgregarCursosIndiv = () => {
             </div>
           </div>
         )}
-        <div className="row">
-          <div className="col">
-            <div className="form-group">
-              <span className="badge bg-light text-dark">
-                <h5>Grupo:</h5>
-                <h5>{numero}</h5>
-              </span>
-            </div>
-          </div>
-          <div className="col">
-            <div className="form-group">
-              <span className="badge bg-light text-dark">
-                <h5>Horario del grupo:</h5>
-                <h5>{horario}</h5>
-              </span>
-            </div>
+    <div className="row">
+    <h3 style={{ color: 'white'}}>Agregar Planificación</h3>
+    <div className="col">
+          <div className="form-group">
+            <span className="badge bg-light text-dark">
+              <h5>Grupo:</h5>
+              <h5>{numero}</h5>
+            </span>
           </div>
         </div>
-        <br></br>
-        <div className="row">
-          <div className="col-md-12 mb-12">
-            <div className="card">
-              <div className="card-body">
-                <h5 className="card-title">{cursoSeleccionado.nombre_curso}</h5>
-                <div className="form-group">
-                  <label>Profesor:</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={profesor}
-                    onChange={(e) => setProfesor(e.target.value)}
-                  />
-                </div>
-                <div className='form-group'>
-                  <label>Fecha Inicio:</label>
-                  <input
-                    type="date"
-                    className="form-control"
-                    value={fechaInicio}
-                    onChange={(e) => setFechaInicio(e.target.value)}
-                  />
-                </div>
-                <div className='form-group'>
-                  <label>Fecha Final:</label>
-                  <input
-                    type="date"
-                    className="form-control"
-                    value={fechaFinal}
-                    onChange={(e) => setFechaFinal(e.target.value)}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Horario:</label>
-                  <select
-                    className="form-select form-select-sm"
-                    aria-label=".form-select-sm example"
-                    onChange={handleChange}
-                    value={
-                      horarioCurso === 'Lunes y Miércoles' ? 'L-M' :
-                        horarioCurso === 'Martes y Jueves' ? 'K-J' :
-                          horarioCurso // Si no coincide con ninguno de los casos anteriores, se utiliza el valor actual de horarioCurso
-                    }
-                  >
-                    <option value="L-M">L-M</option>
-                    <option value="K-J">K-J</option>
-                  </select>
-                </div>
+        <div className="col">
+          <div className="form-group">
+            <span className="badge bg-light text-dark">
+              <h5>Horario del grupo:</h5>
+              <h5>{horario}</h5>
+            </span>
+          </div>
+        </div>
+      <div className="col-md-12 mb-12">
+        <div className="card">
+          <div className="card-body">
+            <h5 className="card-title">{cursoSeleccionado.nombre_curso}</h5>
+            <div className="form-group">
+              <label>Profesor:</label>
+              <input
+                type="text"
+                className="form-control"
+                value={profesor}
+                onChange={(e) => setProfesor(e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>Fecha Inicio:</label>
+              <input
+                type="date"
+                className="form-control"
+                value={fechaInicio}
+                onChange={(e) => setFechaInicio(e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>Fecha Final:</label>
+              <input
+                type="date"
+                className="form-control"
+                value={fechaFinal}
+                onChange={(e) => setFechaFinal(e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>Horario:</label>
+              <select
+                className="form-select form-select-sm"
+                aria-label=".form-select-sm example"
+                onChange={handleChange}
+                value={
+                  horarioCurso === 'Lunes y Miércoles'
+                    ? 'L-M'
+                    : horarioCurso === 'Martes y Jueves'
+                    ? 'K-J'
+                    : horarioCurso
+                }
+              >
+                <option value="L-M">L-M</option>
+                <option value="K-J">K-J</option>
+              </select>
+            </div>
 
-                <div className="form-group">
-                  <label>Jornada:</label>
-                  <select
-                    className="form-select form-select-sm"
-                    aria-label=".form-select-sm example"
-                    onChange={handleChangeJornada}
-                    value={
-                      jornadaCurso // Si no coincide con ninguno de los casos anteriores, se utiliza el valor actual de horarioCurso
-                    }
-                  >
-                    <option value="Diurno">Diurno☀️</option>
-                    <option value="Nocturno">Nocturno🌒</option>
-                  </select>
-                </div>
-                <button className="btn btn-success m-4" onClick={handleConfirmar}>Confirmar cambios</button>
-              </div>
+            <div className="form-group">
+              <label>Jornada:</label>
+              <select
+                className="form-select form-select-sm"
+                aria-label=".form-select-sm example"
+                onChange={handleChangeJornada}
+                value={jornadaCurso}
+              >
+                <option value="Diurno">Diurno☀️</option>
+                <option value="Nocturno">Nocturno🌒</option>
+              </select>
+            </div>
+            <div className="d-flex justify-content-between">
+            <button className="btn btn-danger m-4" onClick={handleBack}>
+                Volver
+              </button>
+              <button className="btn btn-success m-4" onClick={handleConfirmar}>
+                Confirmar cambios
+              </button>
             </div>
           </div>
-        </div>
-        <div className="m-3">
-          <hr />
-          <button className="btn btn-danger m-4" onClick={handleBack}>Volver</button>
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+
   );
 };
 
