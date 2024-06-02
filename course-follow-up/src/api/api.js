@@ -85,7 +85,7 @@ app.get('/usuario/:idUsuario', async(req, res) => {
   const { idUsuario } = req.params;
   try {
       // Obtener el usuario de la base de datos
-      const [usuarios] = await db.query("SELECT * FROM coursefollowup.usuario WHERE idusuario = ?", [idUsuario]);
+      const [usuarios] = await db.query("SELECT * FROM railway.usuario WHERE idusuario = ?", [idUsuario]);
       
       if (usuarios.length === 0) {
           return res.status(404).json({ error: 'Usuario no encontrado' });
@@ -311,7 +311,7 @@ app.get('/gruposXFecha', async (req, res) => {
     console.log('REVISAR AQUI 333: ', idcurso);
     const [cursos] = await db.query(`
       SELECT gxc.idgrupoXcurso ,g.numero AS grupoNumero
-      FROM grupoXcurso gxc
+      FROM grupoxcurso gxc
       JOIN grupo g ON gxc.idgrupo = g.idgrupo
       WHERE gxc.fechaInicio >= ? AND gxc.fechaFinal <= ? AND gxc.idgrupo != ? AND gxc.idcurso = ?
     `, [fechaInicio, fechaFinal, grupo_id, idcurso]);
