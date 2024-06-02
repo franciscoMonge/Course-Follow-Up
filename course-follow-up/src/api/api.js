@@ -142,7 +142,7 @@ app.put('/usuario/:idUsuario', async (req, res) => {
   const psswrdEncriptado = encryptData(contraseña);
 
   try {
-      const query = 'UPDATE coursefollowup.usuario SET correo = ?, contraseña = ? WHERE idusuario = ?';
+      const query = 'UPDATE railway.usuario SET correo = ?, contraseña = ? WHERE idusuario = ?';
       const [results] = await db.query(query, [correoEncriptado, psswrdEncriptado, idUsuario]);
 
       if (results.affectedRows === 0) {
@@ -163,7 +163,7 @@ app.put('/editarUsuario/:idUsuario', async (req, res) => {
 
 
   try {
-      const query = 'UPDATE coursefollowup.usuario SET admin = ? WHERE idusuario = ?';
+      const query = 'UPDATE railway.usuario SET admin = ? WHERE idusuario = ?';
       const [results] = await db.query(query, [admin, idUsuario]);
 
       if (results.affectedRows === 0) {
@@ -346,7 +346,7 @@ app.post('/fusion', async (req, res) => {
       const { idgrupoXcurso1, idgrupoXcurso } = req.body;
       
       // Insertar el nuevo fusion en la base de datos
-      const result = await db.query("INSERT INTO coursefollowup.fusion (idgrupoXcurso1, idgrupoXcurso2) VALUES (?, ?)", [idgrupoXcurso1, idgrupoXcurso]);
+      const result = await db.query("INSERT INTO railway.fusion (idgrupoXcurso1, idgrupoXcurso2) VALUES (?, ?)", [idgrupoXcurso1, idgrupoXcurso]);
       
       // Obtener el ID de la fusion insertada
       const idFusionResult = await db.query("SELECT LAST_INSERT_ID() AS idfusion");
@@ -410,7 +410,7 @@ app.put('/usuarios/updatePassword', async (req, res) => {
         const psswrdEncriptado = encryptData(nuevaContraseña);
 
         // Actualiza la contraseña encriptada en la base de datos para el usuario correspondiente
-        const result = await db.query("UPDATE coursefollowup.usuario SET contraseña = ? WHERE correo = ?", [psswrdEncriptado, correoEncriptado]);
+        const result = await db.query("UPDATE railway.usuario SET contraseña = ? WHERE correo = ?", [psswrdEncriptado, correoEncriptado]);
 
         if (result.affectedRows === 0) {
           res.status(404).json({ mensaje: 'Usuario no encontrado' });
