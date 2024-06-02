@@ -8,19 +8,19 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- Schema mydb
 -- -----------------------------------------------------
 -- -----------------------------------------------------
--- Schema coursefollowup
+-- Schema railway
 -- -----------------------------------------------------
 
 -- -----------------------------------------------------
--- Schema coursefollowup
+-- Schema railway
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `coursefollowup` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
-USE `coursefollowup` ;
+CREATE SCHEMA IF NOT EXISTS `railway` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
+USE `railway` ;
 
 -- -----------------------------------------------------
--- Table `coursefollowup`.`curso`
+-- Table `railway`.`curso`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `coursefollowup`.`curso` (
+CREATE TABLE IF NOT EXISTS `railway`.`curso` (
   `idcurso` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(60) NOT NULL,
   PRIMARY KEY (`idcurso`))
@@ -31,9 +31,9 @@ COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
--- Table `coursefollowup`.`grupo`
+-- Table `railway`.`grupo`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `coursefollowup`.`grupo` (
+CREATE TABLE IF NOT EXISTS `railway`.`grupo` (
   `idgrupo` INT NOT NULL AUTO_INCREMENT,
   `numero` INT NOT NULL,
   `horario` VARCHAR(45) NOT NULL,
@@ -45,9 +45,9 @@ COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
--- Table `coursefollowup`.`grupoxcurso`
+-- Table `railway`.`grupoxcurso`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `coursefollowup`.`grupoxcurso` (
+CREATE TABLE IF NOT EXISTS `railway`.`grupoxcurso` (
   `idgrupoXcurso` INT NOT NULL AUTO_INCREMENT,
   `idgrupo` INT NOT NULL,
   `idcurso` INT NOT NULL,
@@ -61,10 +61,10 @@ CREATE TABLE IF NOT EXISTS `coursefollowup`.`grupoxcurso` (
   INDEX `fk_grupoXcurso_curso1_idx` (`idcurso` ASC) VISIBLE,
   CONSTRAINT `fk_grupoXcurso_curso1`
     FOREIGN KEY (`idcurso`)
-    REFERENCES `coursefollowup`.`curso` (`idcurso`),
+    REFERENCES `railway`.`curso` (`idcurso`),
   CONSTRAINT `fk_grupoXcurso_grupo1`
     FOREIGN KEY (`idgrupo`)
-    REFERENCES `coursefollowup`.`grupo` (`idgrupo`))
+    REFERENCES `railway`.`grupo` (`idgrupo`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 44
 DEFAULT CHARACTER SET = utf8mb4
@@ -72,9 +72,9 @@ COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
--- Table `coursefollowup`.`fusion`
+-- Table `railway`.`fusion`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `coursefollowup`.`fusion` (
+CREATE TABLE IF NOT EXISTS `railway`.`fusion` (
   `idfusion` INT NOT NULL AUTO_INCREMENT,
   `idgrupoXcurso1` INT NOT NULL,
   `idgrupoXcurso2` INT NOT NULL,
@@ -83,20 +83,20 @@ CREATE TABLE IF NOT EXISTS `coursefollowup`.`fusion` (
   INDEX `fk_fusion_grupoxcurso2_idx` (`idgrupoXcurso2` ASC) VISIBLE,
   CONSTRAINT `fk_fusion_grupoxcurso1`
     FOREIGN KEY (`idgrupoXcurso1`)
-    REFERENCES `coursefollowup`.`grupoxcurso` (`idgrupoXcurso`),
+    REFERENCES `railway`.`grupoxcurso` (`idgrupoXcurso`),
   CONSTRAINT `fk_fusion_grupoxcurso2`
     FOREIGN KEY (`idgrupoXcurso2`)
-    REFERENCES `coursefollowup`.`grupoxcurso` (`idgrupoXcurso`))
- ENGINE = InnoDB
- AUTO_INCREMENT = 11
- DEFAULT CHARACTER SET = utf8mb4
- COLLATE = utf8mb4_0900_ai_ci;
+    REFERENCES `railway`.`grupoxcurso` (`idgrupoXcurso`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 11
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
--- Table `coursefollowup`.`usuario`
+-- Table `railway`.`usuario`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `coursefollowup`.`usuario` (
+CREATE TABLE IF NOT EXISTS `railway`.`usuario` (
   `idusuario` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(45) NOT NULL,
   `apellidos` VARCHAR(200) NOT NULL,
@@ -104,22 +104,21 @@ CREATE TABLE IF NOT EXISTS `coursefollowup`.`usuario` (
   `contraseña` VARCHAR(45) NOT NULL,
   `admin` BIT(1) NOT NULL DEFAULT b'0',
   PRIMARY KEY (`idusuario`))
- ENGINE = InnoDB
- AUTO_INCREMENT = 15
- DEFAULT CHARACTER SET = utf8mb4
- COLLATE = utf8mb4_0900_ai_ci;
+ENGINE = InnoDB
+AUTO_INCREMENT = 15
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
 
-USE `coursefollowup` ;
-
+USE `railway` ;
 -- -----------------------------------------------------
 -- procedure GetCursos
 -- -----------------------------------------------------
 
 DELIMITER $$
-USE `coursefollowup`$$
+USE `railway`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetCursos`()
 BEGIN
-    SELECT nombre FROM Curso;
+    SELECT nombre FROM curso;
 END$$
 
 DELIMITER ;
@@ -129,7 +128,7 @@ DELIMITER ;
 -- -----------------------------------------------------
 
 DELIMITER $$
-USE `coursefollowup`$$
+USE `railway`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetCursosEnGrupo`(p_idGrupo INT)
 BEGIN
 	-- Obtengo la información de los cursos para ese grupo, si está disponible
@@ -140,8 +139,8 @@ BEGIN
 		IFNULL(grupoxcurso.fechaFinal, '') AS fechaFinal,
 		IFNULL(grupoxcurso.horario, '') AS horario,
 		IFNULL(grupoxcurso.profesor, '') AS profesor
-	FROM Curso 
-	INNER JOIN GrupoxCurso ON curso.idCurso = grupoxcurso.idCurso AND grupoxcurso.idGrupo = p_idGrupo;
+	FROM curso 
+	INNER JOIN grupoxcurso ON curso.idcurso = grupoxcurso.idcurso AND grupoxcurso.idgrupo = p_idGrupo;
 END$$
 
 DELIMITER ;
@@ -151,7 +150,7 @@ DELIMITER ;
 -- -----------------------------------------------------
 
 DELIMITER $$
-USE `coursefollowup`$$
+USE `railway`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `GetCursosxGrupo`(p_idGrupo INT)
 BEGIN
 	-- Obtengo la información de los cursos para ese grupo, si está disponible
@@ -162,8 +161,8 @@ BEGIN
 		IFNULL(grupoxcurso.fechaFinal, '') AS fechaFinal,
 		IFNULL(grupoxcurso.horario, '') AS horario,
 		IFNULL(grupoxcurso.profesor, '') AS profesor
-	FROM Curso 
-	LEFT JOIN GrupoxCurso ON curso.idCurso = grupoxcurso.idCurso AND grupoxcurso.idGrupo = p_idGrupo;
+	FROM curso 
+	LEFT JOIN grupoxcurso ON curso.idcurso = grupoxcurso.idcurso AND grupoxcurso.idgrupo = p_idGrupo;
 END$$
 
 DELIMITER ;
@@ -173,7 +172,7 @@ DELIMITER ;
 -- -----------------------------------------------------
 
 DELIMITER $$
-USE `coursefollowup`$$
+USE `railway`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `VerificarDistanciaCursos`(
     IN p_nombreCurso VARCHAR(60),
     IN p_fechaInicio DATE,
@@ -224,7 +223,7 @@ DELIMITER ;
 -- -----------------------------------------------------
 
 DELIMITER $$
-USE `coursefollowup`$$
+USE `railway`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `VerificarDistanciaUnaSemana`(
     IN p_idGrupo INT,
     IN p_fechaInicio DATE
@@ -263,7 +262,7 @@ DELIMITER ;
 -- -----------------------------------------------------
 
 DELIMITER $$
-USE `coursefollowup`$$
+USE `railway`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getGrupos`()
 BEGIN
     SELECT idgrupo, numero, horario FROM grupo;
@@ -276,10 +275,10 @@ DELIMITER ;
 -- -----------------------------------------------------
 
 DELIMITER $$
-USE `coursefollowup`$$
+USE `railway`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `getHorarioGrupo`(p_idGrupo int)
 BEGIN
-    SELECT horario FROM grupo WHERE idGrupo = p_idGrupo;
+    SELECT horario FROM grupo WHERE idgrupo = p_idGrupo;
 END$$
 
 DELIMITER ;
@@ -289,7 +288,7 @@ DELIMITER ;
 -- -----------------------------------------------------
 
 DELIMITER $$
-USE `coursefollowup`$$
+USE `railway`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `intercambiarCursos`(
 	IN p_idGrupo INT,
     IN p_idCurso1 INT,
@@ -327,7 +326,7 @@ DELIMITER ;
 -- procedure updateCursoGrupo
 -- -----------------------------------------------------
 DELIMITER $$
-USE `coursefollowup`$$
+USE `railway`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `updateCursoGrupo`(
     IN p_idGrupo INT,
     IN p_idCurso INT,
@@ -347,7 +346,7 @@ BEGIN
     -- VERIFICAR SI EXISTE EL CURSO PARA ESE GRUPO
     SELECT COUNT(*) INTO curso_existente 
     FROM grupoxcurso 
-    WHERE idGrupo = p_idGrupo AND idcurso = p_idCurso;
+    WHERE idgrupo = p_idGrupo AND idcurso = p_idCurso;
 
     IF curso_existente > 0 THEN
         -- Si el curso existe para ese grupo, se ACTUALIZAN los datos
@@ -358,10 +357,10 @@ BEGIN
             fechaFinal = IF(p_fechaFinal IS NOT NULL AND p_fechaFinal <> '', p_fechaFinal, fechaFinal),
             profesor = IF(p_profesor IS NOT NULL AND p_profesor <> '', p_profesor, profesor),
             horario = IF(p_horario IS NOT NULL AND p_horario <> '', p_horario, horario)
-        WHERE idGrupo = p_idGrupo AND idcurso = p_idCurso;
+        WHERE idgrupo = p_idGrupo AND idcurso = p_idCurso;
     ELSE
         -- Si el curso NO existe para ese grupo, se CREA un nuevo registro
-        INSERT INTO grupoxcurso (idGrupo, idcurso, fechaInicio, fechaFinal, profesor, horario)
+        INSERT INTO grupoxcurso (idgrupo, idcurso, fechaInicio, fechaFinal, profesor, horario)
         VALUES (p_idGrupo, p_idCurso, p_fechaInicio, p_fechaFinal, p_profesor, p_horario);
     END IF;
 END$$
@@ -372,7 +371,7 @@ DELIMITER ;
 -- procedure updateCursoGrupo1
 -- -----------------------------------------------------
 DELIMITER $$
-USE `coursefollowup`$$
+USE `railway`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `updateCursoGrupo1`(
     IN p_idGrupo INT,
     IN p_idCurso INT,
@@ -393,7 +392,7 @@ BEGIN
     -- VERIFICAR SI EXISTE EL CURSO PARA ESE GRUPO
     SELECT COUNT(*) INTO curso_existente 
     FROM grupoxcurso 
-    WHERE idGrupo = p_idGrupo AND idcurso = p_idCurso;
+    WHERE idgrupo = p_idGrupo AND idcurso = p_idCurso;
 
     IF curso_existente > 0 THEN
         -- Si el curso existe para ese grupo, se ACTUALIZAN los datos
@@ -405,16 +404,21 @@ BEGIN
             profesor = IF(p_profesor IS NOT NULL AND p_profesor <> '', p_profesor, profesor),
             horario = IF(p_horario IS NOT NULL AND p_horario <> '', p_horario, horario),
             jornada = IF(p_jornada IS NOT NULL AND p_jornada <> '', p_jornada, jornada)
-        WHERE idGrupo = p_idGrupo AND idcurso = p_idCurso;
+        WHERE idgrupo = p_idGrupo AND idcurso = p_idCurso;
     ELSE
         -- Si el curso NO existe para ese grupo, se CREA un nuevo registro
-        INSERT INTO grupoxcurso (idGrupo, idcurso, fechaInicio, fechaFinal, profesor, horario,jornada)
-        VALUES (p_idGrupo, p_idCurso, p_fechaInicio, p_fechaFinal, p_profesor, p_horario,p_jornada);
+        INSERT INTO grupoxcurso (idgrupo, idcurso, fechaInicio, fechaFinal, profesor, horario, jornada)
+        VALUES (p_idGrupo, p_idCurso, p_fechaInicio, p_fechaFinal, p_profesor, p_horario, p_jornada);
     END IF;
 END$$
 
 DELIMITER ;
 
+
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+
+select * from grupoxcurso

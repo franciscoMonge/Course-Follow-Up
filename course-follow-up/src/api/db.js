@@ -1,13 +1,21 @@
 const mysql = require('mysql2');
 
-const connection = mysql.createConnection({
-    host: '127.0.0.1',
-    user: 'root',
-    password: 'Moralesjfi123456',
-    database: 'coursefollowup',
-    port: '3306'
-});
+// const connection = mysql.createConnection({
+//     host: '127.0.0.1',
+//     user: 'root',
+//     password: 'Moralesjfi123456',
+//     database: 'coursefollowup',
+//     port: '3306'
+// });
 
+//Hosteo de base de datos en Railway
+const connection = mysql.createConnection({
+  host: 'monorail.proxy.rlwy.net',
+  user: 'root',
+  password: 'dARhAIEHrxfGrPPSoSvpzlCnqvdWvqQJ',
+  database: 'railway',
+  port: '27491'
+});
 
 const promiseConnection = connection.promise();
 

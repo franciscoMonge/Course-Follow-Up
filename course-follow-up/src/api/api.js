@@ -37,7 +37,7 @@ function decryptData(ciphertext) {
 // Define la función que utiliza await dentro de una función asíncrona
 async function obtenerUsuarios() {
   try {
-      const [usuarios] = await db.query("SELECT * FROM coursefollowup.usuario");
+      const [usuarios] = await db.query("SELECT * FROM railway.usuario");
 
       // Llenar el diccionario con los correos electrónicos desencriptados y encriptados
       usuarios.forEach(usuario => {
@@ -60,7 +60,7 @@ obtenerUsuarios();
 app.get('/usuarios', async(req, res) =>{
     try{  
       // Obtener usuarios de la base de datos
-      const [usuarios] = await db.query("SELECT * FROM coursefollowup.usuario");
+      const [usuarios] = await db.query("SELECT * FROM railway.usuario");
       
       const usuariosDesencriptados = usuarios.map(usuario => ({
         id: usuario.id,
@@ -90,7 +90,7 @@ app.post('/usuarios', async (req, res) => {
       const psswrdEncriptado = encryptData(psswrd);
              
       // Agregar usuario a la base de datos
-      const result = await db.query("INSERT INTO coursefollowup.usuario (nombre, apellidos, correo, contraseña) VALUES (?, ?, ?, ?)", [name, lastName, correoEncriptado, psswrdEncriptado]);
+      const result = await db.query("INSERT INTO railway.usuario (nombre, apellidos, correo, contraseña) VALUES (?, ?, ?, ?)", [name, lastName, correoEncriptado, psswrdEncriptado]);
   
       // Actualizar el diccionario correoMap con el nuevo usuario registrado
       correoMap[correo] = correoEncriptado;
@@ -105,7 +105,7 @@ app.post('/usuarios', async (req, res) => {
 //Ruta para obtener todos los grupos
 app.get('/grupos', async(req, res) =>{
   try{
-      const [grupos] = await db.query("SELECT * FROM coursefollowup.grupo");
+      const [grupos] = await db.query("SELECT * FROM railway.grupo");
       res.json(grupos);
   } catch(error){
       console.error('Error al obtener grupos:', error);
@@ -119,7 +119,7 @@ app.post('/grupos', async (req, res) => {
       const { numero, horario } = req.body;
       
       // Insertar el nuevo grupo en la base de datos
-      const result = await db.query("INSERT INTO coursefollowup.grupo (numero, horario) VALUES (?, ?)", [numero, horario]);
+      const result = await db.query("INSERT INTO railway.grupo (numero, horario) VALUES (?, ?)", [numero, horario]);
       
       // Obtener el ID del grupo insertado
       const idGrupoResult = await db.query("SELECT LAST_INSERT_ID() AS idGrupo");
@@ -185,7 +185,7 @@ app.get('/cursosXFecha', async (req, res) => {
 
     const [cursos] = await db.query(`
       SELECT g.numero AS grupoNumero, g.horario AS grupoHorario, c.idcurso, c.nombre AS cursoNombre, gxc.fechaInicio, gxc.fechaFinal, gxc.profesor, gxc.horario AS cursoHorario
-      FROM grupoXcurso gxc
+      FROM grupoxcurso gxc
       JOIN grupo g ON gxc.idgrupo = g.idgrupo
       JOIN curso c ON gxc.idcurso = c.idcurso
       WHERE gxc.fechaInicio >= ? AND gxc.fechaFinal <= ?
